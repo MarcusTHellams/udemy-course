@@ -14,17 +14,33 @@ type User {
 
   """Email field"""
   email: String!
+  tasks: [Task!]
+}
+
+type Task {
+  """Id field"""
+  id: String!
+
+  """Title field"""
+  title: String!
+
+  """Description field"""
+  description: String
 }
 
 type Query {
   users: [User!]!
   user(id: String!): User!
+  task(id: Int!): Task!
 }
 
 type Mutation {
   createUser(createUserInput: CreateUserInput!): User!
   updateUser(updateUserInput: UpdateUserInput!): User!
   removeUser(id: Int!): User!
+  createTask(createTaskInput: CreateTaskInput!): Task!
+  updateTask(updateTaskInput: UpdateTaskInput!): Task!
+  removeTask(id: Int!): Task!
 }
 
 input CreateUserInput {
@@ -33,6 +49,17 @@ input CreateUserInput {
 }
 
 input UpdateUserInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}
+
+input CreateTaskInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input UpdateTaskInput {
   """Example field (placeholder)"""
   exampleField: Int
   id: Int!

@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
 import { GraphQLModule } from '@nestjs/graphql';
 import { RepoModule } from './repo/repo.module';
+import { TaskModule } from './task/task.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -20,6 +21,7 @@ import { RepoModule } from './repo/repo.module';
     }),
     UserModule,
     RepoModule,
+    TaskModule,
   ],
   controllers: [AppController],
   providers: [AppService],

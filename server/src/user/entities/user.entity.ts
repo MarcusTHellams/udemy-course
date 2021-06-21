@@ -1,5 +1,6 @@
 import { ObjectType, Field } from '@nestjs/graphql';
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Task } from '../../task/entities/task.entity';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 
 @Entity()
 @ObjectType()
@@ -23,4 +24,7 @@ export class User {
   @Column('varchar', { name: 'email', nullable: false })
   @Field(() => String, { description: 'Email field', name: 'email' })
   email: string;
+
+  @OneToMany(() => Task, (task) => task.user)
+  tasks: Task[];
 }
