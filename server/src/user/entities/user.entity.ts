@@ -12,7 +12,7 @@ export class User {
   @Field(() => String, { description: 'Username field', name: 'username' })
   username: string;
 
-  @Column('varchar', { name: 'password', nullable: false })
+  @Column('varchar', { name: 'password', nullable: false, select: false })
   @Field(() => String, { description: 'Password field', name: 'password' })
   password: string;
 
