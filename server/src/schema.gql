@@ -2,27 +2,36 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type Hello {
-  """Example field (placeholder)"""
-  exampleField: Int!
+type User {
+  """Id field"""
+  id: String!
+
+  """Username field"""
+  username: String!
+
+  """Password field"""
+  password: String!
+
+  """Email field"""
+  email: String!
 }
 
 type Query {
-  hello(id: Int!): Hello!
+  user(id: Int!): User!
 }
 
 type Mutation {
-  createHello(createHelloInput: CreateHelloInput!): Hello!
-  updateHello(updateHelloInput: UpdateHelloInput!): Hello!
-  removeHello(id: Int!): Hello!
+  createUser(createUserInput: CreateUserInput!): User!
+  updateUser(updateUserInput: UpdateUserInput!): User!
+  removeUser(id: Int!): User!
 }
 
-input CreateHelloInput {
+input CreateUserInput {
   """Example field (placeholder)"""
   exampleField: Int!
 }
 
-input UpdateHelloInput {
+input UpdateUserInput {
   """Example field (placeholder)"""
   exampleField: Int
   id: Int!

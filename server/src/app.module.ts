@@ -1,15 +1,15 @@
+import { UserModule } from './user/user.module';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
 import { GraphQLModule } from '@nestjs/graphql';
-import { HelloModule } from './hello/hello.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       autoLoadEntities: true,
-      database: `${join(process.cwd(), '../../', 'udemy-course.db')}`,
+      database: `${join(__dirname, '../../', 'udemy-course.db')}`,
       synchronize: true,
       type: 'sqlite',
     }),
@@ -17,7 +17,7 @@ import { HelloModule } from './hello/hello.module';
       playground: true,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
     }),
-    HelloModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
