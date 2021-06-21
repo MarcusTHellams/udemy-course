@@ -1,0 +1,9 @@
+{
+  "name": "udemy-course",
+  "version": "1.0.0",
+  "description": "My Hopeful Udemy Course",
+  "main": "index.js",
+  "author": "Marcus T. Hellams",
+  "license": "MIT",
+  "private": true
+}
