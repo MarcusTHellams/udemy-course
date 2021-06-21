@@ -9,7 +9,7 @@ import { HelloModule } from './hello/hello.module';
   imports: [
     TypeOrmModule.forRoot({
       autoLoadEntities: true,
-      database: `${join(__dirname, '../../', 'udemy-course.db')}`,
+      database: `${join(process.cwd(), '../../', 'udemy-course.db')}`,
       synchronize: true,
       type: 'sqlite',
     }),
