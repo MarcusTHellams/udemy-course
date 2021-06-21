@@ -1,3 +1,4 @@
+import { IGraphqlContext } from './../types/graphql.types';
 import { RepoService } from './../repo/repo.service';
 import {
   Resolver,
@@ -7,6 +8,7 @@ import {
   Int,
   ResolveField,
   Parent,
+  Context,
 } from '@nestjs/graphql';
 import { UserService } from './user.service';
 import { User } from './entities/user.entity';
@@ -47,7 +49,10 @@ export class UserResolver {
   }
 
   @ResolveField(() => [Task], { name: 'tasks', nullable: true })
-  async tasks(@Parent() user: User) {
-    return await this.repo.taskRepo.find({ where: { user } });
+  async tasks(
+    @Parent() user: User,
+    @Context() { taskLoader }: IGraphqlContext,
+  ) {
+    return await taskLoader.load(user.id);
   }
 }

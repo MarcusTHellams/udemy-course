@@ -1,3 +1,4 @@
+import { taskLoader } from './db/loaders/task.loader';
 import { UserModule } from './user/user.module';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
@@ -14,10 +15,15 @@ import { TaskModule } from './task/task.module';
       database: `${join(__dirname, '../../', 'udemy-course.db')}`,
       synchronize: true,
       type: 'sqlite',
+      logging: 'all',
+      logger: 'advanced-console',
     }),
     GraphQLModule.forRoot({
       playground: true,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      context: {
+        taskLoader: taskLoader(),
+      },
     }),
     UserModule,
     RepoModule,
