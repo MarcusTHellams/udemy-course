@@ -1,3 +1,4 @@
+import { roleLoader } from './../db/loaders/role.loader';
 import { In } from 'typeorm';
 import { Role } from './../role/entities/role.entity';
 import { IGraphqlContext } from './../types/graphql.types';
@@ -58,19 +59,24 @@ export class UserResolver {
   }
 
   @ResolveField(() => [Role], { name: 'roles', nullable: true })
-  async roles(@Parent() user: User) {
-    const userRoles = await this.repo.userRoleRepo.find({
-      join: {
-        alias: 'userRole',
-        innerJoinAndSelect: {
-          role: 'userRole.role',
-        },
-      },
-      where: {
-        userId: user.id,
-      },
-    });
+  async roles(
+    @Parent() user: User,
+    @Context() { roleLoader }: IGraphqlContext,
+  ) {
+    const roles = await roleLoader.load(user.id);
 
-    return userRoles.map((u) => u.role);
+    // const userRoles = await this.repo.userRoleRepo.find({
+    //   join: {
+    //     alias: 'userRole',
+    //     innerJoinAndSelect: {
+    //       role: 'userRole.role',
+    //     },
+    //   },
+    //   where: {
+    //     userId: user.id,
+    //   },
+    // });
+
+    return roles;
   }
 }

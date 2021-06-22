@@ -1,3 +1,4 @@
+import { roleLoader } from './db/loaders/role.loader';
 import { taskLoader } from './db/loaders/task.loader';
 import { UserModule } from './user/user.module';
 import { Module } from '@nestjs/common';
@@ -25,6 +26,7 @@ import { UserRoleModule } from './user-role/user-role.module';
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       context: {
         taskLoader: taskLoader(),
+        roleLoader: roleLoader(),
       },
     }),
     UserModule,

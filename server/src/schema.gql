@@ -10,6 +10,17 @@ type Role {
   name: String!
 }
 
+type Task {
+  """Id field"""
+  id: String!
+
+  """Title field"""
+  title: String!
+
+  """Description field"""
+  description: String
+}
+
 type User {
   """Id field"""
   id: String!
@@ -24,17 +35,6 @@ type User {
   email: String!
   tasks: [Task!]
   roles: [Role!]
-}
-
-type Task {
-  """Id field"""
-  id: String!
-
-  """Title field"""
-  title: String!
-
-  """Description field"""
-  description: String
 }
 
 type Query {
