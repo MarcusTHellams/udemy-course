@@ -1,3 +1,5 @@
+import { In } from 'typeorm';
+import { Role } from './../role/entities/role.entity';
 import { IGraphqlContext } from './../types/graphql.types';
 import { RepoService } from './../repo/repo.service';
 import {
@@ -15,7 +17,6 @@ import { User } from './entities/user.entity';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { Task } from '../task/entities/task.entity';
-
 @Resolver(() => User)
 export class UserResolver {
   constructor(
@@ -54,5 +55,22 @@ export class UserResolver {
     @Context() { taskLoader }: IGraphqlContext,
   ) {
     return await taskLoader.load(user.id);
+  }
+
+  @ResolveField(() => [Role], { name: 'roles', nullable: true })
+  async roles(@Parent() user: User) {
+    const userRoles = await this.repo.userRoleRepo.find({
+      join: {
+        alias: 'userRole',
+        innerJoinAndSelect: {
+          role: 'userRole.role',
+        },
+      },
+      where: {
+        userId: user.id,
+      },
+    });
+
+    return userRoles.map((u) => u.role);
   }
 }

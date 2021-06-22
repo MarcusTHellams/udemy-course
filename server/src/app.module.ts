@@ -8,6 +8,8 @@ import { join } from 'path';
 import { GraphQLModule } from '@nestjs/graphql';
 import { RepoModule } from './repo/repo.module';
 import { TaskModule } from './task/task.module';
+import { RoleModule } from './role/role.module';
+import { UserRoleModule } from './user-role/user-role.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -28,6 +30,8 @@ import { TaskModule } from './task/task.module';
     UserModule,
     RepoModule,
     TaskModule,
+    RoleModule,
+    UserRoleModule,
   ],
   controllers: [AppController],
   providers: [AppService],

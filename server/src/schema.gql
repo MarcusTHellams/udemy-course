@@ -2,6 +2,14 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type Role {
+  """Id field"""
+  id: String!
+
+  """Name field"""
+  name: String!
+}
+
 type User {
   """Id field"""
   id: String!
@@ -15,6 +23,7 @@ type User {
   """Email field"""
   email: String!
   tasks: [Task!]
+  roles: [Role!]
 }
 
 type Task {
@@ -32,6 +41,7 @@ type Query {
   users: [User!]!
   user(id: String!): User!
   task(id: Int!): Task!
+  role(id: Int!): Role!
 }
 
 type Mutation {
@@ -41,6 +51,9 @@ type Mutation {
   createTask(createTaskInput: CreateTaskInput!): Task!
   updateTask(updateTaskInput: UpdateTaskInput!): Task!
   removeTask(id: Int!): Task!
+  createRole(createRoleInput: CreateRoleInput!): Role!
+  updateRole(updateRoleInput: UpdateRoleInput!): Role!
+  removeRole(id: Int!): Role!
 }
 
 input CreateUserInput {
@@ -60,6 +73,17 @@ input CreateTaskInput {
 }
 
 input UpdateTaskInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}
+
+input CreateRoleInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input UpdateRoleInput {
   """Example field (placeholder)"""
   exampleField: Int
   id: Int!

@@ -1,3 +1,5 @@
+import { UserRole } from './../../user-role/entities/user-role.entity';
+import { Role } from './../../role/entities/role.entity';
 import { ObjectType, Field } from '@nestjs/graphql';
 import { Task } from '../../task/entities/task.entity';
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
@@ -27,4 +29,7 @@ export class User {
 
   @OneToMany(() => Task, (task) => task.user)
   tasks: Task[];
+
+  @OneToMany(() => UserRole, (ur) => ur.role)
+  roles: Role[];
 }
