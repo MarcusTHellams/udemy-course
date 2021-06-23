@@ -7,6 +7,7 @@ import {
   Text,
   Button,
   useDisclosure,
+  Avatar,
 } from '@chakra-ui/react';
 import { GiHamburgerMenu } from 'react-icons/gi';
 
@@ -21,7 +22,7 @@ export const Header = (props: HeaderProps): JSX.Element => {
     <>
       <Flex
         boxShadow="lg"
-        position="sticky" 
+        position="sticky"
         as='nav'
         align='center'
         justify='space-between'
@@ -32,8 +33,8 @@ export const Header = (props: HeaderProps): JSX.Element => {
         {...props}
       >
         <Flex align='center' mr={5}>
-          <Heading as='h1' size='lg' letterSpacing={'tighter'}>
-            Chakra UI
+          <Heading as='h2' size='lg' letterSpacing={'tighter'}>
+            Tasks IO
           </Heading>
         </Flex>
 
@@ -58,12 +59,7 @@ export const Header = (props: HeaderProps): JSX.Element => {
           display={{ base: isOpen ? 'block' : 'none', md: 'block' }}
           mt={{ base: 4, md: 0 }}
         >
-          <Button
-            variant='outline'
-            _hover={{ bg: 'teal.700', borderColor: 'teal.700' }}
-          >
-            Create account
-          </Button>
+          <Avatar />
         </Box>
       </Flex>
     </>
