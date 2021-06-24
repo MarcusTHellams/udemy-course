@@ -1,4 +1,4 @@
-import { Flex, Stack, Heading } from '@chakra-ui/react';
+import { Flex, Heading } from '@chakra-ui/react';
 import * as React from 'react';
 import { User } from '../../types/user.type';
 import { Card } from '../Card/Card';
