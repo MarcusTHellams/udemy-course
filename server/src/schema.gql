@@ -42,7 +42,7 @@ type Query {
   users: [User!]!
   user(id: String!): User!
   tasks: [Task!]!
-  task(id: Int!): Task!
+  task(id: String!): Task!
   role(id: Int!): Role!
 }
 
@@ -70,14 +70,14 @@ input UpdateUserInput {
 }
 
 input CreateTaskInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
+  """Id Field"""
+  id: String!
 }
 
 input UpdateTaskInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
+  id: String!
+  title: String!
+  description: String
 }
 
 input CreateRoleInput {

@@ -34,7 +34,7 @@ export class TaskResolver {
   }
 
   @Query(() => Task, { name: 'task' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
+  findOne(@Args('id', { type: () => String }) id: string) {
     return this.taskService.findOne(id);
   }
 

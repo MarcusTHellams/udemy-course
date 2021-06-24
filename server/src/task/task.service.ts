@@ -15,12 +15,12 @@ export class TaskService {
     return await this.repo.taskRepo.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} task`;
+  async findOne(id: string) {
+    return this.repo.taskRepo.findOne(id);
   }
 
-  update(id: number, updateTaskInput: UpdateTaskInput) {
-    return `This action updates a #${id} task`;
+  async update(id: string, updateTaskInput: UpdateTaskInput) {
+    return await this.repo.taskRepo.save(updateTaskInput);
   }
 
   remove(id: number) {

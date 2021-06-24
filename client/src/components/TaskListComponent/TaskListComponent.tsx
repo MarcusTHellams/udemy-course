@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Task } from '../../types/task.type';
 import { Table, Thead, Tbody, Tr, Th, Td, Box } from '@chakra-ui/react';
 import { Button, VStack, HStack, Text } from '@chakra-ui/react';
+import { Link } from 'react-router-dom';
 
 type TaskListComponentProps = {
   tasks?: Task[];
@@ -46,7 +47,7 @@ export const TaskListComponent = ({
                       </VStack>
                     </Td>
                     <Td>
-                      <Button rounded='full' colorScheme='green'>
+                      <Button as={Link} to={`tasks/${task.id}`} rounded='full' colorScheme='green'>
                         Edit Task
                       </Button>
                     </Td>
