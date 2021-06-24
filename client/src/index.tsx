@@ -9,18 +9,24 @@ import {
   ApolloProvider,
 } from "@apollo/client";
 import { client } from './graphql/client';
+import {
+  BrowserRouter as Router,
+} from "react-router-dom";
+
 
 const queryClient = new QueryClient();
 
 ReactDOM.render(
   <React.StrictMode>
-    <ApolloProvider client={client}>
-      <QueryClientProvider client={queryClient}>
-        <ChakraProvider>
-          <App />
-        </ChakraProvider>
-      </QueryClientProvider>
-    </ApolloProvider>
+    <Router>
+      <ApolloProvider client={client}>
+        <QueryClientProvider client={queryClient}>
+          <ChakraProvider>
+            <App />
+          </ChakraProvider>
+        </QueryClientProvider>
+      </ApolloProvider>
+    </Router>
   </React.StrictMode>,
   document.getElementById('root')
 );
