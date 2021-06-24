@@ -1,15 +1,18 @@
+import { Task } from './entities/task.entity';
+import { RepoService } from './../repo/repo.service';
 import { Injectable } from '@nestjs/common';
 import { CreateTaskInput } from './dto/create-task.input';
 import { UpdateTaskInput } from './dto/update-task.input';
 
 @Injectable()
 export class TaskService {
+  constructor(private readonly repo: RepoService) {}
   create(createTaskInput: CreateTaskInput) {
     return 'This action adds a new task';
   }
 
-  findAll() {
-    return `This action returns all task`;
+  async findAll(): Promise<Task[]> {
+    return await this.repo.taskRepo.find();
   }
 
   findOne(id: number) {

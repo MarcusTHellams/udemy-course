@@ -1,3 +1,4 @@
+import { userLoader } from './db/loaders/user.loader';
 import { roleLoader } from './db/loaders/role.loader';
 import { taskLoader } from './db/loaders/task.loader';
 import { UserModule } from './user/user.module';
@@ -27,6 +28,7 @@ import { UserRoleModule } from './user-role/user-role.module';
       context: {
         taskLoader: taskLoader(),
         roleLoader: roleLoader(),
+        userLoader: userLoader(),
       },
     }),
     UserModule,

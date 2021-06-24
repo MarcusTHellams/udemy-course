@@ -19,6 +19,7 @@ type Task {
 
   """Description field"""
   description: String
+  user: User
 }
 
 type User {
@@ -40,6 +41,7 @@ type User {
 type Query {
   users: [User!]!
   user(id: String!): User!
+  tasks: [Task!]!
   task(id: Int!): Task!
   role(id: Int!): Role!
 }
