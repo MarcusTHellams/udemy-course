@@ -32,7 +32,7 @@ export const Header = (props: HeaderProps): JSX.Element => {
         {...props}
       >
         <Flex align='center' mr={5}>
-          <Heading as='h2' size='lg' letterSpacing={'tighter'}>
+          <Heading as='h6' size='md' letterSpacing={'tighter'}>
             Tasks IO
           </Heading>
         </Flex>

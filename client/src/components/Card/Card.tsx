@@ -3,11 +3,9 @@ import {
   Heading,
   Avatar,
   Box,
-  Center,
   Text,
   Stack,
   Button,
-  Link,
   Badge,
   useColorModeValue,
 } from '@chakra-ui/react';
@@ -19,7 +17,6 @@ type CardProps = {
 };
 
 export const Card = ({ user, ...rest }: CardProps): JSX.Element => {
-  console.log('user: ', user);
   return (
     <>
       <Box
@@ -30,6 +27,9 @@ export const Card = ({ user, ...rest }: CardProps): JSX.Element => {
         boxShadow={'2xl'}
         rounded={'lg'}
         p={6}
+        mr="0.9375rem"
+        ml="0.9375rem"
+        mb="0.9375rem"
         textAlign={'center'}
       >
         <Avatar
@@ -45,6 +45,20 @@ export const Card = ({ user, ...rest }: CardProps): JSX.Element => {
         <Text fontWeight={600} color={'gray.500'} mb={4}>
           {user.email}
         </Text>
+
+        {!!user.roles && (
+          <Stack align={'center'} justify={'center'} direction={'row'} mt={6}>
+            {user.roles.map((role) => {
+              return (
+                <React.Fragment key={role.id}>
+                  <Badge borderRadius="full" px={2} py={1} bg={'gray.300'} fontWeight={'400'}>
+                    {role.name}
+                  </Badge>
+                </React.Fragment>
+              );
+            })}
+          </Stack>
+        )}
 
         <Stack mt={8} direction={'row'} spacing={4}>
           <Button

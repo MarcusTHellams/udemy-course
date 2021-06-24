@@ -1,4 +1,4 @@
-import { Flex, Stack } from '@chakra-ui/react';
+import { Flex, Stack, Heading } from '@chakra-ui/react';
 import * as React from 'react';
 import { User } from '../../types/user.type';
 import { Card } from '../Card/Card';
@@ -14,11 +14,19 @@ export const UserListComponent = ({
   return (
     <>
       <Layout>
-        <Stack direction={{base: 'column', md: 'row' }} spacing="8">
+        <Heading size="xl" as="h1" mb="8">
+          Users
+        </Heading>
+        <Flex
+          align={{ base: 'center', md: 'start' }}
+          wrap='wrap'
+          direction={{ base: 'column', md: 'row' }}
+          spacing='8'
+        >
           {users.map((user) => {
-            return <Card key={user.id} {...{user}} />;
+            return <Card key={user.id} {...{ user }} />;
           })}
-        </Stack>
+        </Flex>
       </Layout>
     </>
   );
