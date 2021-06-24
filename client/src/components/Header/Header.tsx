@@ -7,8 +7,10 @@ import {
   Text,
   useDisclosure,
   Avatar,
+  Link,
 } from '@chakra-ui/react';
 import { GiHamburgerMenu } from 'react-icons/gi';
+import { Link as RLink } from 'react-router-dom';
 
 type HeaderProps = {
   [key: string]: any;
@@ -20,8 +22,8 @@ export const Header = (props: HeaderProps): JSX.Element => {
   return (
     <>
       <Flex
-        boxShadow="lg"
-        position="sticky"
+        boxShadow='lg'
+        position='sticky'
         as='nav'
         align='center'
         justify='space-between'
@@ -33,11 +35,17 @@ export const Header = (props: HeaderProps): JSX.Element => {
       >
         <Flex align='center' mr={5}>
           <Heading as='h6' size='md' letterSpacing={'tighter'}>
-            Tasks IO
+            <Link _hover={{ textDecoration: 'none' }} as={RLink} to='/'>
+              Tasks IO
+            </Link>
           </Heading>
         </Flex>
 
-        <Box cursor="pointer" display={{ base: 'block', md: 'none' }} onClick={handleToggle}>
+        <Box
+          cursor='pointer'
+          display={{ base: 'block', md: 'none' }}
+          onClick={handleToggle}
+        >
           <GiHamburgerMenu />
         </Box>
 
@@ -49,7 +57,11 @@ export const Header = (props: HeaderProps): JSX.Element => {
           flexGrow={1}
           mt={{ base: 4, md: 0 }}
         >
-          <Text>Docs</Text>
+          <Text>
+            <Link as={RLink} to='/users'>
+              Users
+            </Link>
+          </Text>
           <Text>Examples</Text>
           <Text>Blog</Text>
         </Stack>

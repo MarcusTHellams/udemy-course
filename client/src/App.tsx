@@ -11,6 +11,9 @@ export const App = () => (
       <Route exact path='/'>
         <TaskListView />
       </Route>
+      <Route exact path='/users'>
+        <UserList />
+      </Route>
     </Switch>
   </>
 );
