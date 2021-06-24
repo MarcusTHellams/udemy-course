@@ -7,6 +7,7 @@ export class AppController {
 
   @Get()
   getHello(): any {
+    console.log('hit the endpoint');
     return this.appService.getHello();
   }
 }

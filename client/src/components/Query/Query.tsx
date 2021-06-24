@@ -6,7 +6,7 @@ import { Layout } from '../Layout/Layout';
 type QueryProps = {
   render: (queryResult: Partial<UseQueryResult>) => React.ReactNode;
   queryKey: string | Array<string | unknown>;
-  queryFn: () => Promise<unknown>;
+  queryFn: () => Promise<any>;
   queryOptions?: UseQueryOptions;
 };
 

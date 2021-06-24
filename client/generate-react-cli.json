@@ -13,6 +13,16 @@
       "withTest": false,
       "withStory": false,
       "withLazy": false
+    },
+    "view": {
+      "customTemplates": {
+        "component": "templates/views/TemplateName.tsx"
+      },
+      "path": "src/views",
+      "withStyle": false,
+      "withTest": false,
+      "withStory": false,
+      "withLazy": false
     }
   }
 }
