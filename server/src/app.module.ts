@@ -25,6 +25,10 @@ import { UserRoleModule } from './user-role/user-role.module';
     GraphQLModule.forRoot({
       playground: true,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      cors: {
+        origin: 'http://localhost:3001',
+        credentials: true,
+      },
       context: {
         taskLoader: taskLoader(),
         roleLoader: roleLoader(),
