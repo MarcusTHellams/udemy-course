@@ -9,7 +9,7 @@ type UserSelectProps = {
   [key: string]: any;
   users: User[];
   control: Control<TaskFormValues>;
-  name: "title" | "description" | "id" | "userId";
+  name:  "userId";
   selectProps?: Props
 };
 

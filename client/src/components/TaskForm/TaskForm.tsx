@@ -13,7 +13,7 @@ import {
   Button,
 } from "@chakra-ui/react";
 import omit from "lodash/omit";
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import { client } from "../../graphql/client";
 import { updateTask } from "../../graphql/mutations/updateTask";
 import { Query } from "../Query/Query";
@@ -22,6 +22,7 @@ import { UserSelect } from "../UserSelect/UserSelect";
 import { User } from "../../types/user.type";
 import { TaskFormValues } from "../../types/taskFormValues.type";
 import { DevTool } from "@hookform/devtools";
+import { useHistory } from "react-router-dom";
 
 type TaskFormProps = {
   task?: Task | null;
@@ -38,6 +39,9 @@ export const TaskForm = ({ task = null }: TaskFormProps): JSX.Element => {
     defaultValues: task || {},
   });
 
+  const history = useHistory();
+  const queryClient = useQueryClient();
+
   const mutationFn = React.useCallback((data) => {
     return client
       .mutate({
@@ -51,7 +55,15 @@ export const TaskForm = ({ task = null }: TaskFormProps): JSX.Element => {
       });
   }, []);
 
-  const { mutate } = useMutation(mutationFn);
+  const { mutate, isLoading } = useMutation(mutationFn, {
+    onSuccess: () => {
+      queryClient.invalidateQueries("tasks");
+      if (task?.id) {
+        queryClient.invalidateQueries(["task", task.id]);
+      }
+      history.push("/");
+    },
+  });
 
   const submitHandler: SubmitHandler<TaskFormValues> = (values) => {
     mutate(values);
@@ -73,8 +85,8 @@ export const TaskForm = ({ task = null }: TaskFormProps): JSX.Element => {
               <FormLabel>Description</FormLabel>
               <Input type="text" {...register("description")} />
             </FormControl>
-            <FormControl id="description" isRequired>
-              <FormLabel>Description</FormLabel>
+            <FormControl id="description">
+              <FormLabel>User Task is Assigned to</FormLabel>
               <Query
                 {...{ queryFn, queryKey }}
                 render={({ data: users }) => {
@@ -93,6 +105,7 @@ export const TaskForm = ({ task = null }: TaskFormProps): JSX.Element => {
             </FormControl>
             <Box width="full">
               <Button
+                {...{isLoading}}
                 variant="outline"
                 type="submit"
                 colorScheme="blue"
