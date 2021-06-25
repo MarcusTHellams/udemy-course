@@ -2,7 +2,6 @@ import {
   ApolloClient,
   InMemoryCache,
   DefaultOptions,
-  HttpLink,
 } from '@apollo/client';
 
 const defaultOptions: DefaultOptions = {
@@ -16,16 +15,12 @@ const defaultOptions: DefaultOptions = {
   },
 };
 
-const httpLink = new HttpLink({
-  uri: 'http://localhost:5001/graphql',
-});
 
 export const client = new ApolloClient({
-  // link: httpLink,
   uri: 'http://localhost:5001/graphql',
   cache: new InMemoryCache({
     addTypename: false,
   }),
-  credentials:'include',
   defaultOptions,
+  credentials: 'include',
 });
