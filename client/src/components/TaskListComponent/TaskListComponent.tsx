@@ -1,8 +1,19 @@
 import * as React from 'react';
 import { Task } from '../../types/task.type';
 import { Table, Thead, Tbody, Tr, Th, Td, Box } from '@chakra-ui/react';
-import { Button, VStack, HStack, Text, Heading } from '@chakra-ui/react';
+import {
+  Button,
+  VStack,
+  HStack,
+  Text,
+  Heading,
+  ButtonGroup,
+} from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
+import { DeletionVerification } from '../DeletionVerification/DeletionVerification';
+import { client } from '../../graphql/client';
+import { useMutation, useQueryClient } from 'react-query';
+import { removeTask } from '../../graphql/mutations/removeTask';
 
 type TaskListComponentProps = {
   tasks?: Task[];
@@ -11,11 +22,52 @@ type TaskListComponentProps = {
 export const TaskListComponent = ({
   tasks = [],
 }: TaskListComponentProps): JSX.Element => {
+  const [open, setOpen] = React.useState(false);
+  const [currentTask, setCurrentTask] = React.useState<string | null>();
+
+  const mutationFn = React.useCallback((taskId) => {
+    console.log('taskId: ', taskId);
+    return client.mutate({
+      mutation: removeTask,
+      variables: {
+        id: taskId,
+      },
+    });
+  }, []);
+
+  const queryClient = useQueryClient();
+
+  const { mutate } = useMutation(mutationFn, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('tasks');
+    },
+    onSettled: () => {
+      setOpen(false);
+    },
+  });
+
+  const onClose = React.useCallback(() => {
+    setOpen(false);
+  }, []);
+
+  const onDelete = React.useCallback(() => {
+    mutate(currentTask);
+  }, [currentTask, mutate]);
+
   return (
     <>
-    <Heading display="flex" justifyContent="space-between" alignItems="center" as="h1" mb="8">Tasks
-      <Button as={Link} to="/tasks/create" colorScheme="green" rounded="full">New Task</Button>
-    </Heading>
+      <Heading
+        display='flex'
+        justifyContent='space-between'
+        alignItems='center'
+        as='h1'
+        mb='8'
+      >
+        Tasks
+        <Button as={Link} to='/tasks/create' colorScheme='green' rounded='full'>
+          New Task
+        </Button>
+      </Heading>
       <Box overflowX='scroll'>
         <Table variant='simple' colorScheme='blackAlpha'>
           <Thead>
@@ -50,9 +102,26 @@ export const TaskListComponent = ({
                       </VStack>
                     </Td>
                     <Td>
-                      <Button as={Link} to={`tasks/${task.id}`} rounded='full' colorScheme='green'>
-                        Edit Task
-                      </Button>
+                      <ButtonGroup size='xs'>
+                        <Button
+                          as={Link}
+                          to={`tasks/${task.id}`}
+                          rounded='full'
+                          colorScheme='green'
+                        >
+                          Edit Task
+                        </Button>
+                        <Button
+                          onClick={() => {
+                            setCurrentTask(task.id);
+                            setOpen(true);
+                          }}
+                          rounded='full'
+                          colorScheme='red'
+                        >
+                          Delete Task
+                        </Button>
+                      </ButtonGroup>
                     </Td>
                   </Tr>
                 </React.Fragment>
@@ -61,6 +130,17 @@ export const TaskListComponent = ({
           </Tbody>
         </Table>
       </Box>{' '}
+      <DeletionVerification
+        alertProps={{
+          isCentered: true,
+          closeOnOverlayClick: false,
+          size: '6xl',
+        }}
+        isOpen={open}
+        {...{ onClose, onDelete }}
+        title='Delete Task'
+        bodyText='Are you sure you want to delete the task?'
+      />
     </>
   );
 };

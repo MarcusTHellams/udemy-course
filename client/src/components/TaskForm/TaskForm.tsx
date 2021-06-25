@@ -58,9 +58,6 @@ export const TaskForm = ({ task = null }: TaskFormProps): JSX.Element => {
         variables: {
           [task ? 'updateTaskInput' : 'createTaskInput']: omit(data, ["__typename", "user"]),
         },
-      })
-      .then((resp) => {
-        console.log("resp: ", resp);
       });
   }, [task]);
 

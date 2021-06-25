@@ -28,7 +28,7 @@ export class TaskService {
     return await this.repo.taskRepo.save(updateTaskInput);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} task`;
+  async remove(id: string) {
+    return await this.repo.taskRepo.delete(id);
   }
 }

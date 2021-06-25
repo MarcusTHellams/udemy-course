@@ -44,9 +44,10 @@ export class TaskResolver {
     return await this.findOne(updateTaskInput.id);
   }
 
-  @Mutation(() => Task)
-  removeTask(@Args('id', { type: () => Int }) id: number) {
-    return this.taskService.remove(id);
+  @Mutation(() => Boolean)
+  removeTask(@Args('id', { type: () => String }) id: string) {
+    this.taskService.remove(id);
+    return true;
   }
 
   @ResolveField(() => User, { name: 'user', nullable: true })
