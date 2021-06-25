@@ -11,6 +11,7 @@ import {
   Heading,
   Box,
   Button,
+  Textarea,
 } from "@chakra-ui/react";
 import omit from "lodash/omit";
 import { useMutation, useQueryClient } from "react-query";
@@ -35,9 +36,15 @@ const queryFn = () => {
 const queryKey = "users";
 
 export const TaskForm = ({ task = null }: TaskFormProps): JSX.Element => {
-  const { register, handleSubmit, control } = useForm<TaskFormValues>({
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<TaskFormValues>({
     defaultValues: task || {},
   });
+  console.log('errors: ', errors);
 
   const history = useHistory();
   const queryClient = useQueryClient();
@@ -75,15 +82,15 @@ export const TaskForm = ({ task = null }: TaskFormProps): JSX.Element => {
           Edit Task
         </Heading>
         <form onSubmit={handleSubmit(submitHandler)}>
-          <input type="hidden" {...register("id")} />
           <VStack spacing="8" align="start">
-            <FormControl id="title" isRequired>
-              <FormLabel>Title</FormLabel>
-              <Input type="text" {...register("title")} />
+            <FormControl isInvalid={!!errors?.title}>
+              <FormLabel htmlFor="title">Title</FormLabel>
+              <Input id="title" {...register("title", {required: 'Title is Required'})} />
+              <FormErrorMessage>{errors?.title?.message}</FormErrorMessage>
             </FormControl>
-            <FormControl id="description" isRequired>
-              <FormLabel>Description</FormLabel>
-              <Input type="text" {...register("description")} />
+            <FormControl>
+              <FormLabel htmlFor="description">Description</FormLabel>
+              <Textarea id="description"  {...register("description")} />
             </FormControl>
             <FormControl id="description">
               <FormLabel>User Task is Assigned to</FormLabel>
@@ -105,7 +112,7 @@ export const TaskForm = ({ task = null }: TaskFormProps): JSX.Element => {
             </FormControl>
             <Box width="full">
               <Button
-                {...{isLoading}}
+                {...{ isLoading }}
                 variant="outline"
                 type="submit"
                 colorScheme="blue"
