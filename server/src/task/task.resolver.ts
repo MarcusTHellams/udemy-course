@@ -40,7 +40,7 @@ export class TaskResolver {
 
   @Mutation(() => Task)
   async updateTask(@Args('updateTaskInput') updateTaskInput: UpdateTaskInput) {
-    this.taskService.update(updateTaskInput.id, updateTaskInput);
+    await this.taskService.update(updateTaskInput.id, updateTaskInput);
     return await this.findOne(updateTaskInput.id);
   }
 

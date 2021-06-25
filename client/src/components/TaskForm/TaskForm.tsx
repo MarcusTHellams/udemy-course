@@ -54,8 +54,7 @@ export const TaskForm = ({ task = null }: TaskFormProps): JSX.Element => {
   const { mutate } = useMutation(mutationFn);
 
   const submitHandler: SubmitHandler<TaskFormValues> = (values) => {
-    console.log("values: ", values);
-    // mutate(values);
+    mutate(values);
   };
   return (
     <>
