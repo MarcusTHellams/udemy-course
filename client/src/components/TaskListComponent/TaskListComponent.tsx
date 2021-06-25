@@ -134,7 +134,6 @@ export const TaskListComponent = ({
         alertProps={{
           isCentered: true,
           closeOnOverlayClick: false,
-          size: '6xl',
         }}
         isOpen={open}
         {...{ onClose, onDelete }}
