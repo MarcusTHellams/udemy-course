@@ -124,7 +124,7 @@ export const TaskForm = ({ task = null }: TaskFormProps): JSX.Element => {
           </VStack>
         </form>
       </Layout>
-      {/* <DevTool control={control} /> */}
+      <DevTool control={control} />
     </>
   );
 };

@@ -51,7 +51,7 @@
     ]
   },
   "devDependencies": {
-    "@hookform/devtools": "^3.0.0-rc.2",
+    "@hookform/devtools": "3.0.2",
     "@types/react-query": "^1.2.9",
     "@types/react-router-dom": "^5.1.7",
     "@types/react-select": "^4.0.16"
