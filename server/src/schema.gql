@@ -71,15 +71,16 @@ input UpdateUserInput {
 }
 
 input CreateTaskInput {
-  """Id Field"""
-  id: String!
-}
-
-input UpdateTaskInput {
-  id: String!
   title: String!
   description: String
   userId: String
+}
+
+input UpdateTaskInput {
+  title: String!
+  description: String
+  userId: String
+  id: String!
 }
 
 input CreateRoleInput {

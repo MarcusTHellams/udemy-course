@@ -24,6 +24,7 @@ import { User } from "../../types/user.type";
 import { TaskFormValues } from "../../types/taskFormValues.type";
 import { DevTool } from "@hookform/devtools";
 import { useHistory } from "react-router-dom";
+import { createTask } from "../../graphql/mutations/createTask";
 
 type TaskFormProps = {
   task?: Task | null;
@@ -36,6 +37,8 @@ const queryFn = () => {
 const queryKey = "users";
 
 export const TaskForm = ({ task = null }: TaskFormProps): JSX.Element => {
+  const editOrCreate = !!task ? "Edit" : "Create";
+
   const {
     register,
     handleSubmit,
@@ -44,7 +47,6 @@ export const TaskForm = ({ task = null }: TaskFormProps): JSX.Element => {
   } = useForm<TaskFormValues>({
     defaultValues: task || {},
   });
-  console.log('errors: ', errors);
 
   const history = useHistory();
   const queryClient = useQueryClient();
@@ -52,15 +54,15 @@ export const TaskForm = ({ task = null }: TaskFormProps): JSX.Element => {
   const mutationFn = React.useCallback((data) => {
     return client
       .mutate({
-        mutation: updateTask,
+        mutation: task ? updateTask : createTask,
         variables: {
-          updateTaskInput: omit(data, ["__typename", "user"]),
+          [task ? 'updateTaskInput' : 'createTaskInput']: omit(data, ["__typename", "user"]),
         },
       })
       .then((resp) => {
         console.log("resp: ", resp);
       });
-  }, []);
+  }, [task]);
 
   const { mutate, isLoading } = useMutation(mutationFn, {
     onSuccess: () => {
@@ -75,22 +77,26 @@ export const TaskForm = ({ task = null }: TaskFormProps): JSX.Element => {
   const submitHandler: SubmitHandler<TaskFormValues> = (values) => {
     mutate(values);
   };
+
   return (
     <>
       <Layout maxW="container.sm">
         <Heading as="h1" mb="4">
-          Edit Task
+          {editOrCreate} Task
         </Heading>
         <form onSubmit={handleSubmit(submitHandler)}>
           <VStack spacing="8" align="start">
             <FormControl isInvalid={!!errors?.title}>
               <FormLabel htmlFor="title">Title</FormLabel>
-              <Input id="title" {...register("title", {required: 'Title is Required'})} />
+              <Input
+                id="title"
+                {...register("title", { required: "Title is Required" })}
+              />
               <FormErrorMessage>{errors?.title?.message}</FormErrorMessage>
             </FormControl>
             <FormControl>
               <FormLabel htmlFor="description">Description</FormLabel>
-              <Textarea id="description"  {...register("description")} />
+              <Textarea id="description" {...register("description")} />
             </FormControl>
             <FormControl id="description">
               <FormLabel>User Task is Assigned to</FormLabel>
@@ -118,7 +124,7 @@ export const TaskForm = ({ task = null }: TaskFormProps): JSX.Element => {
                 colorScheme="blue"
                 w="full"
               >
-                Edit
+                {editOrCreate}
               </Button>
             </Box>
           </VStack>

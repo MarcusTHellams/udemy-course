@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Task } from '../../types/task.type';
 import { Table, Thead, Tbody, Tr, Th, Td, Box } from '@chakra-ui/react';
-import { Button, VStack, HStack, Text } from '@chakra-ui/react';
+import { Button, VStack, HStack, Text, Heading } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
 
 type TaskListComponentProps = {
@@ -13,6 +13,9 @@ export const TaskListComponent = ({
 }: TaskListComponentProps): JSX.Element => {
   return (
     <>
+    <Heading display="flex" justifyContent="space-between" alignItems="center" as="h1" mb="8">Tasks
+      <Button as={Link} to="/tasks/create" colorScheme="green" rounded="full">New Task</Button>
+    </Heading>
       <Box overflowX='scroll'>
         <Table variant='simple' colorScheme='blackAlpha'>
           <Thead>

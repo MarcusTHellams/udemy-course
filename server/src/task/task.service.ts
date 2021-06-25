@@ -3,12 +3,17 @@ import { RepoService } from './../repo/repo.service';
 import { Injectable } from '@nestjs/common';
 import { CreateTaskInput } from './dto/create-task.input';
 import { UpdateTaskInput } from './dto/update-task.input';
-
+import { v4 as uuidv4 } from 'uuid';
 @Injectable()
 export class TaskService {
   constructor(private readonly repo: RepoService) {}
-  create(createTaskInput: CreateTaskInput) {
-    return 'This action adds a new task';
+  async create(createTaskInput: CreateTaskInput): Promise<Task> {
+    const task = this.repo.taskRepo.create({
+      ...createTaskInput,
+      id: uuidv4(),
+    });
+    await this.repo.taskRepo.save(task);
+    return task;
   }
 
   async findAll(): Promise<Task[]> {
