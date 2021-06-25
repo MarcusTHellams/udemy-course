@@ -19,6 +19,7 @@ type Task {
 
   """Description field"""
   description: String
+  userId: String
   user: User
 }
 
@@ -78,6 +79,7 @@ input UpdateTaskInput {
   id: String!
   title: String!
   description: String
+  userId: String
 }
 
 input CreateRoleInput {

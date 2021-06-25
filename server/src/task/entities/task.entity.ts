@@ -21,6 +21,7 @@ export class Task {
   })
   description: string;
 
+  @Field(() => String, { name: 'userId', nullable: true })
   @Column('uuid', { name: 'userId', nullable: true })
   userId: string;
 

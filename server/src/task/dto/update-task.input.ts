@@ -11,4 +11,7 @@ export class UpdateTaskInput extends PartialType(CreateTaskInput) {
 
   @Field(() => String, { nullable: true })
   description: string;
+
+  @Field(() => String, { nullable: true })
+  userId: string;
 }

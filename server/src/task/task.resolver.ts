@@ -39,8 +39,9 @@ export class TaskResolver {
   }
 
   @Mutation(() => Task)
-  updateTask(@Args('updateTaskInput') updateTaskInput: UpdateTaskInput) {
-    return this.taskService.update(updateTaskInput.id, updateTaskInput);
+  async updateTask(@Args('updateTaskInput') updateTaskInput: UpdateTaskInput) {
+    this.taskService.update(updateTaskInput.id, updateTaskInput);
+    return await this.findOne(updateTaskInput.id);
   }
 
   @Mutation(() => Task)
@@ -50,6 +51,7 @@ export class TaskResolver {
 
   @ResolveField(() => User, { name: 'user', nullable: true })
   async user(@Parent() task: Task, @Context() { userLoader }: IGraphqlContext) {
+    console.log('task: ', task);
     const user = await userLoader.load(task.userId);
     return user;
   }

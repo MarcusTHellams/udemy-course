@@ -6,6 +6,7 @@ export const getTask = gql`
       id
       title
       description
+      userId
       user {
         id
         username
