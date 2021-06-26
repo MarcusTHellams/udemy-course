@@ -39,18 +39,12 @@ type User {
   roles: [Role!]
 }
 
-type Auth {
-  """Example field (placeholder)"""
-  exampleField: Int!
-}
-
 type Query {
   users: [User!]!
   user(id: String!): User!
   tasks: [Task!]!
   task(id: String!): Task!
   role(id: Int!): Role!
-  auth(id: Int!): Auth!
 }
 
 type Mutation {
@@ -63,9 +57,7 @@ type Mutation {
   createRole(createRoleInput: CreateRoleInput!): Role!
   updateRole(updateRoleInput: UpdateRoleInput!): Role!
   removeRole(id: Int!): Role!
-  createAuth(createAuthInput: CreateAuthInput!): Auth!
-  updateAuth(updateAuthInput: UpdateAuthInput!): Auth!
-  removeAuth(id: Int!): Auth!
+  login(password: String!, username: String!): User!
 }
 
 input CreateUserInput {
@@ -98,17 +90,6 @@ input CreateRoleInput {
 }
 
 input UpdateRoleInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
-}
-
-input CreateAuthInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
-}
-
-input UpdateAuthInput {
   """Example field (placeholder)"""
   exampleField: Int
   id: Int!

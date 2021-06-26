@@ -13,6 +13,8 @@ import { TaskModule } from './task/task.module';
 import { RoleModule } from './role/role.module';
 import { UserRoleModule } from './user-role/user-role.module';
 import { AuthModule } from './auth/auth.module';
+import { buildContext } from 'graphql-passport';
+
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -30,13 +32,14 @@ import { AuthModule } from './auth/auth.module';
         origin: 'http://localhost:3001',
         credentials: true,
       },
-      context: ({ req, res }) => ({
-        req,
-        res,
-        taskLoader: taskLoader(),
-        roleLoader: roleLoader(),
-        userLoader: userLoader(),
-      }),
+      context: ({ req, res }) =>
+        buildContext({
+          req,
+          res,
+          taskLoader: taskLoader(),
+          roleLoader: roleLoader(),
+          userLoader: userLoader(),
+        }),
     }),
     UserModule,
     RepoModule,
