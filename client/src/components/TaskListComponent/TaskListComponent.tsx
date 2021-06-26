@@ -54,6 +54,12 @@ export const TaskListComponent = ({
     mutate(currentTask);
   }, [currentTask, mutate]);
 
+  React.useEffect(() => {
+    if (!open) {
+      setCurrentTask(null);
+    }
+  }, [open])
+
   return (
     <>
       <Heading
