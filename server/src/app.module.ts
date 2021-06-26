@@ -12,6 +12,7 @@ import { RepoModule } from './repo/repo.module';
 import { TaskModule } from './task/task.module';
 import { RoleModule } from './role/role.module';
 import { UserRoleModule } from './user-role/user-role.module';
+import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -29,17 +30,20 @@ import { UserRoleModule } from './user-role/user-role.module';
         origin: 'http://localhost:3001',
         credentials: true,
       },
-      context: {
+      context: ({ req, res }) => ({
+        req,
+        res,
         taskLoader: taskLoader(),
         roleLoader: roleLoader(),
         userLoader: userLoader(),
-      },
+      }),
     }),
     UserModule,
     RepoModule,
     TaskModule,
     RoleModule,
     UserRoleModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

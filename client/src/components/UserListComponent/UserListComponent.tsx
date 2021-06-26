@@ -18,7 +18,7 @@ export const UserListComponent = ({
           Users
         </Heading>
         <Flex
-          align={{ base: 'center', md: 'start' }}
+          align={{ base: 'center', md: 'stretch' }}
           wrap='wrap'
           direction={{ base: 'column', md: 'row' }}
           spacing='8'

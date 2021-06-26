@@ -11,7 +11,12 @@ export class User {
   @Field(() => String, { description: 'Id field' })
   id: string;
 
-  @Column('varchar', { name: 'username', length: 45, nullable: false })
+  @Column('varchar', {
+    name: 'username',
+    length: 45,
+    nullable: false,
+    unique: true,
+  })
   @Field(() => String, { description: 'Username field', name: 'username' })
   username: string;
 

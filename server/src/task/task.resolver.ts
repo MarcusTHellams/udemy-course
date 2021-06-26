@@ -29,7 +29,11 @@ export class TaskResolver {
   }
 
   @Query(() => [Task], { name: 'tasks' })
-  findAll() {
+  findAll(@Context() ctx) {
+    console.log('ctx.req.cookie: ', ctx.req.cookies);
+    // ctx.res.cookie('name', 'marcus', {
+    //   httpOnly: true,
+    // });
     return this.taskService.findAll();
   }
 
