@@ -1,5 +1,3 @@
-import { IGraphqlContext } from './../types/graphql.types';
-import { UseGuards } from '@nestjs/common';
 import { Resolver, Mutation, Args, Context } from '@nestjs/graphql';
 import { AuthService } from './auth.service';
 import { Auth } from './entities/auth.entity';
@@ -15,7 +13,6 @@ export class AuthResolver {
     @Args('password') password: string,
     @Context() ctx: any,
   ) {
-    console.log('ctx.authenticate: ', ctx.authenticate);
     const { user } = await ctx.authenticate('graphql-local', {
       username,
       password,

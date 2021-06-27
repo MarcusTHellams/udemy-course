@@ -42,6 +42,7 @@ type User {
 type Query {
   users: [User!]!
   user(id: String!): User!
+  profile: String!
   tasks: [Task!]!
   task(id: String!): Task!
   role(id: Int!): Role!

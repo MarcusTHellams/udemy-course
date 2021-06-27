@@ -1,3 +1,4 @@
+import { JwtStrategy } from './../auth/jwt.strategy';
 import { roleLoader } from './../db/loaders/role.loader';
 import { In } from 'typeorm';
 import { Role } from './../role/entities/role.entity';
@@ -18,6 +19,8 @@ import { User } from './entities/user.entity';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { Task } from '../task/entities/task.entity';
+import { UseGuards } from '@nestjs/common';
+import { JWTAuthGuard } from '../auth/jwt-auth.guard';
 @Resolver(() => User)
 export class UserResolver {
   constructor(
@@ -38,6 +41,14 @@ export class UserResolver {
   @Query(() => User, { name: 'user' })
   findOne(@Args('id', { type: () => String }) id: string) {
     return this.userService.findOne(id);
+  }
+
+  @UseGuards(new JWTAuthGuard())
+  @Query(() => String, { name: 'profile' })
+  profile(@Context() ctx: any) {
+    console.log('ctx: ', ctx.user);
+    // return this.userService.findOne(id);
+    return 'Ok';
   }
 
   @Mutation(() => User)
