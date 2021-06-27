@@ -2,6 +2,7 @@ import { RepoService } from './../repo/repo.service';
 import { Injectable } from '@nestjs/common';
 import { User } from 'src/user/entities/user.entity';
 import bcrypt = require('bcryptjs');
+import { JwtService } from '@nestjs/jwt';
 
 type ModifiedUser = Omit<User, 'roles' | 'tasks' | 'password'> & {
   roles: string[];
@@ -9,7 +10,10 @@ type ModifiedUser = Omit<User, 'roles' | 'tasks' | 'password'> & {
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly repo: RepoService) {}
+  constructor(
+    private readonly repo: RepoService,
+    private readonly jwtService: JwtService,
+  ) {}
 
   async validateUser(
     username: string,
@@ -45,5 +49,10 @@ export class AuthService {
     }
 
     return null;
+  }
+
+  async login(user: any) {
+    const payload = { ...user };
+    return { access_token: this.jwtService.sign(payload) };
   }
 }
