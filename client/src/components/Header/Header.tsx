@@ -8,9 +8,11 @@ import {
   useDisclosure,
   Avatar,
   Link,
+  Button,
 } from '@chakra-ui/react';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { Link as RLink } from 'react-router-dom';
+import { useUserContext } from '../../contexts/userContext/userContext';
 
 type HeaderProps = {
   [key: string]: any;
@@ -19,6 +21,8 @@ type HeaderProps = {
 export const Header = (props: HeaderProps): JSX.Element => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const handleToggle = () => (isOpen ? onClose() : onOpen());
+  const { userStorage } = useUserContext();
+  const user = JSON.parse(userStorage as string);
   return (
     <>
       <Flex
@@ -70,7 +74,13 @@ export const Header = (props: HeaderProps): JSX.Element => {
           display={{ base: isOpen ? 'block' : 'none', md: 'block' }}
           mt={{ base: 4, md: 0 }}
         >
-          <Avatar />
+          {(user && (
+            <Avatar src={user.imageUrl} size='md' name={user.username} />
+          )) || (
+            <Button size='xs' as={RLink} to='/login' variant='outline'>
+              Log In
+            </Button>
+          )}
         </Box>
       </Flex>
     </>

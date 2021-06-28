@@ -20,7 +20,7 @@ export class AuthService {
     password: string,
   ): Promise<Partial<ModifiedUser>> {
     const user = await this.repo.userRepo.findOne({
-      select: ['username', 'id', 'password', 'email'],
+      select: ['username', 'id', 'password', 'email', 'imageUrl'],
       where: { username },
     });
 
@@ -40,6 +40,7 @@ export class AuthService {
           id: user.id,
           email: user.email,
           roles: userRoles.map((ur) => ur.role.name),
+          imageUrl: user.imageUrl,
         };
 
         result.roles = userRoles.map((ur) => ur.role);

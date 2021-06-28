@@ -3,7 +3,7 @@ import { useLocalStorage } from 'react-use';
 import { StorageUser } from '../../types/user.type';
 
 interface UserContextInterface {
-  userStorage: StorageUser | null | undefined;
+  userStorage: string | null | undefined;
   setUserStorage: React.Dispatch<React.SetStateAction<null | undefined>> | null;
   removeUserStorage: () => void | null;
 }

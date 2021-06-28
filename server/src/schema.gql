@@ -35,6 +35,9 @@ type User {
 
   """Email field"""
   email: String!
+
+  """ImageUrl field"""
+  imageUrl: String!
   tasks: [Task!]
   roles: [Role!]
 }

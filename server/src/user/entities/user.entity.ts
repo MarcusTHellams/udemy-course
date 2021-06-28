@@ -32,6 +32,10 @@ export class User {
   @Field(() => String, { description: 'Email field', name: 'email' })
   email: string;
 
+  @Column('text', { name: 'imageUrl', nullable: true })
+  @Field(() => String, { description: 'ImageUrl field', name: 'imageUrl' })
+  imageUrl: string;
+
   @OneToMany(() => Task, (task) => task.user)
   tasks: Task[];
 
