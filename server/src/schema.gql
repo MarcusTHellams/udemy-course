@@ -62,6 +62,7 @@ type Mutation {
   updateRole(updateRoleInput: UpdateRoleInput!): Role!
   removeRole(id: Int!): Role!
   login(password: String!, username: String!): String!
+  logout: String!
 }
 
 input CreateUserInput {

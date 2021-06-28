@@ -26,4 +26,10 @@ export class AuthResolver {
     });
     return JSON.stringify(user);
   }
+
+  @Mutation(() => String)
+  async logout(@Context() ctx: any) {
+    ctx.res.clearCookie('todoio');
+    return 'Logged Out Successfully';
+  }
 }
