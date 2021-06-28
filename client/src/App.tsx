@@ -5,6 +5,7 @@ import { Switch, Route } from "react-router-dom";
 import { TaskListView } from "./views/TaskListView/TaskListView";
 import { TaskEditView } from "./views/TaskEditView/TaskEditView";
 import { TaskCreate } from "./components/TaskCreate/TaskCreate";
+import { LogIn } from "./components/LogIn/LogIn";
 
 export const App = () => (
   <>
@@ -12,6 +13,9 @@ export const App = () => (
     <Switch>
       <Route exact path="/tasks/create">
         <TaskCreate />
+      </Route>
+      <Route exact path="/login">
+        <LogIn />
       </Route>
       <Route exact path="/tasks/:id">
         <TaskEditView />
