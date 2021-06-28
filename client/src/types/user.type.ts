@@ -8,3 +8,10 @@ export type User = {
   roles: Role[];
   tasks: Task[];
 }
+
+export type StorageUser = {
+  email: string;
+  id: string;
+  username: string;
+  roles: string[];
+}

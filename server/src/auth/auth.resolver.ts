@@ -20,7 +20,7 @@ export class AuthResolver {
     const { access_token } = await this.authService.login(user);
     ctx.res.cookie('todoio', access_token, {
       httpOnly: true,
-      sameSite: 'none',
+      sameSite: 'strict',
       expires: add(new Date(), { minutes: 30 }),
       path: '/',
     });

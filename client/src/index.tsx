@@ -12,6 +12,7 @@ import { client } from './graphql/client';
 import {
   BrowserRouter as Router,
 } from "react-router-dom";
+import { UserContextProvider } from './contexts/userContext/userContext';
 
 
 const queryClient = new QueryClient();
@@ -22,7 +23,9 @@ ReactDOM.render(
       <ApolloProvider client={client}>
         <QueryClientProvider client={queryClient}>
           <ChakraProvider>
-            <App />
+            <UserContextProvider>
+              <App />
+            </UserContextProvider>
           </ChakraProvider>
         </QueryClientProvider>
       </ApolloProvider>
