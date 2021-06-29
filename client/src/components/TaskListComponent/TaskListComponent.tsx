@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Task } from '../../types/task.type';
-import { Table, Thead, Tbody, Tr, Th, Td, Box } from '@chakra-ui/react';
 import {
   Button,
   VStack,
@@ -8,6 +7,13 @@ import {
   Text,
   Heading,
   ButtonGroup,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  Box,
 } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
 import { DeletionVerification } from '../DeletionVerification/DeletionVerification';
@@ -26,7 +32,6 @@ export const TaskListComponent = ({
   const [currentTask, setCurrentTask] = React.useState<string | null>();
 
   const mutationFn = React.useCallback((taskId) => {
-    console.log('taskId: ', taskId);
     return client.mutate({
       mutation: removeTask,
       variables: {
@@ -58,7 +63,7 @@ export const TaskListComponent = ({
     if (!open) {
       setCurrentTask(null);
     }
-  }, [open])
+  }, [open]);
 
   return (
     <>
