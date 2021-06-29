@@ -45,9 +45,7 @@ export class UserResolver {
 
   @UseGuards(new JWTAuthGuard())
   @Query(() => String, { name: 'profile' })
-  profile(@Context() ctx: any) {
-    console.log('ctx: ', ctx.user);
-    // return this.userService.findOne(id);
+  profile() {
     return 'Ok';
   }
 

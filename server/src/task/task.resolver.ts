@@ -16,6 +16,7 @@ import { Task } from './entities/task.entity';
 import { CreateTaskInput } from './dto/create-task.input';
 import { UpdateTaskInput } from './dto/update-task.input';
 import { User } from 'src/user/entities/user.entity';
+import { Roles } from '../decorators/roles.decorator';
 @Resolver(() => Task)
 export class TaskResolver {
   constructor(
@@ -44,7 +45,7 @@ export class TaskResolver {
 
   @Mutation(() => Task)
   async updateTask(@Args('updateTaskInput') updateTaskInput: UpdateTaskInput) {
-    await this.taskService.update(updateTaskInput.id, updateTaskInput);
+    return await this.taskService.update(updateTaskInput.id, updateTaskInput);
     return await this.findOne(updateTaskInput.id);
   }
 
