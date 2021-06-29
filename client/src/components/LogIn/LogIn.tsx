@@ -19,7 +19,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { client } from "../../graphql/client";
 import { login } from "../../graphql/mutations/login";
 import { useMutation } from "react-query";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import { useUserContext } from "../../contexts/userContext/userContext";
 
 type LogInFormValues = {
@@ -48,13 +48,18 @@ export const LogIn = (): JSX.Element => {
 
   const history = useHistory();
   const { setUserStorage } = useUserContext();
+  const { state } = useLocation<{ referrer?: string }>();
 
   const { mutate, error } = useMutation(mutationFn, {
     onSuccess: (data) => {
       if (setUserStorage) {
         setUserStorage(data);
       }
-      history.push("/");
+      if (state?.referrer) {
+        history.push(state.referrer);
+      } else {
+        history.push("/");
+      }
     },
   });
 
