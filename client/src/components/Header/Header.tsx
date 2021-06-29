@@ -35,7 +35,7 @@ export const Header = (props: HeaderProps): JSX.Element => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const handleToggle = () => (isOpen ? onClose() : onOpen());
   const { userStorage, removeUserStorage } = useUserContext();
-  const [user, setUser] = React.useState(null);
+  const [user, setUser] = React.useState<{username: string, imageUrl?: string} | null>(null);
 
   const history = useHistory();
 

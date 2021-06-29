@@ -1,7 +1,5 @@
 import * as React from 'react';
 import { useLocalStorage } from 'react-use';
-import { StorageUser } from '../../types/user.type';
-
 interface UserContextInterface {
   userStorage: string | null | undefined;
   setUserStorage: React.Dispatch<React.SetStateAction<null | undefined>> | null;
