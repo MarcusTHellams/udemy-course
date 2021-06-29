@@ -6,7 +6,7 @@ import { Reflector } from '@nestjs/core';
 
 @Injectable()
 export class RolesGuard extends JWTAuthGuard implements CanActivate {
-  constructor(private readonly reflector: Reflector) {
+  constructor(private reflector: Reflector) {
     super();
   }
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -18,7 +18,10 @@ export class RolesGuard extends JWTAuthGuard implements CanActivate {
     if (!ctx.req.cookies.todoio) {
       return false;
     }
-    const user = getUser(ctx.req.cookies.todoio);
-    return true;
+    const user = (await getUser(ctx.req.cookies.todoio)) as { roles: string[] };
+
+    const isAuthorized = roles.some((role) => user.roles.includes(role));
+
+    return isAuthorized;
   }
 }

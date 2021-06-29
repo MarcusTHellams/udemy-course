@@ -1,4 +1,3 @@
-import { userLoader } from './../db/loaders/user.loader';
 import { IGraphqlContext } from './../types/graphql.types';
 import { RepoService } from './../repo/repo.service';
 import {
@@ -16,7 +15,9 @@ import { Task } from './entities/task.entity';
 import { CreateTaskInput } from './dto/create-task.input';
 import { UpdateTaskInput } from './dto/update-task.input';
 import { User } from 'src/user/entities/user.entity';
-import { Roles } from '../decorators/roles.decorator';
+import { Roles } from 'src/decorators/role.decorator';
+import { UseGuards } from '@nestjs/common';
+import { RolesGuard } from 'src/auth/roles.guard';
 @Resolver(() => Task)
 export class TaskResolver {
   constructor(
@@ -39,6 +40,8 @@ export class TaskResolver {
   }
 
   @Query(() => Task, { name: 'task' })
+  @Roles('admin')
+  @UseGuards(RolesGuard)
   findOne(@Args('id', { type: () => String }) id: string) {
     return this.taskService.findOne(id);
   }

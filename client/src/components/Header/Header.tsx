@@ -117,7 +117,7 @@ export const Header = (props: HeaderProps): JSX.Element => {
               </Menu>
             </>
           )) || (
-            <Button size="xs" as={RLink} to="/login" variant="outline">
+            <Button _hover={{color: 'black'}} size="xs" as={RLink} to="/login" variant="outline">
               Log In
             </Button>
           )}
