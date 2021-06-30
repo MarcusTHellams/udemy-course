@@ -33,7 +33,11 @@ export class User {
   email: string;
 
   @Column('text', { name: 'imageUrl', nullable: true })
-  @Field(() => String, { description: 'ImageUrl field', name: 'imageUrl' })
+  @Field(() => String, {
+    description: 'ImageUrl field',
+    name: 'imageUrl',
+    nullable: true,
+  })
   imageUrl: string;
 
   @OneToMany(() => Task, (task) => task.user)
