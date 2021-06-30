@@ -48,6 +48,7 @@ type Query {
   profile: String!
   tasks: [Task!]!
   task(id: String!): Task!
+  roles: [Role!]!
   role(id: Int!): Role!
 }
 

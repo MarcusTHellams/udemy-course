@@ -15,10 +15,20 @@ import { User } from '../../types/user.type';
 import { Layout } from '../Layout/Layout';
 import { UserFormValues } from '../../types/userFormValues.type';
 import omit from 'lodash/omit';
+import { RoleSelect } from '../RoleSelect/RoleSelect';
+import { Query } from '../Query/Query';
+import { getRoles } from '../../graphql/queries/roles';
+import { Role } from '../../types/role.type';
 
 type UserFormProps = {
-  user?: Omit<User, 'roles'> | null;
+  user?: User | null;
 };
+
+const queryFn = () => {
+  return client.query({ query: getRoles }).then(({ data: { roles } }) => roles);
+};
+
+const queryKey = 'roles';
 
 export const UserForm = ({ user }: UserFormProps): JSX.Element => {
   const editOrCreate = !!user ? 'Edit' : 'Create';
@@ -34,9 +44,10 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm<UserFormValues>({
-    defaultValues,
+    defaultValues: user || {}
   });
 
   const submitHandler: SubmitHandler<UserFormValues> = (values) => {
@@ -70,6 +81,15 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
               <FormLabel htmlFor='imageUrl'>Image Url</FormLabel>
               <Input id='imageUrl' {...register('imageUrl')} />
               <FormErrorMessage>{errors?.imageUrl?.message}</FormErrorMessage>
+            </FormControl>
+            <FormControl isInvalid={!!errors?.roles}>
+              <FormLabel htmlFor='roles'>Roles</FormLabel>
+              <Query
+                {...{ queryFn, queryKey }}
+                render={({data: roles}) => {
+                  return <RoleSelect {...{ control }} roles={roles as Role[]} />;
+                }}
+              />
             </FormControl>
             <Box width='full'>
               <Button
