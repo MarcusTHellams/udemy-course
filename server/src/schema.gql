@@ -72,15 +72,12 @@ input CreateUserInput {
 }
 
 input UpdateUserInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
-}
-
-input CreateTaskInput {
-  title: String!
-  description: String
-  userId: String
+  id: String!
+  username: String!
+  email: String!
+  imageUrl: String
+  tasks: [UpdateTaskInput!]
+  roles: [UpdateRoleInput!]
 }
 
 input UpdateTaskInput {
@@ -90,13 +87,24 @@ input UpdateTaskInput {
   id: String!
 }
 
-input CreateRoleInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
+input UpdateRoleInput {
+  """Id field"""
+  id: String
+
+  """Name field"""
+  name: String
 }
 
-input UpdateRoleInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
+input CreateTaskInput {
+  title: String!
+  description: String
+  userId: String
+}
+
+input CreateRoleInput {
+  """Id field"""
+  id: String!
+
+  """Name field"""
+  name: String!
 }

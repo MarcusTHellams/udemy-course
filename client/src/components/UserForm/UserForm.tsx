@@ -14,11 +14,13 @@ import { client } from '../../graphql/client';
 import { User } from '../../types/user.type';
 import { Layout } from '../Layout/Layout';
 import { UserFormValues } from '../../types/userFormValues.type';
-import omit from 'lodash/omit';
 import { RoleSelect } from '../RoleSelect/RoleSelect';
 import { Query } from '../Query/Query';
 import { getRoles } from '../../graphql/queries/roles';
 import { Role } from '../../types/role.type';
+import { updateUser } from '../../graphql/mutations/user';
+import { useMutation, useQueryClient } from 'react-query';
+import { useHistory } from 'react-router-dom';
 
 type UserFormProps = {
   user?: User | null;
@@ -30,16 +32,20 @@ const queryFn = () => {
 
 const queryKey = 'roles';
 
+const mutationFn = (values: any) => {
+  return client.mutate({
+    mutation: updateUser,
+    variables: {
+      updateUserInput: values,
+    },
+  });
+};
+
 export const UserForm = ({ user }: UserFormProps): JSX.Element => {
   const editOrCreate = !!user ? 'Edit' : 'Create';
 
-  const defaultValues = React.useMemo(() => {
-    if (user) {
-      return omit(user, ['roles', 'tasks']);
-    } else {
-      return {};
-    }
-  }, [user]);
+  const queryClient = useQueryClient();
+  const history = useHistory();
 
   const {
     register,
@@ -47,11 +53,23 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
     control,
     formState: { errors },
   } = useForm<UserFormValues>({
-    defaultValues: user || {}
+    defaultValues: user || {},
+  });
+
+  const { mutate } = useMutation(mutationFn, {
+    onSuccess() {
+      const oldData = queryClient.getQueryData(['user', user?.id]);
+      console.log('oldData: ', oldData);
+      if (user?.id) {
+        queryClient.invalidateQueries(['user', user.id]);
+      }
+      queryClient.invalidateQueries('users');
+      history.push('/users');
+    },
   });
 
   const submitHandler: SubmitHandler<UserFormValues> = (values) => {
-    console.log(values);
+    mutate(values);
   };
   return (
     <>
@@ -86,8 +104,16 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
               <FormLabel htmlFor='roles'>Roles</FormLabel>
               <Query
                 {...{ queryFn, queryKey }}
-                render={({data: roles}) => {
-                  return <RoleSelect {...{ control }} roles={roles as Role[]} />;
+                queryOptions={{
+                  refetchIntervalInBackground: false,
+                  refetchOnMount: false,
+                  refetchOnReconnect: false,
+                  refetchOnWindowFocus: false,
+                }}
+                render={({ data: roles }) => {
+                  return (
+                    <RoleSelect {...{ control }} roles={roles as Role[]} />
+                  );
                 }}
               />
             </FormControl>

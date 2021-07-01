@@ -19,8 +19,21 @@ export class UserService {
     return await this.repo.userRepo.findOne(id);
   }
 
-  update(id: number, updateUserInput: UpdateUserInput) {
-    return `This action updates a #${id} user`;
+  async update(updateUserInput: UpdateUserInput) {
+    await this.repo.userRepo.save(updateUserInput);
+
+    await this.repo.userRoleRepo.delete({ userId: updateUserInput.id });
+
+    if (updateUserInput.roles.length) {
+      await this.repo.userRoleRepo.save(
+        updateUserInput.roles.map((role) => {
+          return {
+            roleId: role.id,
+            userId: updateUserInput.id,
+          };
+        }),
+      );
+    }
   }
 
   remove(id: number) {

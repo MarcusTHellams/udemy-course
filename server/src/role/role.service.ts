@@ -18,7 +18,7 @@ export class RoleService {
     return `This action returns a #${id} role`;
   }
 
-  update(id: number, updateRoleInput: UpdateRoleInput) {
+  update(id: string, updateRoleInput: UpdateRoleInput) {
     return `This action updates a #${id} role`;
   }
 
