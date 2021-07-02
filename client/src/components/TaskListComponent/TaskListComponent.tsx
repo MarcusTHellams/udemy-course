@@ -14,8 +14,9 @@ import {
   Th,
   Td,
   Box,
+  Link,
 } from '@chakra-ui/react';
-import { Link } from 'react-router-dom';
+import { Link as RLink } from 'react-router-dom';
 import { DeletionVerification } from '../DeletionVerification/DeletionVerification';
 import { client } from '../../graphql/client';
 import { useMutation, useQueryClient } from 'react-query';
@@ -75,7 +76,12 @@ export const TaskListComponent = ({
         mb='8'
       >
         Tasks
-        <Button as={Link} to='/tasks/create' colorScheme='green' rounded='full'>
+        <Button
+          as={RLink}
+          to='/tasks/create'
+          colorScheme='green'
+          rounded='full'
+        >
           New Task
         </Button>
       </Heading>
@@ -97,25 +103,30 @@ export const TaskListComponent = ({
                     <Td>{task.title}</Td>
                     <Td>{task.description}</Td>
                     <Td>
-                      <VStack align='start' as='dl'>
-                        <HStack>
-                          <Text as='dt' fontWeight='bold'>
-                            Username:
-                          </Text>
-                          <Text as='dd'>{task?.user?.username}</Text>
-                        </HStack>
-                        <HStack>
-                          <Text as='dt' fontWeight='bold'>
-                            Email:
-                          </Text>
-                          <Text as='dd'>{task?.user?.email}</Text>
-                        </HStack>
-                      </VStack>
+                      {(!!task.user && (
+                        <VStack align='start' as='dl'>
+                          <Link as={RLink} to={`/users/${task?.user?.id}`}>
+                            <HStack>
+                              <Text as='dt' fontWeight='bold'>
+                                Username:
+                              </Text>
+                              <Text as='dd'>{task?.user?.username}</Text>
+                            </HStack>
+                            <HStack>
+                              <Text as='dt' fontWeight='bold'>
+                                Email:
+                              </Text>
+                              <Text as='dd'>{task?.user?.email}</Text>
+                            </HStack>
+                          </Link>
+                        </VStack>
+                      )) ||
+                        'None'}
                     </Td>
                     <Td>
                       <ButtonGroup size='xs'>
                         <Button
-                          as={Link}
+                          as={RLink}
                           to={`tasks/${task.id}`}
                           rounded='full'
                           colorScheme='green'

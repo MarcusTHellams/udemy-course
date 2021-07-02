@@ -16,11 +16,9 @@ export const App = () => (
       <Route exact path='/tasks/create'>
         <TaskCreate />
       </Route>
-      <Route exact path='/tasks/:id'>
-        <ProtectedRoute>
-          <TaskEditView />
-        </ProtectedRoute>
-      </Route>
+      <ProtectedRoute exact path='/tasks/:id'>
+        <TaskEditView />
+      </ProtectedRoute>
       <Route exact path='/users/:id'>
         <UserEditView />
       </Route>

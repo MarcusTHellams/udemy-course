@@ -25,7 +25,17 @@ export class TaskService {
   }
 
   async update(id: string, updateTaskInput: UpdateTaskInput) {
-    return await this.repo.taskRepo.update(updateTaskInput.id, updateTaskInput);
+    const task = await this.repo.taskRepo.findOne(updateTaskInput.id);
+
+    Object.keys(task).forEach((key) => {
+      if (!updateTaskInput[key]) {
+        task[key] = null;
+      } else {
+        task[key] = updateTaskInput[key];
+      }
+    });
+
+    await this.repo.taskRepo.update(task.id, task);
   }
 
   async remove(id: string) {

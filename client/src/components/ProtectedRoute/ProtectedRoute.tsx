@@ -1,42 +1,34 @@
-import * as React from "react";
-import { useQuery } from "react-query";
-import { useHistory, useLocation } from "react-router-dom";
-import { useUserContext } from "../../contexts/userContext/userContext";
-import { client } from "../../graphql/client";
-import { getProfile } from "../../graphql/queries/profile";
+import * as React from 'react';
+import { Route, Redirect } from 'react-router-dom';
+import { useUserContext } from '../../contexts/userContext/userContext';
+
+type ProtectedRouteProps = {
+  [key: string] : any;
+}
 
 export const ProtectedRoute = ({
   children,
-}: React.PropsWithChildren<{}>): JSX.Element | null => {
-  const queryFn = React.useCallback(() => {
-    return client
-      .query({
-        query: getProfile,
-      })
-      .catch((error) => {
-        throw new Error(error.message);
-      });
-  }, []);
+  ...rest
+}: React.PropsWithChildren<ProtectedRouteProps>): JSX.Element | null => {
+  const { userStorage } = useUserContext();
 
-  const history = useHistory();
-  const location = useLocation();
-  const {removeUserStorage} = useUserContext();
-
-  const { isLoading } = useQuery("profile", queryFn, {
-    retry: false,
-    cacheTime: 0,
-    refetchInterval: 30000,
-    refetchIntervalInBackground: true,
-    onError() {
-      removeUserStorage();
-      history.replace("/login", { referrer: location.pathname });
-    },
-    onSuccess() {},
-  });
-
-  if (isLoading) {
-    return null;
-  }
-
-  return <>{children}</>;
+  return (
+    <>
+      <Route
+        {...rest}
+        render={({ location }) =>
+          !!userStorage ? (
+            children
+          ) : (
+            <Redirect
+              to={{
+                pathname: '/login',
+                state: { referrer: location.pathname },
+              }}
+            />
+          )
+        }
+      />
+    </>
+  );
 };

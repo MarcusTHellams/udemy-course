@@ -51,7 +51,6 @@ const mutationFn = (values: any) => {
 
 export const UserForm = ({ user }: UserFormProps): JSX.Element => {
   const editOrCreate = !!user ? 'Edit' : 'Create';
-  console.log('user: ', user);
 
   const queryClient = useQueryClient();
   const history = useHistory();
