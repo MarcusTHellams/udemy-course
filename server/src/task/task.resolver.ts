@@ -60,7 +60,11 @@ export class TaskResolver {
 
   @ResolveField(() => User, { name: 'user', nullable: true })
   async user(@Parent() task: Task, @Context() { userLoader }: IGraphqlContext) {
-    const user = await userLoader.load(task.userId);
-    return user;
+    if (task.userId) {
+      const user = await userLoader.load(task.userId);
+      return user;
+    }
+
+    return null;
   }
 }

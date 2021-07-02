@@ -56,7 +56,7 @@ export const LogIn = (): JSX.Element => {
         setUserStorage(data);
       }
       if (state?.referrer) {
-        history.push(state.referrer);
+        history.replace(state.referrer);
       } else {
         history.push("/");
       }

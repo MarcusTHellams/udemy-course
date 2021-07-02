@@ -25,7 +25,7 @@ export class TaskService {
   }
 
   async update(id: string, updateTaskInput: UpdateTaskInput) {
-    return await this.repo.taskRepo.save(updateTaskInput);
+    return await this.repo.taskRepo.update(updateTaskInput.id, updateTaskInput);
   }
 
   async remove(id: string) {

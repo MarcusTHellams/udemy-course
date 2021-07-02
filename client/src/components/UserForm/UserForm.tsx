@@ -7,6 +7,13 @@ import {
   FormErrorMessage,
   Box,
   Button,
+  Avatar,
+  Table,
+  Th,
+  Tr,
+  Tbody,
+  Thead,
+  Td,
 } from '@chakra-ui/react';
 import * as React from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
@@ -20,7 +27,8 @@ import { getRoles } from '../../graphql/queries/roles';
 import { Role } from '../../types/role.type';
 import { updateUser } from '../../graphql/mutations/user';
 import { useMutation, useQueryClient } from 'react-query';
-import { useHistory } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
+import omit from 'lodash/omit';
 
 type UserFormProps = {
   user?: User | null;
@@ -43,9 +51,11 @@ const mutationFn = (values: any) => {
 
 export const UserForm = ({ user }: UserFormProps): JSX.Element => {
   const editOrCreate = !!user ? 'Edit' : 'Create';
+  console.log('user: ', user);
 
   const queryClient = useQueryClient();
   const history = useHistory();
+  const location = useLocation();
 
   const {
     register,
@@ -53,13 +63,11 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
     control,
     formState: { errors },
   } = useForm<UserFormValues>({
-    defaultValues: user || {},
+    defaultValues: (user && omit(user, ['tasks'])) || undefined,
   });
 
   const { mutate } = useMutation(mutationFn, {
     onSuccess() {
-      const oldData = queryClient.getQueryData(['user', user?.id]);
-      console.log('oldData: ', oldData);
       if (user?.id) {
         queryClient.invalidateQueries(['user', user.id]);
       }
@@ -75,6 +83,7 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
     <>
       <Layout maxW='container.sm'>
         <Heading as='h1' mb='8'>
+          <Avatar shadow='2xl' name={user?.username} src={user?.imageUrl} />{' '}
           {editOrCreate} User
         </Heading>
         <form onSubmit={handleSubmit(submitHandler)}>
@@ -104,12 +113,6 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
               <FormLabel htmlFor='roles'>Roles</FormLabel>
               <Query
                 {...{ queryFn, queryKey }}
-                queryOptions={{
-                  refetchIntervalInBackground: false,
-                  refetchOnMount: false,
-                  refetchOnReconnect: false,
-                  refetchOnWindowFocus: false,
-                }}
                 render={({ data: roles }) => {
                   return (
                     <RoleSelect {...{ control }} roles={roles as Role[]} />
@@ -129,6 +132,43 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
             </Box>
           </VStack>
         </form>
+        {user?.tasks && (
+          <Table mt='4'>
+            <Thead>
+              <Tr>
+                <Th>Title</Th>
+                <Th>Description</Th>
+                <Th>Actions</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {user.tasks.map((task) => {
+                return (
+                  <React.Fragment key={task.id}>
+                    <Tr>
+                      <Td>{task.title}</Td>
+                      <Td>{task.description}</Td>
+                      <Td>
+                        <Button
+                          type='button'
+                          size='xs'
+                          colorScheme='green'
+                          as={Link}
+                          to={{
+                            pathname: `/tasks/${task.id}`,
+                            state: { referrer: location.pathname },
+                          }}
+                        >
+                          Edit
+                        </Button>
+                      </Td>
+                    </Tr>
+                  </React.Fragment>
+                );
+              })}
+            </Tbody>
+          </Table>
+        )}
       </Layout>
     </>
   );

@@ -17,26 +17,26 @@ export class AppController {
   async getHello(): Promise<any> {
     const user = await this.repo.userRepo.findOne({
       select: ['password', 'email', 'id', 'username'],
+      relations: ['tasks'],
       where: {
-        username: 'mhellams',
-        password:
-          '$2a$12$2w0nYG17TQxIIfi6PTLrUuE0GCWtDssqDT/c8L6SE1BqZxnUMsm06',
+        username: 'Giovanna66',
       },
     });
 
-    const result = await bcrypt2.compare(
-      'password',
-      '$2a$12$2w0nYG17TQxIIfi6PTLrUuE0GCWtDssqDT/c8L6SE1BqZxnUMsm06',
-    );
-    console.log('result: ', result);
+    // const result = await bcrypt2.compare(
+    //   'password',
+    //   '$2a$12$2w0nYG17TQxIIfi6PTLrUuE0GCWtDssqDT/c8L6SE1BqZxnUMsm06',
+    // );
+    // console.log('result: ', result);
 
-    const userRoles = await this.repo.userRoleRepo
-      .createQueryBuilder('userRole')
-      .innerJoinAndSelect('userRole.role', 'roles')
-      .where('userRole.userId = :userId', { userId: user.id })
-      .getMany();
+    // const userRoles = await this.repo.userRoleRepo
+    //   .createQueryBuilder('userRole')
+    //   .innerJoinAndSelect('userRole.role', 'roles')
+    //   .where('userRole.userId = :userId', { userId: user.id })
+    //   .getMany();
 
-    user.roles = userRoles.map((ur) => ur.role);
+    // user.roles = userRoles.map((ur) => ur.role);
+    console.log('user: ', user);
 
     return user;
     // const roleId = '07203ac4-93fd-46cf-8cb9-0b09e643b246';

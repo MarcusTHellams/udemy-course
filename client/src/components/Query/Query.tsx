@@ -1,6 +1,7 @@
 import { Heading, Skeleton, Stack } from '@chakra-ui/react';
 import * as React from 'react';
 import { useQuery, UseQueryOptions, UseQueryResult } from 'react-query';
+import { useWhyDidYouUpdate } from '../../hooks/useWhyDidYouUpdate';
 import { Layout } from '../Layout/Layout';
 
 type QueryProps = {
@@ -14,14 +15,16 @@ export const Query = ({
   render,
   queryKey,
   queryFn,
-  queryOptions = {},
+  queryOptions,
 }: QueryProps): JSX.Element => {
   const { isLoading, isError, ...rest } = useQuery(
     queryKey,
     queryFn,
     queryOptions
   );
-
+  useWhyDidYouUpdate('Query Props', {
+    ...{ queryKey, queryFn, queryOptions },
+  } as unknown as Record<string, string>);
   if (isLoading) {
     return (
       <Layout>

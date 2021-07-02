@@ -24,7 +24,7 @@ export class UserService {
 
     await this.repo.userRoleRepo.delete({ userId: updateUserInput.id });
 
-    if (updateUserInput.roles.length) {
+    if (updateUserInput?.roles?.length) {
       await this.repo.userRoleRepo.save(
         updateUserInput.roles.map((role) => {
           return {

@@ -7,6 +7,7 @@ export type User = {
   username: string;
   roles: Role[];
   tasks: Task[];
+  imageUrl: string;
 }
 
 export type StorageUser = {

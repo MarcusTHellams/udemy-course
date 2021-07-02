@@ -102,13 +102,13 @@ export const TaskListComponent = ({
                           <Text as='dt' fontWeight='bold'>
                             Username:
                           </Text>
-                          <Text as='dd'>{task.user.username}</Text>
+                          <Text as='dd'>{task?.user?.username}</Text>
                         </HStack>
                         <HStack>
                           <Text as='dt' fontWeight='bold'>
                             Email:
                           </Text>
-                          <Text as='dd'>{task.user.email}</Text>
+                          <Text as='dd'>{task?.user?.email}</Text>
                         </HStack>
                       </VStack>
                     </Td>
