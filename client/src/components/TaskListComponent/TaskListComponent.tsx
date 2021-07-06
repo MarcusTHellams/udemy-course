@@ -124,8 +124,9 @@ export const TaskListComponent = ({
                         'None'}
                     </Td>
                     <Td>
-                      <ButtonGroup size='xs'>
+                      <ButtonGroup isAttached size='xs'>
                         <Button
+                          borderRightRadius="0"
                           as={RLink}
                           to={`tasks/${task.id}`}
                           rounded='full'
@@ -134,6 +135,7 @@ export const TaskListComponent = ({
                           Edit Task
                         </Button>
                         <Button
+                          borderLeftRadius="0"
                           onClick={() => {
                             setCurrentTask(task.id);
                             setOpen(true);
