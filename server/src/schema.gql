@@ -42,11 +42,32 @@ type User {
   roles: [Role!]
 }
 
+type Links {
+  first: String!
+  previous: String!
+  next: String!
+  last: String!
+}
+
+type Meta {
+  itemCount: Int!
+  totalItems: Int!
+  itemsPerPage: Int!
+  totalPages: Int!
+  currentPage: Int!
+}
+
+type PaginatedTask {
+  items: [Task!]!
+  meta: Meta!
+  links: Links
+}
+
 type Query {
   users: [User!]!
   user(id: String!): User!
   profile: String!
-  tasks: [Task!]!
+  tasks: PaginatedTask!
   task(id: String!): Task!
   roles: [Role!]!
   role(id: Int!): Role!

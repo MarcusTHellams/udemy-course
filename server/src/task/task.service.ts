@@ -1,9 +1,12 @@
+import { FindAll } from './../types/findAll.types';
 import { Task } from './entities/task.entity';
 import { RepoService } from './../repo/repo.service';
 import { Injectable } from '@nestjs/common';
 import { CreateTaskInput } from './dto/create-task.input';
 import { UpdateTaskInput } from './dto/update-task.input';
 import { v4 as uuidv4 } from 'uuid';
+import { paginate, Pagination } from 'nestjs-typeorm-paginate';
+
 @Injectable()
 export class TaskService {
   constructor(private readonly repo: RepoService) {}
@@ -16,8 +19,10 @@ export class TaskService {
     return task;
   }
 
-  async findAll(): Promise<Task[]> {
-    return await this.repo.taskRepo.find();
+  async findAll(
+    options: FindAll = { page: 1, limit: 10 },
+  ): Promise<Pagination<Task>> {
+    return await paginate<Task>(this.repo.taskRepo, options);
   }
 
   async findOne(id: string) {

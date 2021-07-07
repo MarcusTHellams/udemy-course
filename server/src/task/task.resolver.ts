@@ -1,3 +1,5 @@
+import { PaginatedTask } from './entities/paginatedTasks.entity';
+import { Pagination } from 'nestjs-typeorm-paginate';
 import { IGraphqlContext } from './../types/graphql.types';
 import { RepoService } from './../repo/repo.service';
 import {
@@ -30,13 +32,9 @@ export class TaskResolver {
     return this.taskService.create(createTaskInput);
   }
 
-  @Query(() => [Task], { name: 'tasks' })
-  findAll(@Context() ctx) {
-    // console.log('ctx.req.cookie: ', ctx.req.cookies);
-    // ctx.res.cookie('name', 'marcus', {
-    //   httpOnly: true,
-    // });
-    return this.taskService.findAll();
+  @Query(() => PaginatedTask, { name: 'tasks' })
+  async findAll() {
+    return await this.taskService.findAll();
   }
 
   @Query(() => Task, { name: 'task' })
