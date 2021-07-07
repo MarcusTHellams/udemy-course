@@ -6,6 +6,7 @@ export const getUsers = gql`
       id
       username
       email
+      imageUrl
       tasks {
         id
         title

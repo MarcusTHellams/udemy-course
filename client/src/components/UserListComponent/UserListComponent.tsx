@@ -12,12 +12,15 @@ import {
   WrapItem,
   Button,
   ButtonGroup,
-} from '@chakra-ui/react';
-import * as React from 'react';
-import { Link } from 'react-router-dom';
-import { Role } from '../../types/role.type';
-import { User } from '../../types/user.type';
-import { Layout } from '../Layout/Layout';
+  Avatar,
+  HStack,
+  Text,
+} from "@chakra-ui/react";
+import * as React from "react";
+import { Link } from "react-router-dom";
+import { Role } from "../../types/role.type";
+import { User } from "../../types/user.type";
+import { Layout } from "../Layout/Layout";
 
 type UserListComponentProps = {
   users: User[];
@@ -29,11 +32,11 @@ export const UserListComponent = ({
   return (
     <>
       <Layout>
-        <Heading size='xl' as='h1' mb='8'>
+        <Heading size="xl" as="h1" mb="8">
           Users
         </Heading>
         <Box overflowX="scroll">
-          <Table variant='simple' colorScheme='blackAlpha'>
+          <Table variant="simple" colorScheme="blackAlpha">
             <Thead>
               <tr>
                 <Th>Username</Th>
@@ -47,7 +50,12 @@ export const UserListComponent = ({
                 return (
                   <React.Fragment key={user.id}>
                     <Tr>
-                      <Td>{user.username}</Td>
+                      <Td>
+                        <HStack>
+                          <Avatar size="sm" name={user.username} src={user.imageUrl} />
+                          <Text as="span">{user.username}</Text>
+                        </HStack>
+                      </Td>
                       <Td>{user.email}</Td>
                       <Td>
                         {!!user.roles && (
@@ -56,7 +64,7 @@ export const UserListComponent = ({
                               return (
                                 <React.Fragment key={role.id}>
                                   <WrapItem>
-                                    <Badge rounded='full'>{role.name}</Badge>
+                                    <Badge rounded="full">{role.name}</Badge>
                                   </WrapItem>
                                 </React.Fragment>
                               );
@@ -66,8 +74,14 @@ export const UserListComponent = ({
                       </Td>
                       <Td>
                         <ButtonGroup size="xs">
-                          <Button as={Link} to={`/users/${user.id}`} colorScheme='green'>Edit</Button>
-                          <Button color='white' colorScheme='yellow'>
+                          <Button
+                            as={Link}
+                            to={`/users/${user.id}`}
+                            colorScheme="green"
+                          >
+                            Edit
+                          </Button>
+                          <Button color="white" colorScheme="yellow">
                             Delete
                           </Button>
                         </ButtonGroup>

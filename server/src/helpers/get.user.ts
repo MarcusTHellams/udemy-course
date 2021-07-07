@@ -5,6 +5,6 @@ export const getUser = async (cookie: string) => {
     return undefined;
   }
 
-  const decoded = jwt.verify(cookie, 'mySecret');
+  const decoded = await jwt.verify(cookie, 'mySecret');
   return decoded;
 };
