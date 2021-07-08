@@ -56,8 +56,8 @@ export const TaskListComponent = ({
         Cell: ({ row }: { row: Row<Task> }) => {
           const { user = null } = row.original;
           return user ? (
-            <VStack align="start" as="dl">
-              <Link as={RLink} to={`/users/${user?.id}`}>
+            <Link as={RLink} to={`/users/${user?.id}`}>
+              <VStack align="start" as="dl">
                 <HStack>
                   <Text as="dt" fontWeight="bold">
                     Username:
@@ -70,8 +70,8 @@ export const TaskListComponent = ({
                   </Text>
                   <Text as="dd">{user?.email}</Text>
                 </HStack>
-              </Link>
-            </VStack>
+              </VStack>
+            </Link>
           ) : (
             <Text>None</Text>
           );
