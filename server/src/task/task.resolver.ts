@@ -7,7 +7,6 @@ import {
   Query,
   Mutation,
   Args,
-  Int,
   Parent,
   ResolveField,
   Context,
@@ -20,6 +19,7 @@ import { User } from 'src/user/entities/user.entity';
 import { Roles } from 'src/decorators/role.decorator';
 import { UseGuards } from '@nestjs/common';
 import { RolesGuard } from 'src/auth/roles.guard';
+import { PageQueryInput } from 'src/common/entities/pageQuery.input';
 @Resolver(() => Task)
 export class TaskResolver {
   constructor(
@@ -33,8 +33,10 @@ export class TaskResolver {
   }
 
   @Query(() => PaginatedTask, { name: 'tasks' })
-  async findAll() {
-    return await this.taskService.findAll();
+  async findAll(
+    @Args('pageQueryInput', { nullable: true }) pageQueryInput: PageQueryInput,
+  ) {
+    return await this.taskService.findAll(pageQueryInput);
   }
 
   @Query(() => Task, { name: 'task' })

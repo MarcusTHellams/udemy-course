@@ -20,7 +20,7 @@ export class TaskService {
   }
 
   async findAll(
-    options: FindAll = { page: 1, limit: 10 },
+    options: FindAll = { page: 1, limit: 1 },
   ): Promise<Pagination<Task>> {
     return await paginate<Task>(this.repo.taskRepo, options);
   }

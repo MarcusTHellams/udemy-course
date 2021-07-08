@@ -1,8 +1,8 @@
 import gql from "graphql-tag";
 
 export const getTasks = gql`
-  query getTasks {
-    tasks {
+  query getTasks($pageQueryInput: PageQueryInput) {
+    tasks(pageQueryInput: $pageQueryInput) {
       items {
         id
         title

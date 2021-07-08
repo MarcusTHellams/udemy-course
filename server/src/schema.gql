@@ -67,10 +67,15 @@ type Query {
   users: [User!]!
   user(id: String!): User!
   profile: String!
-  tasks: PaginatedTask!
+  tasks(pageQueryInput: PageQueryInput): PaginatedTask!
   task(id: String!): Task!
   roles: [Role!]!
   role(id: Int!): Role!
+}
+
+input PageQueryInput {
+  page: Int
+  limit: Int
 }
 
 type Mutation {

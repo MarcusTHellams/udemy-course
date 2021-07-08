@@ -1,10 +1,10 @@
 export interface PaginatedResults<Data = unknown> {
     items: Data[];
     meta: {
-        itemCount: Number;
-        totalItems: Number;
-        totalPages: Number;
-        currentPage: Number;
+        itemCount: number;
+        totalItems: number;
+        totalPages: number;
+        currentPage: number;
 
     };
     links?: {
