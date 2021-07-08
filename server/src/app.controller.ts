@@ -19,9 +19,27 @@ export class AppController {
       select: ['password', 'email', 'id', 'username'],
       relations: ['tasks'],
       where: {
-        username: 'Giovanna66',
+        username: 'mhellams',
       },
     });
+
+    for (let i = 0; i < 100; i++) {
+      const title = faker.lorem.words(
+        faker.datatype.number({ min: 3, max: 10 }),
+      );
+      const description = faker.lorem.sentence(
+        faker.datatype.number({ min: 4, max: 10 }),
+      );
+      const id = uuidv4();
+      const task = this.repo.taskRepo.create({
+        title,
+        description,
+        id,
+        user,
+      });
+
+      await this.repo.taskRepo.save(task);
+    }
 
     // const result = await bcrypt2.compare(
     //   'password',
@@ -36,7 +54,6 @@ export class AppController {
     //   .getMany();
 
     // user.roles = userRoles.map((ur) => ur.role);
-    console.log('user: ', user);
 
     return user;
     // const roleId = '07203ac4-93fd-46cf-8cb9-0b09e643b246';

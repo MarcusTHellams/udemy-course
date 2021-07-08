@@ -120,23 +120,17 @@ export const TaskListComponent = ({
     []
   );
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    prepareRow,
-    page,
-    state: { pageIndex, pageSize },
-  } = useTable<Task>(
-    {
-      columns,
-      data,
-      manualPagination: true,
-      pageCount: totalPages,
-      initialState: { pageSize: 1, pageIndex: 1 },
-    },
-    usePagination
-  );
+  const { getTableProps, getTableBodyProps, headerGroups, prepareRow, page } =
+    useTable<Task>(
+      {
+        columns,
+        data,
+        manualPagination: true,
+        pageCount: totalPages,
+        initialState: { pageSize: 1, pageIndex: 1 },
+      },
+      usePagination
+    );
 
   const mutationFn = React.useCallback((taskId) => {
     return client.mutate({
@@ -225,69 +219,81 @@ export const TaskListComponent = ({
         </Table>
       </Box>{" "}
       {totalPages > 1 && (
-        <Paginated
-          currentPage={currentPage}
-          totalPage={totalPages}
-          siblingsSize={2}
-          boundarySize={2}
-        >
-          {({
-            pages,
-            currentPage,
-            hasPrev,
-            hasNext,
-            getFirstBoundary,
-            getLastBoundary,
-            isPrevTruncated,
-            isNextTruncated,
-          }) => (
-            <ButtonGroup
-              mt="5"
-              colorScheme="blue"
-              variant="outline"
-              isAttached={true}
-            >
-              {hasPrev() && (
-                <Button onClick={() => setPage((prev) => prev - 1)}>
-                  Prev
-                </Button>
-              )}
-              {getFirstBoundary().map((boundary) => (
-                <Button key={boundary}>{boundary}</Button>
-              ))}
-              {isPrevTruncated && <span>...</span>}
-              {pages.map((page) => {
-                return page === currentPage ? (
-                  <Button variant="solid" disabled={true} key={page}>
-                    {page}
+        <Box mb="8">
+          <Paginated
+            currentPage={currentPage}
+            totalPage={totalPages}
+            siblingsSize={2}
+            boundarySize={2}
+          >
+            {({
+              pages,
+              currentPage,
+              hasPrev,
+              hasNext,
+              getFirstBoundary,
+              getLastBoundary,
+              isPrevTruncated,
+              isNextTruncated,
+            }) => (
+              <ButtonGroup
+                mt="5"
+                colorScheme="blue"
+                variant="outline"
+                isAttached={true}
+              >
+                {hasPrev() && (
+                  <>
+                    <Button onClick={() => setPage(1)}>First</Button>
+                    <Button onClick={() => setPage((prev) => prev - 1)}>
+                      Prev
+                    </Button>
+                  </>
+                )}
+                {getFirstBoundary().map((boundary) => (
+                  <Button onClick={() => setPage(boundary)} key={boundary}>
+                    {boundary}
                   </Button>
-                ) : (
-                  <Button
-                    onClick={() => {
-                      setPage(page);
-                    }}
-                    key={page}
-                  >
-                    {page}
+                ))}
+                {isPrevTruncated && <span>...</span>}
+                {pages.map((page) => {
+                  return page === currentPage ? (
+                    <Button variant="solid" disabled={true} key={page}>
+                      {page}
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={() => {
+                        setPage(page);
+                      }}
+                      key={page}
+                    >
+                      {page}
+                    </Button>
+                  );
+                })}
+                {isNextTruncated && <Text as="span">...</Text>}
+                {getLastBoundary().map((boundary) => (
+                  <Button onClick={() => setPage(boundary)} key={boundary}>
+                    {boundary}
                   </Button>
-                );
-              })}
-              {isNextTruncated && <Text as="span">...</Text>}
-              {getLastBoundary().map((boundary) => (
-                <Button key={boundary}>{boundary}</Button>
-              ))}
-              {hasNext() && (
-                <Button
-                  onClick={() => {
-                    setPage((prev) => prev + 1);
-                  }}
-                >
-                  Next
-                </Button>
-              )}
-            </ButtonGroup>
-          )}
-        </Paginated>
+                ))}
+                {hasNext() && (
+                  <>
+                    <Button
+                      onClick={() => {
+                        setPage((prev) => prev + 1);
+                      }}
+                    >
+                      Next
+                    </Button>
+                    <Button onClick={() => setPage(totalPages)}>Last</Button>
+                  </>
+                )}
+              </ButtonGroup>
+            )}
+          </Paginated>
+        </Box>
       )}
       <DeletionVerification
         alertProps={{
