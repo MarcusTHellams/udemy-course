@@ -4,6 +4,7 @@ import { Query } from '../../components/Query/Query';
 import { TaskListComponent } from '../../components/TaskListComponent/TaskListComponent';
 import { client } from '../../graphql/client';
 import { getTasks } from '../../graphql/queries/tasks';
+import { PaginatedResults } from '../../types/paginatedResults.type';
 import { Task } from '../../types/task.type';
 
 type TaskListViewProps = {};
@@ -18,11 +19,11 @@ export const TaskListView = (props: TaskListViewProps): JSX.Element => {
     <>
       <Query
         {...{ queryKey, queryFn }}
-        render={({ data: tasks }) => {
+        render={({ data: paginatedTasks }) => {
           return (
             <>
               <Layout>
-                <TaskListComponent tasks={tasks as Task[]} />
+                <TaskListComponent paginatedTasks={paginatedTasks as PaginatedResults<Task>} />
               </Layout>
             </>
           );

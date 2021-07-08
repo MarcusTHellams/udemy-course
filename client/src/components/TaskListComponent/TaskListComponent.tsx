@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { Task } from '../../types/task.type';
+import * as React from "react";
+import { Task } from "../../types/task.type";
 import {
   Button,
   VStack,
@@ -15,22 +15,105 @@ import {
   Td,
   Box,
   Link,
-} from '@chakra-ui/react';
-import { Link as RLink } from 'react-router-dom';
-import { DeletionVerification } from '../DeletionVerification/DeletionVerification';
-import { client } from '../../graphql/client';
-import { useMutation, useQueryClient } from 'react-query';
-import { removeTask } from '../../graphql/mutations/removeTask';
+} from "@chakra-ui/react";
+import { Link as RLink } from "react-router-dom";
+import { DeletionVerification } from "../DeletionVerification/DeletionVerification";
+import { client } from "../../graphql/client";
+import { useMutation, useQueryClient } from "react-query";
+import { removeTask } from "../../graphql/mutations/removeTask";
+import { PaginatedResults } from "../../types/paginatedResults.type";
+import { useTable, Column, Row, HeaderGroup } from "react-table";
 
 type TaskListComponentProps = {
-  tasks?: Task[];
+  paginatedTasks?: PaginatedResults<Task>;
 };
 
 export const TaskListComponent = ({
-  tasks = [],
+  paginatedTasks = {
+    items: [],
+    meta: { itemCount: 0, totalItems: 0, totalPages: 0, currentPage: 1 },
+  },
 }: TaskListComponentProps): JSX.Element => {
+  const { items } = paginatedTasks;
   const [open, setOpen] = React.useState(false);
   const [currentTask, setCurrentTask] = React.useState<string | null>();
+
+  const data = React.useMemo(() => items, [items]);
+
+  const columns: Column<Task>[] = React.useMemo(
+    () => [
+      {
+        Header: "Title",
+        accessor: "title",
+      },
+      {
+        Header: "Description",
+        accessor: "description",
+      },
+      {
+        Header: "User",
+        accessor: "user",
+        Cell: ({ row }: { row: Row<Task> }) => {
+          const { user = null } = row.original;
+          return user ? (
+            <VStack align="start" as="dl">
+              <Link as={RLink} to={`/users/${user?.id}`}>
+                <HStack>
+                  <Text as="dt" fontWeight="bold">
+                    Username:
+                  </Text>
+                  <Text as="dd">{user?.username}</Text>
+                </HStack>
+                <HStack>
+                  <Text as="dt" fontWeight="bold">
+                    Email:
+                  </Text>
+                  <Text as="dd">{user?.email}</Text>
+                </HStack>
+              </Link>
+            </VStack>
+          ) : (
+            <Text>None</Text>
+          );
+        },
+      },
+      {
+        Header: "Actions",
+        id: "actions",
+        Cell: ({ row }: { row: Row<Task> }) => {
+          const { id } = row.original;
+          return (
+            <ButtonGroup isAttached size="xs">
+              <Button
+                borderRightRadius="0"
+                as={RLink}
+                to={`tasks/${id}`}
+                rounded="full"
+                colorScheme="green"
+              >
+                Edit Task
+              </Button>
+              <Button
+                borderLeftRadius="0"
+                onClick={() => {
+                  setCurrentTask(id);
+                  setOpen(true);
+                }}
+                rounded="full"
+                colorScheme="red"
+              >
+                Delete Task
+              </Button>
+            </ButtonGroup>
+          );
+        },
+      },
+    ],
+    []
+  );
+
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
+    useTable({ columns, data });
 
   const mutationFn = React.useCallback((taskId) => {
     return client.mutate({
@@ -45,7 +128,7 @@ export const TaskListComponent = ({
 
   const { mutate } = useMutation(mutationFn, {
     onSuccess: () => {
-      queryClient.invalidateQueries('tasks');
+      queryClient.invalidateQueries("tasks");
     },
     onSettled: () => {
       setOpen(false);
@@ -69,91 +152,55 @@ export const TaskListComponent = ({
   return (
     <>
       <Heading
-        display='flex'
-        justifyContent='space-between'
-        alignItems='center'
-        as='h1'
-        mb='8'
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        as="h1"
+        mb="8"
       >
         Tasks
         <Button
           as={RLink}
-          to='/tasks/create'
-          colorScheme='green'
-          rounded='full'
+          to="/tasks/create"
+          colorScheme="green"
+          rounded="full"
         >
           New Task
         </Button>
       </Heading>
-      <Box overflowX='scroll'>
-        <Table variant='simple' colorScheme='blackAlpha'>
+      <Box overflowX="scroll">
+        <Table {...getTableProps()} variant="simple" colorScheme="blackAlpha">
           <Thead>
-            <Tr>
-              <Th>Title</Th>
-              <Th>Description</Th>
-              <Th>User</Th>
-              <Th>Actions</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {tasks.map((task) => {
+            {headerGroups.map((headerGroup: HeaderGroup<Task>) => {
               return (
-                <React.Fragment key={task.id}>
-                  <Tr>
-                    <Td>{task.title}</Td>
-                    <Td>{task.description}</Td>
-                    <Td>
-                      {(!!task.user && (
-                        <VStack align='start' as='dl'>
-                          <Link as={RLink} to={`/users/${task?.user?.id}`}>
-                            <HStack>
-                              <Text as='dt' fontWeight='bold'>
-                                Username:
-                              </Text>
-                              <Text as='dd'>{task?.user?.username}</Text>
-                            </HStack>
-                            <HStack>
-                              <Text as='dt' fontWeight='bold'>
-                                Email:
-                              </Text>
-                              <Text as='dd'>{task?.user?.email}</Text>
-                            </HStack>
-                          </Link>
-                        </VStack>
-                      )) ||
-                        'None'}
-                    </Td>
-                    <Td>
-                      <ButtonGroup isAttached size='xs'>
-                        <Button
-                          borderRightRadius="0"
-                          as={RLink}
-                          to={`tasks/${task.id}`}
-                          rounded='full'
-                          colorScheme='green'
-                        >
-                          Edit Task
-                        </Button>
-                        <Button
-                          borderLeftRadius="0"
-                          onClick={() => {
-                            setCurrentTask(task.id);
-                            setOpen(true);
-                          }}
-                          rounded='full'
-                          colorScheme='red'
-                        >
-                          Delete Task
-                        </Button>
-                      </ButtonGroup>
-                    </Td>
-                  </Tr>
-                </React.Fragment>
+                <Tr {...headerGroup.getHeaderGroupProps()}>
+                  {headerGroup.headers.map((column) => {
+                    return (
+                      <Th {...column.getHeaderProps()}>
+                        {column.render("Header")}
+                      </Th>
+                    );
+                  })}
+                </Tr>
+              );
+            })}
+          </Thead>
+          <Tbody {...getTableBodyProps()}>
+            {rows.map((row) => {
+              prepareRow(row);
+              return (
+                <Tr {...row.getRowProps()}>
+                  {row.cells.map((cell) => {
+                    return (
+                      <Td {...cell.getCellProps()}>{cell.render("Cell")}</Td>
+                    );
+                  })}
+                </Tr>
               );
             })}
           </Tbody>
         </Table>
-      </Box>{' '}
+      </Box>{" "}
       <DeletionVerification
         alertProps={{
           isCentered: true,
@@ -161,8 +208,8 @@ export const TaskListComponent = ({
         }}
         isOpen={open}
         {...{ onClose, onDelete }}
-        title='Delete Task'
-        bodyText='Are you sure you want to delete the task?'
+        title="Delete Task"
+        bodyText="Are you sure you want to delete the task?"
       />
     </>
   );

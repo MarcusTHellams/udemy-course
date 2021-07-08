@@ -3,13 +3,28 @@ import gql from "graphql-tag";
 export const getTasks = gql`
   query getTasks {
     tasks {
-      id
-      title
-      description
-      user {
+      items {
         id
-        username
-        email
+        title
+        description
+        user {
+          id
+          username
+          email
+        }
+      }
+      meta {
+        itemCount
+        totalItems
+        itemsPerPage
+        totalPages
+        currentPage
+      }
+      links {
+        next
+        first
+        previous
+        last
       }
     }
   }
