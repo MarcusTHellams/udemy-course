@@ -15,6 +15,9 @@ import {
   Td,
   Box,
   Link,
+  Wrap,
+  WrapItem,
+  Icon,
 } from "@chakra-ui/react";
 import { Link as RLink } from "react-router-dom";
 import { DeletionVerification } from "../DeletionVerification/DeletionVerification";
@@ -22,13 +25,23 @@ import { client } from "../../graphql/client";
 import { useMutation, useQueryClient } from "react-query";
 import { removeTask } from "../../graphql/mutations/removeTask";
 import { PaginatedResults } from "../../types/paginatedResults.type";
-import { useTable, usePagination, Column, Row, HeaderGroup } from "react-table";
+import {
+  useTable,
+  usePagination,
+  Column,
+  Row,
+  HeaderGroup,
+  useSortBy,
+} from "react-table";
 import { Paginated } from "@makotot/paginated";
+import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { DirectionEnum, OrderByType } from "../../types/orderBy.type";
 
 type TaskListComponentProps = {
   paginatedTasks?: PaginatedResults<Task>;
   setPage: React.Dispatch<React.SetStateAction<number>>;
   setLimit: React.Dispatch<React.SetStateAction<number>>;
+  setOrderBy: React.Dispatch<React.SetStateAction<OrderByType[]>>;
 };
 
 export const TaskListComponent = ({
@@ -38,6 +51,7 @@ export const TaskListComponent = ({
   },
   setPage,
   setLimit,
+  setOrderBy,
 }: TaskListComponentProps): JSX.Element => {
   const {
     items,
@@ -60,7 +74,6 @@ export const TaskListComponent = ({
       },
       {
         Header: "User",
-        accessor: "user",
         Cell: ({ row }: { row: Row<Task> }) => {
           const { user = null } = row.original;
           return user ? (
@@ -120,17 +133,34 @@ export const TaskListComponent = ({
     []
   );
 
-  const { getTableProps, getTableBodyProps, headerGroups, prepareRow, page } =
-    useTable<Task>(
-      {
-        columns,
-        data,
-        manualPagination: true,
-        pageCount: totalPages,
-        initialState: { pageSize: 1, pageIndex: 1 },
-      },
-      usePagination
-    );
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    prepareRow,
+    page,
+    state: { sortBy },
+  } = useTable<Task>(
+    {
+      columns,
+      data,
+      manualPagination: true,
+      manualSortBy: true,
+      pageCount: totalPages,
+    },
+    useSortBy,
+    usePagination
+  );
+
+  React.useEffect(() => {
+    const formatted = sortBy.map((sort) => {
+      return {
+        field: sort.id,
+        direction: sort.desc === false ? DirectionEnum.ASC : DirectionEnum.DESC,
+      };
+    });
+    setOrderBy(formatted);
+  }, [sortBy, setOrderBy]);
 
   const mutationFn = React.useCallback((taskId) => {
     return client.mutate({
@@ -193,8 +223,28 @@ export const TaskListComponent = ({
                 <Tr {...headerGroup.getHeaderGroupProps()}>
                   {headerGroup.headers.map((column) => {
                     return (
-                      <Th {...column.getHeaderProps()}>
-                        {column.render("Header")}
+                      <Th
+                        onClick={() => console.log("Hello")}
+                        {...column.getHeaderProps(
+                          column.getSortByToggleProps()
+                        )}
+                      >
+                        <Wrap as="div">
+                          <WrapItem as="div">
+                            {column.render("Header")}
+                          </WrapItem>
+                          <WrapItem as="div">
+                            {column.isSorted ? (
+                              column.isSortedDesc ? (
+                                <Icon as={FaChevronDown} w={4} h={4} />
+                              ) : (
+                                <Icon as={FaChevronUp} w={4} h={4} />
+                              )
+                            ) : (
+                              ""
+                            )}
+                          </WrapItem>
+                        </Wrap>
                       </Th>
                     );
                   })}
@@ -217,84 +267,84 @@ export const TaskListComponent = ({
             })}
           </Tbody>
         </Table>
-      </Box>{" "}
-      {totalPages > 1 && (
-        <Box mb="8">
-          <Paginated
-            currentPage={currentPage}
-            totalPage={totalPages}
-            siblingsSize={2}
-            boundarySize={2}
-          >
-            {({
-              pages,
-              currentPage,
-              hasPrev,
-              hasNext,
-              getFirstBoundary,
-              getLastBoundary,
-              isPrevTruncated,
-              isNextTruncated,
-            }) => (
-              <ButtonGroup
-                mt="5"
-                colorScheme="blue"
-                variant="outline"
-                isAttached={true}
-              >
-                {hasPrev() && (
-                  <>
-                    <Button onClick={() => setPage(1)}>First</Button>
-                    <Button onClick={() => setPage((prev) => prev - 1)}>
-                      Prev
+        {totalPages > 1 && (
+          <Box mb="8">
+            <Paginated
+              currentPage={currentPage}
+              totalPage={totalPages}
+              siblingsSize={2}
+              boundarySize={2}
+            >
+              {({
+                pages,
+                currentPage,
+                hasPrev,
+                hasNext,
+                getFirstBoundary,
+                getLastBoundary,
+                isPrevTruncated,
+                isNextTruncated,
+              }) => (
+                <ButtonGroup
+                  mt="5"
+                  colorScheme="blue"
+                  variant="outline"
+                  isAttached={true}
+                >
+                  {hasPrev() && (
+                    <>
+                      <Button onClick={() => setPage(1)}>First</Button>
+                      <Button onClick={() => setPage((prev) => prev - 1)}>
+                        Prev
+                      </Button>
+                    </>
+                  )}
+                  {getFirstBoundary().map((boundary) => (
+                    <Button onClick={() => setPage(boundary)} key={boundary}>
+                      {boundary}
                     </Button>
-                  </>
-                )}
-                {getFirstBoundary().map((boundary) => (
-                  <Button onClick={() => setPage(boundary)} key={boundary}>
-                    {boundary}
-                  </Button>
-                ))}
-                {isPrevTruncated && <span>...</span>}
-                {pages.map((page) => {
-                  return page === currentPage ? (
-                    <Button variant="solid" disabled={true} key={page}>
-                      {page}
+                  ))}
+                  {isPrevTruncated && <Button>...</Button>}
+                  {pages.map((page) => {
+                    return page === currentPage ? (
+                      <Button variant="solid" disabled={true} key={page}>
+                        {page}
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={() => {
+                          setPage(page);
+                        }}
+                        key={page}
+                      >
+                        {page}
+                      </Button>
+                    );
+                  })}
+                  {isNextTruncated && <Button>...</Button>}
+                  {getLastBoundary().map((boundary) => (
+                    <Button onClick={() => setPage(boundary)} key={boundary}>
+                      {boundary}
                     </Button>
-                  ) : (
-                    <Button
-                      onClick={() => {
-                        setPage(page);
-                      }}
-                      key={page}
-                    >
-                      {page}
-                    </Button>
-                  );
-                })}
-                {isNextTruncated && <Text as="span">...</Text>}
-                {getLastBoundary().map((boundary) => (
-                  <Button onClick={() => setPage(boundary)} key={boundary}>
-                    {boundary}
-                  </Button>
-                ))}
-                {hasNext() && (
-                  <>
-                    <Button
-                      onClick={() => {
-                        setPage((prev) => prev + 1);
-                      }}
-                    >
-                      Next
-                    </Button>
-                    <Button onClick={() => setPage(totalPages)}>Last</Button>
-                  </>
-                )}
-              </ButtonGroup>
-            )}
-          </Paginated>
-        </Box>
-      )}
+                  ))}
+                  {hasNext() && (
+                    <>
+                      <Button
+                        onClick={() => {
+                          setPage((prev) => prev + 1);
+                        }}
+                      >
+                        Next
+                      </Button>
+                      <Button onClick={() => setPage(totalPages)}>Last</Button>
+                    </>
+                  )}
+                </ButtonGroup>
+              )}
+            </Paginated>
+          </Box>
+        )}
+      </Box>
       <DeletionVerification
         alertProps={{
           isCentered: true,

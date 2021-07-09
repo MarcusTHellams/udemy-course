@@ -76,6 +76,17 @@ type Query {
 input PageQueryInput {
   page: Int
   limit: Int
+  orderBy: [OrderByInput!]
+}
+
+input OrderByInput {
+  field: String!
+  direction: Direction!
+}
+
+enum Direction {
+  ASC
+  DESC
 }
 
 type Mutation {

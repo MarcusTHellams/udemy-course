@@ -10,6 +10,7 @@ import {
   Parent,
   ResolveField,
   Context,
+  Info,
 } from '@nestjs/graphql';
 import { TaskService } from './task.service';
 import { Task } from './entities/task.entity';
@@ -59,7 +60,17 @@ export class TaskResolver {
   }
 
   @ResolveField(() => User, { name: 'user', nullable: true })
-  async user(@Parent() task: Task, @Context() { userLoader }: IGraphqlContext) {
+  async user(
+    @Parent() task: Task,
+    @Context() { userLoader }: IGraphqlContext,
+    @Info()
+    {
+      variableValues: {
+        pageQueryInput: { orderBy },
+      },
+    },
+  ) {
+    console.log('pageQueryInput: ', orderBy);
     if (task.userId) {
       const user = await userLoader.load(task.userId);
       return user;

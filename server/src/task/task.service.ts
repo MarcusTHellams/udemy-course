@@ -20,9 +20,23 @@ export class TaskService {
   }
 
   async findAll(
-    options: FindAll = { page: 1, limit: 1 },
+    options: FindAll = { page: 1, limit: 1, orderBy: [] },
   ): Promise<Pagination<Task>> {
-    return await paginate<Task>(this.repo.taskRepo, options);
+    const QB = this.repo.taskRepo.createQueryBuilder();
+    const { orderBy } = options;
+
+    const formattedOrderby = orderBy.reduce((acc, value) => {
+      if (value.field !== 'user') {
+        acc[`LOWER(${value.field})`] = value.direction;
+      }
+      return acc;
+    }, {});
+
+    if (!!options.orderBy.length) {
+      QB.orderBy(formattedOrderby);
+    }
+
+    return await paginate<Task>(QB, options);
   }
 
   async findOne(id: string) {
