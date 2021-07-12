@@ -14,7 +14,19 @@ import { RoleModule } from './role/role.module';
 import { UserRoleModule } from './user-role/user-role.module';
 import { AuthModule } from './auth/auth.module';
 import { buildContext } from 'graphql-passport';
+import { GraphQLSchema } from 'graphql';
+import { applyMiddleware } from 'graphql-middleware';
+import { rule, shield } from 'graphql-shield';
 
+const isAuthenticated = rule()(async (parent, args, ctx, info) => {
+  return true;
+});
+
+const permissions = shield({
+  Query: {
+    users: isAuthenticated,
+  },
+});
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -28,6 +40,10 @@ import { buildContext } from 'graphql-passport';
     GraphQLModule.forRoot({
       playground: true,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      transformSchema: (schema: GraphQLSchema) => {
+        schema = applyMiddleware(schema, permissions);
+        return schema;
+      },
       cors: {
         origin: 'http://localhost:3001',
         credentials: true,
