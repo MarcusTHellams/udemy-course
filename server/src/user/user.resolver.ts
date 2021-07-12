@@ -1,3 +1,5 @@
+import { PaginatedUser } from './entities/paginatedUsers.entity';
+import { PageQueryInput } from './../common/entities/pageQuery.input';
 import { JwtStrategy } from './../auth/jwt.strategy';
 import { roleLoader } from './../db/loaders/role.loader';
 import { In } from 'typeorm';
@@ -33,9 +35,11 @@ export class UserResolver {
     return this.userService.create(createUserInput);
   }
 
-  @Query(() => [User], { name: 'users' })
-  findAll() {
-    return this.userService.findAll();
+  @Query(() => PaginatedUser, { name: 'users' })
+  findAll(
+    @Args('pageQueryInput', { nullable: true }) pageQueryInput: PageQueryInput,
+  ) {
+    return this.userService.findAll(pageQueryInput);
   }
 
   @Query(() => User, { name: 'user' })

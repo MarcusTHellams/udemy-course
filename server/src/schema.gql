@@ -57,14 +57,20 @@ type Meta {
   currentPage: Int!
 }
 
-type PaginatedTask {
-  items: [Task!]!
-  meta: Meta!
+type PaginatedUser {
+  meta: Meta
   links: Links
+  items: [User!]!
+}
+
+type PaginatedTask {
+  meta: Meta
+  links: Links
+  items: [Task!]!
 }
 
 type Query {
-  users: [User!]!
+  users(pageQueryInput: PageQueryInput): PaginatedUser!
   user(id: String!): User!
   profile: String!
   tasks(pageQueryInput: PageQueryInput): PaginatedTask!

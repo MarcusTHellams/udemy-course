@@ -4,21 +4,39 @@ import { UserListComponent } from '../../components/UserListComponent/UserListCo
 import { client } from '../../graphql/client';
 import { getUsers } from '../../graphql/queries/users';
 import { User } from '../../types/user.type';
+import { PaginatedResults } from "../../types/paginatedResults.type";
+import { OrderByType } from "../../types/orderBy.type";
 
-const queryFn = () => {
-  return client.query({ query: getUsers }).then(({ data: { users } }) => users);
-};
-const queryKey = 'users';
 
 export const UserList = (): JSX.Element => {
+  const [page, setPage] = React.useState(1);
+  const [limit, setLimit] = React.useState(10);
+  const [orderBy, setOrderBy] = React.useState<OrderByType[]>([]);
+
+  const queryKey = React.useMemo(() => ["users", page, orderBy], [page, orderBy]);
+  const queryFn = React.useCallback(() => {
+    return client
+      .query({
+        query: getUsers,
+        variables: {
+          pageQueryInput: {
+            limit,
+            page,
+            orderBy,
+          },
+        },
+      })
+      .then(({ data: { users } }) => users);
+  }, [limit, page, orderBy]);
+
   return (
     <>
       <Query
         {...{ queryKey, queryFn }}
-        render={({ data: users }) => {
+        render={({ data: paginatedUsers }) => {
           return (
             <>
-              <UserListComponent users={users as User[]} />
+              <UserListComponent {...{setPage, setLimit, setOrderBy}} paginatedUsers={paginatedUsers as PaginatedResults<User>} />
             </>
           );
         }}

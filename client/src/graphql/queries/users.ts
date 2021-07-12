@@ -1,20 +1,35 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const getUsers = gql`
-  query getUsers {
-    users {
-      id
-      username
-      email
-      imageUrl
-      tasks {
+  query getUsers($pageQueryInput: PageQueryInput) {
+    users(pageQueryInput: $pageQueryInput) {
+      items {
         id
-        title
-        description
+        username
+        email
+        imageUrl
+        tasks {
+          id
+          title
+          description
+        }
+        roles {
+          id
+          name
+        }
       }
-      roles {
-        id
-        name
+      meta {
+        itemCount
+        totalItems
+        itemsPerPage
+        totalPages
+        currentPage
+      }
+      links {
+        next
+        first
+        previous
+        last
       }
     }
   }

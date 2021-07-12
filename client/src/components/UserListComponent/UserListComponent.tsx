@@ -21,13 +21,21 @@ import { Link } from "react-router-dom";
 import { Role } from "../../types/role.type";
 import { User } from "../../types/user.type";
 import { Layout } from "../Layout/Layout";
+import { PaginatedResults } from "../../types/paginatedResults.type";
+import { DirectionEnum, OrderByType } from "../../types/orderBy.type";
 
 type UserListComponentProps = {
-  users: User[];
+  paginatedUsers?: PaginatedResults<User>;
+  setPage: React.Dispatch<React.SetStateAction<number>>;
+  setLimit: React.Dispatch<React.SetStateAction<number>>;
+  setOrderBy: React.Dispatch<React.SetStateAction<OrderByType[]>>;
 };
 
 export const UserListComponent = ({
-  users = [],
+  paginatedUsers = {
+    items: [],
+    meta: { itemCount: 0, totalItems: 0, totalPages: 0, currentPage: 1 },
+  },
 }: UserListComponentProps): JSX.Element => {
   return (
     <>
@@ -46,7 +54,7 @@ export const UserListComponent = ({
               </tr>
             </Thead>
             <Tbody>
-              {users.map((user: User) => {
+              {paginatedUsers.items.map((user: User) => {
                 return (
                   <React.Fragment key={user.id}>
                     <Tr>

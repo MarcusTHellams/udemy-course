@@ -25,10 +25,10 @@ type HeaderProps = {
   [key: string]: any;
 };
 
-const mutationFn = () => {
+const mutationFn = (): Promise<string> => {
   return client.mutate({
     mutation: logout,
-  });
+  }).then(({data: {logout}})=> logout);
 };
 
 export const Header = (props: HeaderProps): JSX.Element => {
@@ -43,7 +43,7 @@ export const Header = (props: HeaderProps): JSX.Element => {
 
   const history = useHistory();
 
-  const { mutate } = useMutation(mutationFn, {
+  const { mutate } = useMutation<string, Error>(mutationFn, {
     onSuccess() {
       removeUserStorage();
       history.push('/login');

@@ -8,9 +8,8 @@ import { OrderByType } from "../../types/orderBy.type";
 import { PaginatedResults } from "../../types/paginatedResults.type";
 import { Task } from "../../types/task.type";
 
-type TaskListViewProps = {};
 
-export const TaskListView = (props: TaskListViewProps): JSX.Element => {
+export const TaskListView = (): JSX.Element => {
   const [page, setPage] = React.useState(1);
   const [limit, setLimit] = React.useState(10);
   const [orderBy, setOrderBy] = React.useState<OrderByType[]>([]);
