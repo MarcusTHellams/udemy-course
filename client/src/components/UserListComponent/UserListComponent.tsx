@@ -15,14 +15,25 @@ import {
   Avatar,
   HStack,
   Text,
-} from "@chakra-ui/react";
-import * as React from "react";
-import { Link } from "react-router-dom";
-import { Role } from "../../types/role.type";
-import { User } from "../../types/user.type";
-import { Layout } from "../Layout/Layout";
-import { PaginatedResults } from "../../types/paginatedResults.type";
-import { DirectionEnum, OrderByType } from "../../types/orderBy.type";
+  Icon,
+} from '@chakra-ui/react';
+import * as React from 'react';
+import { Link } from 'react-router-dom';
+import { Role } from '../../types/role.type';
+import { User } from '../../types/user.type';
+import { Layout } from '../Layout/Layout';
+import { PaginatedResults } from '../../types/paginatedResults.type';
+import { DirectionEnum, OrderByType } from '../../types/orderBy.type';
+import {
+  useTable,
+  usePagination,
+  Column,
+  Row,
+  HeaderGroup,
+  useSortBy,
+} from 'react-table';
+import { Paginated } from '@makotot/paginated';
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 
 type UserListComponentProps = {
   paginatedUsers?: PaginatedResults<User>;
@@ -36,70 +47,253 @@ export const UserListComponent = ({
     items: [],
     meta: { itemCount: 0, totalItems: 0, totalPages: 0, currentPage: 1 },
   },
+  setPage,
+  setLimit,
+  setOrderBy,
 }: UserListComponentProps): JSX.Element => {
+  const {
+    items,
+    meta: { totalPages, currentPage },
+  } = paginatedUsers;
+
+  const data = React.useMemo(() => items, [items]);
+
+  const columns: Column<User>[] = React.useMemo(
+    () => [
+      {
+        Header: 'Username',
+        accessor: 'username',
+        Cell: ({ row }: { row: Row<User> }) => {
+          const { username, imageUrl } = row.original;
+          return (
+            <>
+              <HStack>
+                <Avatar size="sm" name={username} src={imageUrl} />
+                <Text>{username}</Text>
+              </HStack>
+            </>
+          );
+        },
+      },
+      {
+        Header: 'Email',
+        accessor: 'email',
+      },
+      {
+        Header: 'Roles',
+        id: 'roles',
+        Cell: ({ row }: { row: Row<User> }) => {
+          const { roles } = row.original;
+          return (
+            <>
+              <Wrap>
+                {(!!roles &&
+                  roles.map((role: Role) => {
+                    return (
+                      <React.Fragment key={role.id}>
+                        <WrapItem>
+                          <Badge rounded='full'>{role.name}</Badge>
+                        </WrapItem>
+                      </React.Fragment>
+                    );
+                  })) || <Text>None</Text>}
+              </Wrap>
+            </>
+          );
+        },
+      },
+      {
+        Header: 'Actions',
+        id: 'actions',
+        Cell: ({ row }: { row: Row<User> }) => {
+          const { id } = row.original;
+          return (
+            <ButtonGroup isAttached size='xs'>
+              <Button
+                borderRightRadius='0'
+                as={Link}
+                to={`users/${id}`}
+                rounded='full'
+                colorScheme='green'
+              >
+                Edit User
+              </Button>
+              <Button borderLeftRadius='0' rounded='full' colorScheme='red'>
+                Delete User
+              </Button>
+            </ButtonGroup>
+          );
+        },
+      },
+    ],
+    []
+  );
+
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    prepareRow,
+    page,
+    state: { sortBy },
+  } = useTable<User>(
+    {
+      columns,
+      data,
+      manualPagination: true,
+      manualSortBy: true,
+      pageCount: totalPages,
+    },
+    useSortBy,
+    usePagination
+  );
+
+  React.useEffect(() => {
+    const formatted = sortBy.map((sort) => {
+      return {
+        field: sort.id,
+        direction: sort.desc === false ? DirectionEnum.ASC : DirectionEnum.DESC,
+      };
+    });
+    setOrderBy(formatted);
+  }, [sortBy, setOrderBy]);
+
   return (
     <>
       <Layout>
-        <Heading size="xl" as="h1" mb="8">
+        <Heading size='xl' as='h1' mb='8'>
           Users
         </Heading>
-        <Box overflowX="scroll">
-          <Table variant="simple" colorScheme="blackAlpha">
+        <Box overflowX='scroll'>
+          <Table {...getTableProps()} variant='simple' colorScheme='blackAlpha'>
             <Thead>
-              <tr>
-                <Th>Username</Th>
-                <Th>Email</Th>
-                <Th>Roles</Th>
-                <Th>Actions</Th>
-              </tr>
-            </Thead>
-            <Tbody>
-              {paginatedUsers.items.map((user: User) => {
+              {headerGroups.map((headerGroup: HeaderGroup<User>) => {
                 return (
-                  <React.Fragment key={user.id}>
-                    <Tr>
-                      <Td>
-                        <HStack>
-                          <Avatar size="sm" name={user.username} src={user.imageUrl} />
-                          <Text as="span">{user.username}</Text>
-                        </HStack>
-                      </Td>
-                      <Td>{user.email}</Td>
-                      <Td>
-                        {!!user.roles && (
-                          <Wrap>
-                            {user.roles.map((role: Role) => {
-                              return (
-                                <React.Fragment key={role.id}>
-                                  <WrapItem>
-                                    <Badge rounded="full">{role.name}</Badge>
-                                  </WrapItem>
-                                </React.Fragment>
-                              );
-                            })}
+                  <Tr {...headerGroup.getHeaderGroupProps()}>
+                    {headerGroup.headers.map((column) => {
+                      return (
+                        <Th
+                          {...column.getHeaderProps(
+                            column.getSortByToggleProps()
+                          )}
+                        >
+                          <Wrap as='div'>
+                            <WrapItem as='div'>
+                              {column.render('Header')}
+                            </WrapItem>
+                            <WrapItem as='div'>
+                              {column.isSorted ? (
+                                column.isSortedDesc ? (
+                                  <Icon as={FaChevronDown} w={4} h={4} />
+                                ) : (
+                                  <Icon as={FaChevronUp} w={4} h={4} />
+                                )
+                              ) : (
+                                ''
+                              )}
+                            </WrapItem>
                           </Wrap>
-                        )}
-                      </Td>
-                      <Td>
-                        <ButtonGroup size="xs">
-                          <Button
-                            as={Link}
-                            to={`/users/${user.id}`}
-                            colorScheme="green"
-                          >
-                            Edit
-                          </Button>
-                          <Button color="white" colorScheme="yellow">
-                            Delete
-                          </Button>
-                        </ButtonGroup>
-                      </Td>
-                    </Tr>
-                  </React.Fragment>
+                        </Th>
+                      );
+                    })}
+                  </Tr>
+                );
+              })}
+            </Thead>
+            <Tbody {...getTableBodyProps()}>
+              {page.map((row) => {
+                prepareRow(row);
+                return (
+                  <Tr {...row.getRowProps()}>
+                    {row.cells.map((cell) => {
+                      return (
+                        <Td {...cell.getCellProps()}>{cell.render('Cell')}</Td>
+                      );
+                    })}
+                  </Tr>
                 );
               })}
             </Tbody>
           </Table>
+          {totalPages > 1 && (
+            <Box mb='8'>
+              <Paginated
+                currentPage={currentPage}
+                totalPage={totalPages}
+                siblingsSize={2}
+                boundarySize={2}
+              >
+                {({
+                  pages,
+                  currentPage,
+                  hasPrev,
+                  hasNext,
+                  getFirstBoundary,
+                  getLastBoundary,
+                  isPrevTruncated,
+                  isNextTruncated,
+                }) => (
+                  <ButtonGroup
+                    mt='5'
+                    colorScheme='blue'
+                    variant='outline'
+                    isAttached={true}
+                  >
+                    {hasPrev() && (
+                      <>
+                        <Button onClick={() => setPage(1)}>First</Button>
+                        <Button onClick={() => setPage((prev) => prev - 1)}>
+                          Prev
+                        </Button>
+                      </>
+                    )}
+                    {getFirstBoundary().map((boundary) => (
+                      <Button onClick={() => setPage(boundary)} key={boundary}>
+                        {boundary}
+                      </Button>
+                    ))}
+                    {isPrevTruncated && <Button>...</Button>}
+                    {pages.map((page) => {
+                      return page === currentPage ? (
+                        <Button variant='solid' disabled={true} key={page}>
+                          {page}
+                        </Button>
+                      ) : (
+                        <Button
+                          onClick={() => {
+                            setPage(page);
+                          }}
+                          key={page}
+                        >
+                          {page}
+                        </Button>
+                      );
+                    })}
+                    {isNextTruncated && <Button>...</Button>}
+                    {getLastBoundary().map((boundary) => (
+                      <Button onClick={() => setPage(boundary)} key={boundary}>
+                        {boundary}
+                      </Button>
+                    ))}
+                    {hasNext() && (
+                      <>
+                        <Button
+                          onClick={() => {
+                            setPage((prev) => prev + 1);
+                          }}
+                        >
+                          Next
+                        </Button>
+                        <Button onClick={() => setPage(totalPages)}>
+                          Last
+                        </Button>
+                      </>
+                    )}
+                  </ButtonGroup>
+                )}
+              </Paginated>
+            </Box>
+          )}
         </Box>
       </Layout>
     </>
