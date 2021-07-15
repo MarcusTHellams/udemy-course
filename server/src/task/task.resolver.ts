@@ -41,9 +41,8 @@ export class TaskResolver {
   }
 
   @Query(() => Task, { name: 'task' })
-  @Roles('admin')
-  @UseGuards(RolesGuard)
   findOne(@Args('id', { type: () => String }) id: string) {
+    console.log('id: ', id);
     return this.taskService.findOne(id);
   }
 
@@ -60,17 +59,7 @@ export class TaskResolver {
   }
 
   @ResolveField(() => User, { name: 'user', nullable: true })
-  async user(
-    @Parent() task: Task,
-    @Context() { userLoader }: IGraphqlContext,
-    @Info()
-    {
-      variableValues: {
-        pageQueryInput: { orderBy },
-      },
-    },
-  ) {
-    console.log('pageQueryInput: ', orderBy);
+  async user(@Parent() task: Task, @Context() { userLoader }: IGraphqlContext) {
     if (task.userId) {
       const user = await userLoader.load(task.userId);
       return user;

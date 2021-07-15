@@ -42,6 +42,7 @@ export const UserContextProvider = ({
     cacheTime: 0,
     refetchInterval: 30000,
     refetchIntervalInBackground: true,
+    refetchOnWindowFocus: true,
     onError(){
       removeUserStorage();
     },

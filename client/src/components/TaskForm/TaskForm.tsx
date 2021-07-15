@@ -25,6 +25,7 @@ import { TaskFormValues } from '../../types/taskFormValues.type';
 import { DevTool } from '@hookform/devtools';
 import { useHistory, useLocation } from 'react-router-dom';
 import { createTask } from '../../graphql/mutations/createTask';
+import { PaginatedResults } from '../../types/paginatedResults.type';
 
 type TaskFormProps = {
   task?: Task | null;
@@ -107,14 +108,15 @@ export const TaskForm = ({ task = null }: TaskFormProps): JSX.Element => {
               <FormLabel>User Task is Assigned to</FormLabel>
               <Query
                 {...{ queryFn, queryKey }}
-                render={({ data: users }) => {
+                render={({ data }) => {
+                  const { items } = data as PaginatedResults<User>;
                   return (
                     <>
                       <UserSelect
                         selectProps={{ isClearable: true }}
                         name='userId'
                         {...{ control }}
-                        users={users as User[]}
+                        users={items}
                       />
                     </>
                   );

@@ -41,7 +41,7 @@ const permissions = shield({
       playground: true,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       transformSchema: (schema: GraphQLSchema) => {
-        schema = applyMiddleware(schema, permissions);
+        // schema = applyMiddleware(schema, permissions);
         return schema;
       },
       cors: {
