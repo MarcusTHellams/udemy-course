@@ -30,7 +30,7 @@ export const ResponsiveTable = ({
             position: ['relative', null, 'inherit'],
             paddingLeft: ['50%', null, 'inherit'],
             '&:before': {
-              top: '4',
+              top: '5',
               left: '0.375rem',
               position: 'absolute',
               content: 'attr(data-th)":"',

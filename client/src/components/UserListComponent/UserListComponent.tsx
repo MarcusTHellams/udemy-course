@@ -2,7 +2,6 @@ import {
   Badge,
   Box,
   Heading,
-  Table,
   Tbody,
   Td,
   Th,
@@ -34,6 +33,7 @@ import {
 } from 'react-table';
 import { Paginated } from '@makotot/paginated';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { ResponsiveTable } from '../ResponsiveTable/ResponsiveTable';
 
 type UserListComponentProps = {
   paginatedUsers?: PaginatedResults<User>;
@@ -68,8 +68,8 @@ export const UserListComponent = ({
           return (
             <>
               <HStack>
-                <Avatar size="sm" name={username} src={imageUrl} />
-                <Text>{username}</Text>
+                <Avatar size='sm' name={username} src={imageUrl} />
+                <Text wordBreak='break-all'>{username}</Text>
               </HStack>
             </>
           );
@@ -164,137 +164,140 @@ export const UserListComponent = ({
         <Heading size='xl' as='h1' mb='8'>
           Users
         </Heading>
-        <Box overflowX='scroll'>
-          <Table {...getTableProps()} variant='simple' colorScheme='blackAlpha'>
-            <Thead>
-              {headerGroups.map((headerGroup: HeaderGroup<User>) => {
-                return (
-                  <Tr {...headerGroup.getHeaderGroupProps()}>
-                    {headerGroup.headers.map((column) => {
-                      return (
-                        <Th
-                          {...column.getHeaderProps(
-                            column.getSortByToggleProps()
-                          )}
-                        >
-                          <Wrap as='div'>
-                            <WrapItem as='div'>
-                              {column.render('Header')}
-                            </WrapItem>
-                            <WrapItem as='div'>
-                              {column.isSorted ? (
-                                column.isSortedDesc ? (
-                                  <Icon as={FaChevronDown} w={4} h={4} />
-                                ) : (
-                                  <Icon as={FaChevronUp} w={4} h={4} />
-                                )
+
+        <ResponsiveTable
+          reactTableProps={getTableProps()}
+          tableProps={{ variant: 'simple', colorScheme: 'blackAlpha' }}
+        >
+          <Thead>
+            {headerGroups.map((headerGroup: HeaderGroup<User>) => {
+              return (
+                <Tr {...headerGroup.getHeaderGroupProps()}>
+                  {headerGroup.headers.map((column) => {
+                    return (
+                      <Th
+                        {...column.getHeaderProps(
+                          column.getSortByToggleProps()
+                        )}
+                      >
+                        <Wrap as='div'>
+                          <WrapItem as='div'>
+                            {column.render('Header')}
+                          </WrapItem>
+                          <WrapItem as='div'>
+                            {column.isSorted ? (
+                              column.isSortedDesc ? (
+                                <Icon as={FaChevronDown} w={4} h={4} />
                               ) : (
-                                ''
-                              )}
-                            </WrapItem>
-                          </Wrap>
-                        </Th>
-                      );
-                    })}
-                  </Tr>
-                );
-              })}
-            </Thead>
-            <Tbody {...getTableBodyProps()}>
-              {page.map((row) => {
-                prepareRow(row);
-                return (
-                  <Tr {...row.getRowProps()}>
-                    {row.cells.map((cell) => {
-                      return (
-                        <Td {...cell.getCellProps()}>{cell.render('Cell')}</Td>
-                      );
-                    })}
-                  </Tr>
-                );
-              })}
-            </Tbody>
-          </Table>
-          {totalPages > 1 && (
-            <Box mb='8'>
-              <Paginated
-                currentPage={currentPage}
-                totalPage={totalPages}
-                siblingsSize={2}
-                boundarySize={2}
-              >
-                {({
-                  pages,
-                  currentPage,
-                  hasPrev,
-                  hasNext,
-                  getFirstBoundary,
-                  getLastBoundary,
-                  isPrevTruncated,
-                  isNextTruncated,
-                }) => (
-                  <ButtonGroup
-                    mt='5'
-                    colorScheme='blue'
-                    variant='outline'
-                    isAttached={true}
-                  >
-                    {hasPrev() && (
-                      <>
-                        <Button onClick={() => setPage(1)}>First</Button>
-                        <Button onClick={() => setPage((prev) => prev - 1)}>
-                          Prev
-                        </Button>
-                      </>
-                    )}
-                    {getFirstBoundary().map((boundary) => (
-                      <Button onClick={() => setPage(boundary)} key={boundary}>
-                        {boundary}
+                                <Icon as={FaChevronUp} w={4} h={4} />
+                              )
+                            ) : (
+                              ''
+                            )}
+                          </WrapItem>
+                        </Wrap>
+                      </Th>
+                    );
+                  })}
+                </Tr>
+              );
+            })}
+          </Thead>
+          <Tbody {...getTableBodyProps()}>
+            {page.map((row) => {
+              prepareRow(row);
+              return (
+                <Tr {...row.getRowProps()}>
+                  {row.cells.map((cell) => {
+                    return (
+                      <Td data-th={cell.column.Header} {...cell.getCellProps()}>
+                        {cell.render('Cell')}
+                      </Td>
+                    );
+                  })}
+                </Tr>
+              );
+            })}
+          </Tbody>
+        </ResponsiveTable>
+        {totalPages > 1 && (
+          <Box mb='8'>
+            <Paginated
+              currentPage={currentPage}
+              totalPage={totalPages}
+              siblingsSize={2}
+              boundarySize={2}
+            >
+              {({
+                pages,
+                currentPage,
+                hasPrev,
+                hasNext,
+                getFirstBoundary,
+                getLastBoundary,
+                isPrevTruncated,
+                isNextTruncated,
+              }) => (
+                <ButtonGroup
+                  flexWrap='wrap'
+                  mt='5'
+                  colorScheme='blue'
+                  variant='outline'
+                  isAttached={true}
+                >
+                  {hasPrev() && (
+                    <>
+                      <Button onClick={() => setPage(1)}>First</Button>
+                      <Button onClick={() => setPage((prev) => prev - 1)}>
+                        Prev
                       </Button>
-                    ))}
-                    {isPrevTruncated && <Button>...</Button>}
-                    {pages.map((page) => {
-                      return page === currentPage ? (
-                        <Button variant='solid' disabled={true} key={page}>
-                          {page}
-                        </Button>
-                      ) : (
-                        <Button
-                          onClick={() => {
-                            setPage(page);
-                          }}
-                          key={page}
-                        >
-                          {page}
-                        </Button>
-                      );
-                    })}
-                    {isNextTruncated && <Button>...</Button>}
-                    {getLastBoundary().map((boundary) => (
-                      <Button onClick={() => setPage(boundary)} key={boundary}>
-                        {boundary}
+                    </>
+                  )}
+                  {getFirstBoundary().map((boundary) => (
+                    <Button onClick={() => setPage(boundary)} key={boundary}>
+                      {boundary}
+                    </Button>
+                  ))}
+                  {isPrevTruncated && <Button>...</Button>}
+                  {pages.map((page) => {
+                    return page === currentPage ? (
+                      <Button variant='solid' disabled={true} key={page}>
+                        {page}
                       </Button>
-                    ))}
-                    {hasNext() && (
-                      <>
-                        <Button
-                          onClick={() => {
-                            setPage((prev) => prev + 1);
-                          }}
-                        >
-                          Next
-                        </Button>
-                        <Button onClick={() => setPage(totalPages)}>
-                          Last
-                        </Button>
-                      </>
-                    )}
-                  </ButtonGroup>
-                )}
-              </Paginated>
-            </Box>
-          )}
-        </Box>
+                    ) : (
+                      <Button
+                        onClick={() => {
+                          setPage(page);
+                        }}
+                        key={page}
+                      >
+                        {page}
+                      </Button>
+                    );
+                  })}
+                  {isNextTruncated && <Button>...</Button>}
+                  {getLastBoundary().map((boundary) => (
+                    <Button onClick={() => setPage(boundary)} key={boundary}>
+                      {boundary}
+                    </Button>
+                  ))}
+                  {hasNext() && (
+                    <>
+                      <Button
+                        onClick={() => {
+                          setPage((prev) => prev + 1);
+                        }}
+                      >
+                        Next
+                      </Button>
+                      <Button onClick={() => setPage(totalPages)}>Last</Button>
+                    </>
+                  )}
+                </ButtonGroup>
+              )}
+            </Paginated>
+          </Box>
+        )}
       </Layout>
     </>
   );
