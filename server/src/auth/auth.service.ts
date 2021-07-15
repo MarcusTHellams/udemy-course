@@ -1,13 +1,8 @@
+import { ModifiedUser } from './../types/modifiedUser.type';
 import { RepoService } from './../repo/repo.service';
 import { Injectable } from '@nestjs/common';
-import { User } from 'src/user/entities/user.entity';
 import bcrypt = require('bcryptjs');
 import { JwtService } from '@nestjs/jwt';
-
-type ModifiedUser = Omit<User, 'roles' | 'tasks' | 'password'> & {
-  roles: string[];
-};
-
 @Injectable()
 export class AuthService {
   constructor(
@@ -27,8 +22,6 @@ export class AuthService {
     if (user) {
       const isPasswordMatch = await bcrypt.compare(password, user.password);
       if (isPasswordMatch) {
-        const { password, ...result } = user;
-        password && undefined;
         const userRoles = await this.repo.userRoleRepo
           .createQueryBuilder('userRole')
           .innerJoinAndSelect('userRole.role', 'roles')
@@ -42,8 +35,6 @@ export class AuthService {
           roles: userRoles.map((ur) => ur.role.name),
           imageUrl: user.imageUrl,
         };
-
-        result.roles = userRoles.map((ur) => ur.role);
 
         return modifiedResult;
       }
