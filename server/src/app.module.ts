@@ -1,3 +1,4 @@
+import { permissions } from './authorization/rules';
 import { userLoader } from './db/loaders/user.loader';
 import { roleLoader } from './db/loaders/role.loader';
 import { taskLoader } from './db/loaders/task.loader';
@@ -16,17 +17,6 @@ import { AuthModule } from './auth/auth.module';
 import { buildContext } from 'graphql-passport';
 import { GraphQLSchema } from 'graphql';
 import { applyMiddleware } from 'graphql-middleware';
-import { rule, shield } from 'graphql-shield';
-
-const isAuthenticated = rule()(async (parent, args, ctx, info) => {
-  return true;
-});
-
-const permissions = shield({
-  Query: {
-    users: isAuthenticated,
-  },
-});
 @Module({
   imports: [
     TypeOrmModule.forRoot({
