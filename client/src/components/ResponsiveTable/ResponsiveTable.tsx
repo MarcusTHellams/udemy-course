@@ -29,7 +29,7 @@ export const ResponsiveTable = ({
             display: ['block', null, 'table-cell'],
             position: ['relative', null, 'inherit'],
             paddingLeft: ['50%', null, 'inherit'],
-            '&:before': {
+            '.mobile-header':{
               top: '5',
               left: '0.375rem',
               position: 'absolute',
@@ -39,6 +39,17 @@ export const ResponsiveTable = ({
               whiteSpace: 'nowrap',
               display: [null, null, 'none'],
             },
+
+            // '&:before': {
+            //   top: '5',
+            //   left: '0.375rem',
+            //   position: 'absolute',
+            //   content: 'attr(data-th)":"',
+            //   fontWeight: 'bold',
+            //   w: '45%',
+            //   whiteSpace: 'nowrap',
+            //   display: [null, null, 'none'],
+            // },
           },
         }}
         {...tableProps}
