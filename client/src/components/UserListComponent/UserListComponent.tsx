@@ -211,6 +211,25 @@ export const UserListComponent = ({
                   {row.cells.map((cell) => {
                     return (
                       <Td data-th={cell.column.Header} {...cell.getCellProps()}>
+                         <Text
+                        {...cell.column.getHeaderProps(
+                          cell.column.getSortByToggleProps()
+                        )}
+                        className='mobile-header'
+                        fontWeight='bold'
+                        as='span'
+                      >
+                        {cell.column.Header}:
+                        {cell.column.isSorted ? (
+                          cell.column.isSortedDesc ? (
+                            <Icon as={FaChevronDown} w={4} h={4} />
+                          ) : (
+                            <Icon as={FaChevronUp} w={4} h={4} />
+                          )
+                        ) : (
+                          ''
+                        )}
+                      </Text>
                         {cell.render('Cell')}
                       </Td>
                     );
