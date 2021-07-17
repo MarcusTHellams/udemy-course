@@ -70,6 +70,8 @@ export const Header = (props: HeaderProps): JSX.Element => {
         padding={6}
         bg='red.800'
         color='white'
+        top="0"
+        zIndex="sticky"
         {...props}
       >
         <Flex align='center' mr={5}>
