@@ -30,9 +30,6 @@ type User {
   """Username field"""
   username: String!
 
-  """Password field"""
-  password: String
-
   """Email field"""
   email: String!
 
