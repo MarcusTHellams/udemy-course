@@ -1,23 +1,20 @@
-import { UserRole } from './../../user-role/entities/user-role.entity';
+import { User } from 'src/user/entities/user.entity';
 import Dataloader = require('dataloader');
 import { getRepository } from 'typeorm';
-import groupBy = require('lodash.groupby');
+import keyBy = require('lodash.keyby');
 
 const batchRoles = async (userIds: string[]) => {
-  const userRoles = await getRepository(UserRole)
-    .createQueryBuilder('userRole')
-    .innerJoinAndSelect('userRole.role', 'role')
-    .where('userId IN (:...userIds)', { userIds })
+  const user = await getRepository(User)
+    .createQueryBuilder('user')
+    .select(['user.id'])
+    .innerJoinAndSelect('user.roles', 'roles')
+    .whereInIds(userIds)
     .getMany();
 
-  const roleIdsByUser = groupBy(userRoles, (userRole) => userRole.userId);
-
-  const _roleIdsByUser = {};
-  Object.keys(roleIdsByUser).forEach((key) => {
-    _roleIdsByUser[key] = roleIdsByUser[key].map((userRole) => userRole.role);
+  const rolesByUserId = keyBy(user, (user) => user.id);
+  return userIds.map((userId) => {
+    return rolesByUserId[userId].roles;
   });
-
-  return userIds.map((userId) => _roleIdsByUser[userId]);
 };
 
 export const roleLoader = () => new Dataloader(batchRoles);

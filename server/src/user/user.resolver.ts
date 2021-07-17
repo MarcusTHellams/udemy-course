@@ -35,7 +35,7 @@ export class UserResolver {
     return this.userService.create(createUserInput);
   }
 
-  @UseGuards(new JWTAuthGuard())
+  // @UseGuards(new JWTAuthGuard())
   @Query(() => PaginatedUser, { name: 'users' })
   findAll(
     @Args('pageQueryInput', { nullable: true }) pageQueryInput: PageQueryInput,

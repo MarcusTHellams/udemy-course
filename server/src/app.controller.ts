@@ -5,6 +5,8 @@ import faker = require('faker');
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt = require('bcrypt');
 import bcrypt2 = require('bcryptjs');
+import groupBy = require('lodash.groupby');
+import keyBy = require('lodash.keyby');
 
 @Controller()
 export class AppController {
@@ -15,31 +17,33 @@ export class AppController {
 
   @Get()
   async getHello(): Promise<any> {
-    const user = await this.repo.userRepo.findOne({
-      select: ['password', 'email', 'id', 'username'],
-      relations: ['tasks'],
-      where: {
-        username: 'mhellams',
-      },
-    });
+    const user = await this.repo.userRepo
+      .createQueryBuilder('user')
+      .select(['user.id'])
+      .innerJoinAndSelect('user.roles', 'roles')
+      .whereInIds(['653453b7-ec29-47ee-8ba8-70616c37a2e8'])
+      .getMany();
 
-    for (let i = 0; i < 100; i++) {
-      const title = faker.lorem.words(
-        faker.datatype.number({ min: 3, max: 10 }),
-      );
-      const description = faker.lorem.sentence(
-        faker.datatype.number({ min: 4, max: 10 }),
-      );
-      const id = uuidv4();
-      const task = this.repo.taskRepo.create({
-        title,
-        description,
-        id,
-        user,
-      });
+    const keyedUsers = keyBy(user, (user) => user.id);
+    console.log('keyedUsers: ', keyedUsers);
 
-      await this.repo.taskRepo.save(task);
-    }
+    // for (let i = 0; i < 100; i++) {
+    //   const title = faker.lorem.words(
+    //     faker.datatype.number({ min: 3, max: 10 }),
+    //   );
+    //   const description = faker.lorem.sentence(
+    //     faker.datatype.number({ min: 4, max: 10 }),
+    //   );
+    //   const id = uuidv4();
+    //   const task = this.repo.taskRepo.create({
+    //     title,
+    //     description,
+    //     id,
+    //     user,
+    //   });
+
+    //   await this.repo.taskRepo.save(task);
+    // }
 
     // const result = await bcrypt2.compare(
     //   'password',

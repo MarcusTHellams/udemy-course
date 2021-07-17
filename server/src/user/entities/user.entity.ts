@@ -1,8 +1,14 @@
-import { UserRole } from './../../user-role/entities/user-role.entity';
 import { Role } from './../../role/entities/role.entity';
 import { ObjectType, Field } from '@nestjs/graphql';
 import { Task } from '../../task/entities/task.entity';
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  ManyToMany,
+  JoinTable,
+} from 'typeorm';
 
 @Entity()
 @ObjectType()
@@ -43,6 +49,17 @@ export class User {
   @OneToMany(() => Task, (task) => task.user)
   tasks: Task[];
 
-  @OneToMany(() => UserRole, (ur) => ur.role)
+  @ManyToMany(() => Role, (role) => role.users)
+  @JoinTable({
+    name: 'user_role',
+    joinColumn: {
+      name: 'userId',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'roleId',
+      referencedColumnName: 'id',
+    },
+  })
   roles: Role[];
 }

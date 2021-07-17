@@ -1,7 +1,12 @@
-import { UserRole } from './../../user-role/entities/user-role.entity';
 import { ObjectType, Field } from '@nestjs/graphql';
 import { User } from '../../user/entities/user.entity';
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  ManyToMany,
+} from 'typeorm';
 
 @Entity()
 @ObjectType()
@@ -14,6 +19,6 @@ export class Role {
   @Field(() => String, { description: 'Name field', name: 'name' })
   name: string;
 
-  @OneToMany(() => UserRole, (ur) => ur.user)
+  @ManyToMany(() => User, (user) => user.roles)
   users: User[];
 }

@@ -14,25 +14,27 @@ export class AuthService {
     username: string,
     password: string,
   ): Promise<Partial<ModifiedUser>> {
-    const user = await this.repo.userRepo.findOne({
-      select: ['username', 'id', 'password', 'email', 'imageUrl'],
-      where: { username },
-    });
+    const user = await this.repo.userRepo
+      .createQueryBuilder('user')
+      .select([
+        'user.id',
+        'user.username',
+        'user.email',
+        'user.imageUrl',
+        'user.password',
+      ])
+      .innerJoinAndSelect('user.roles', 'roles')
+      .where('user.username = :username', { username })
+      .getOne();
 
     if (user) {
       const isPasswordMatch = await bcrypt.compare(password, user.password);
       if (isPasswordMatch) {
-        const userRoles = await this.repo.userRoleRepo
-          .createQueryBuilder('userRole')
-          .innerJoinAndSelect('userRole.role', 'roles')
-          .where('userRole.userId = :userId', { userId: user.id })
-          .getMany();
-
         const modifiedResult: ModifiedUser = {
           username: user.username,
           id: user.id,
           email: user.email,
-          roles: userRoles.map((ur) => ur.role.name),
+          roles: user.roles.map((role) => role.name),
           imageUrl: user.imageUrl,
         };
 

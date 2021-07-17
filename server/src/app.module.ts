@@ -12,7 +12,6 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { RepoModule } from './repo/repo.module';
 import { TaskModule } from './task/task.module';
 import { RoleModule } from './role/role.module';
-import { UserRoleModule } from './user-role/user-role.module';
 import { AuthModule } from './auth/auth.module';
 import { buildContext } from 'graphql-passport';
 import { GraphQLSchema } from 'graphql';
@@ -51,7 +50,6 @@ import { applyMiddleware } from 'graphql-middleware';
     RepoModule,
     TaskModule,
     RoleModule,
-    UserRoleModule,
     AuthModule,
   ],
   controllers: [AppController],
