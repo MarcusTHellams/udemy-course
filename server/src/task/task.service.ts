@@ -23,7 +23,7 @@ export class TaskService {
     options: FindAll = { page: 1, limit: 1, orderBy: [] },
   ): Promise<Pagination<Task>> {
     const QB = this.repo.taskRepo.createQueryBuilder();
-    const { orderBy } = options;
+    const { orderBy = [] } = options;
 
     const formattedOrderby = orderBy.reduce((acc, value) => {
       if (value.field !== 'user') {
@@ -32,7 +32,7 @@ export class TaskService {
       return acc;
     }, {});
 
-    if (!!options.orderBy.length) {
+    if (!!orderBy.length) {
       QB.orderBy(formattedOrderby);
     }
 

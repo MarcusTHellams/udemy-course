@@ -16,14 +16,14 @@ export class UserService {
     options: FindAll = { page: 1, limit: 10, orderBy: [] },
   ): Promise<Pagination<User>> {
     const QB = this.repo.userRepo.createQueryBuilder();
-    const { orderBy } = options;
+    const { orderBy = [] } = options;
 
     const formattedOrderby = orderBy.reduce((acc, value) => {
       acc[`LOWER(${value.field})`] = value.direction;
       return acc;
     }, {});
 
-    if (!!options.orderBy.length) {
+    if (!!orderBy.length) {
       QB.orderBy(formattedOrderby);
     }
 
