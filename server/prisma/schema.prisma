@@ -1,0 +1,44 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["orderByRelation"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model role {
+  id        String      @id
+  name      String
+  user_role user_role[]
+}
+
+model task {
+  id          String  @id
+  title       String
+  description String?
+  userId      String?
+  user        user?   @relation(fields: [userId], references: [id])
+}
+
+model user {
+  id        String      @id
+  username  String      @unique
+  password  String
+  email     String
+  imageUrl  String?
+  task      task[]
+  user_role user_role[]
+}
+
+model user_role {
+  userId String
+  roleId String
+  role   role   @relation(fields: [roleId], references: [id])
+  user   user   @relation(fields: [userId], references: [id])
+
+  @@id([userId, roleId])
+  @@index([roleId], name: "IDX_dba55ed826ef26b5b22bd39409")
+  @@index([userId], name: "IDX_ab40a6f0cd7d3ebfcce082131f")
+}

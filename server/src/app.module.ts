@@ -16,6 +16,7 @@ import { AuthModule } from './auth/auth.module';
 import { buildContext } from 'graphql-passport';
 import { GraphQLSchema } from 'graphql';
 import { applyMiddleware } from 'graphql-middleware';
+import { PrismaService } from './prisma/prisma.service';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -53,6 +54,6 @@ import { applyMiddleware } from 'graphql-middleware';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, PrismaService],
 })
 export class AppModule {}

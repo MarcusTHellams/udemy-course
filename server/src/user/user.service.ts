@@ -1,3 +1,4 @@
+import { PrismaService } from './../prisma/prisma.service';
 import { FindAll } from './../types/findAll.types';
 import { RepoService } from './../repo/repo.service';
 import { Injectable } from '@nestjs/common';
@@ -7,7 +8,10 @@ import { User } from './entities/user.entity';
 import { paginate, Pagination } from 'nestjs-typeorm-paginate';
 @Injectable()
 export class UserService {
-  constructor(private readonly repo: RepoService) {}
+  constructor(
+    private readonly repo: RepoService,
+    private readonly prisma: PrismaService,
+  ) {}
   create(createUserInput: CreateUserInput) {
     return 'This action adds a new user';
   }

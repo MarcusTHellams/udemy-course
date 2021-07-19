@@ -1,3 +1,5 @@
+import { FindAll } from './types/findAll.types';
+import { PrismaService } from './prisma/prisma.service';
 import { RepoService } from './repo/repo.service';
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
@@ -13,78 +15,33 @@ export class AppController {
   constructor(
     private readonly appService: AppService,
     private readonly repo: RepoService,
+    private readonly prisma: PrismaService,
   ) {}
 
   @Get()
   async getHello(): Promise<any> {
-    const user = await this.repo.userRepo
-      .createQueryBuilder('user')
-      .select(['user.id'])
-      .innerJoinAndSelect('user.roles', 'roles')
-      .whereInIds(['653453b7-ec29-47ee-8ba8-70616c37a2e8'])
-      .getMany();
-
-    const keyedUsers = keyBy(user, (user) => user.id);
-    console.log('keyedUsers: ', keyedUsers);
-
-    // for (let i = 0; i < 100; i++) {
-    //   const title = faker.lorem.words(
-    //     faker.datatype.number({ min: 3, max: 10 }),
-    //   );
-    //   const description = faker.lorem.sentence(
-    //     faker.datatype.number({ min: 4, max: 10 }),
-    //   );
-    //   const id = uuidv4();
-    //   const task = this.repo.taskRepo.create({
-    //     title,
-    //     description,
-    //     id,
-    //     user,
-    //   });
-
-    //   await this.repo.taskRepo.save(task);
-    // }
-
-    // const result = await bcrypt2.compare(
-    //   'password',
-    //   '$2a$12$2w0nYG17TQxIIfi6PTLrUuE0GCWtDssqDT/c8L6SE1BqZxnUMsm06',
-    // );
-    // console.log('result: ', result);
-
-    // const userRoles = await this.repo.userRoleRepo
-    //   .createQueryBuilder('userRole')
-    //   .innerJoinAndSelect('userRole.role', 'roles')
-    //   .where('userRole.userId = :userId', { userId: user.id })
-    //   .getMany();
-
-    // user.roles = userRoles.map((ur) => ur.role);
-
-    return user;
-    // const roleId = '07203ac4-93fd-46cf-8cb9-0b09e643b246';
-
-    // for (let index = 0; index < 8; index++) {
-    //   const username = faker.internet.userName();
-    //   const email = faker.internet.email();
-    //   const id = uuidv4();
-    //   const password = await bcrypt.hash('password', 12);
-
-    //   const user = this.repo.userRepo.create({
-    //     username,
-    //     email,
-    //     id,
-    //     password,
-    //   });
-
-    //   await this.repo.userRepo.save(user);
-
-    //   const userRole = this.repo.userRoleRepo.create({
-    //     userId: user.id,
-    //     roleId,
-    //   });
-
-    //   await this.repo.userRoleRepo.save(userRole);
-    // }
-
-    return this.appService.getHello();
+    // return await this.repo.taskRepo.find();
+    return await this.prisma.user.findMany({
+      orderBy: [{}],
+      include: {
+        user_role: {
+          select: {
+            role: true,
+          },
+        },
+      },
+    });
+    return await this.prisma.task.findMany({
+      orderBy: [
+        {
+          user: {
+            username: 'asc',
+          },
+        },
+      ],
+      include: {
+        user: true,
+      },
+    });
   }
 }
