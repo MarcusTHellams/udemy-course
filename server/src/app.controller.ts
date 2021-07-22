@@ -7,6 +7,8 @@ import bcrypt = require('bcrypt');
 import bcrypt2 = require('bcryptjs');
 import groupBy = require('lodash.groupby');
 import keyBy = require('lodash.keyby');
+import { infiniteLoading } from './helpers/infiniteLoading';
+import { User } from './user/entities/user.entity';
 
 @Controller()
 export class AppController {
@@ -17,15 +19,17 @@ export class AppController {
 
   @Get()
   async getHello(): Promise<any> {
-    const user = await this.repo.userRepo
-      .createQueryBuilder('user')
-      .select(['user.id'])
-      .innerJoinAndSelect('user.roles', 'roles')
-      .whereInIds(['653453b7-ec29-47ee-8ba8-70616c37a2e8'])
-      .getMany();
-
-    const keyedUsers = keyBy(user, (user) => user.id);
-    console.log('keyedUsers: ', keyedUsers);
+    const QB = this.repo.taskRepo
+      .createQueryBuilder('task')
+      .innerJoinAndSelect('task.user', 'user')
+      .orderBy({
+        'user.username': 'ASC',
+        'LOWER(task.title)': 'ASC',
+      });
+    const user = await infiniteLoading(QB, {
+      currentRowCount: 0,
+      limit: 10,
+    });
 
     // for (let i = 0; i < 100; i++) {
     //   const title = faker.lorem.words(

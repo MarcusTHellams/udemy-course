@@ -43,7 +43,7 @@
     "graphql-tools": "^7.0.5",
     "lodash.groupby": "^4.6.0",
     "lodash.keyby": "^4.6.0",
-    "nestjs-typeorm-paginate": "^2.5.3",
+    "nestjs-typeorm-paginate": "^2.6.0",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",

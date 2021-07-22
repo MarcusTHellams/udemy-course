@@ -5,7 +5,11 @@ import { Injectable } from '@nestjs/common';
 import { CreateTaskInput } from './dto/create-task.input';
 import { UpdateTaskInput } from './dto/update-task.input';
 import { v4 as uuidv4 } from 'uuid';
-import { paginate, Pagination } from 'nestjs-typeorm-paginate';
+import {
+  paginate,
+  Pagination,
+  PaginationTypeEnum,
+} from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class TaskService {
@@ -36,7 +40,10 @@ export class TaskService {
       QB.orderBy(formattedOrderby);
     }
 
-    return await paginate<Task>(QB, options);
+    return await paginate<Task>(QB, {
+      ...options,
+      paginationType: PaginationTypeEnum.LIMIT_AND_OFFSET,
+    });
   }
 
   async findOne(id: string) {
