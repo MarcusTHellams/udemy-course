@@ -78,7 +78,6 @@ export class UserResolver {
     @Context() { roleLoader }: IGraphqlContext,
   ) {
     const roles = await roleLoader.load(user.id);
-
     // const userRoles = await this.repo.userRoleRepo.find({
     //   join: {
     //     alias: 'userRole',

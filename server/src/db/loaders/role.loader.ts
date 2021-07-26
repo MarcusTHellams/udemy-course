@@ -13,7 +13,7 @@ const batchRoles = async (userIds: string[]) => {
 
   const rolesByUserId = keyBy(user, (user) => user.id);
   return userIds.map((userId) => {
-    return rolesByUserId[userId].roles;
+    return rolesByUserId[userId]?.roles;
   });
 };
 

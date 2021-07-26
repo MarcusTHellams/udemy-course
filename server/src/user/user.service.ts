@@ -4,7 +4,11 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { User } from './entities/user.entity';
-import { paginate, Pagination } from 'nestjs-typeorm-paginate';
+import {
+  paginate,
+  Pagination,
+  PaginationTypeEnum,
+} from 'nestjs-typeorm-paginate';
 @Injectable()
 export class UserService {
   constructor(private readonly repo: RepoService) {}
@@ -15,7 +19,7 @@ export class UserService {
   async findAll(
     options: FindAll = { page: 1, limit: 10, orderBy: [] },
   ): Promise<Pagination<User>> {
-    const QB = this.repo.userRepo.createQueryBuilder();
+    const QB = this.repo.userRepo.createQueryBuilder('user');
     const { orderBy = [] } = options;
 
     const formattedOrderby = orderBy.reduce((acc, value) => {
@@ -27,7 +31,10 @@ export class UserService {
       QB.orderBy(formattedOrderby);
     }
 
-    return await paginate<User>(QB, options);
+    return await paginate<User>(QB, {
+      ...options,
+      paginationType: PaginationTypeEnum.LIMIT_AND_OFFSET,
+    });
   }
 
   async findOne(id: string): Promise<User> {

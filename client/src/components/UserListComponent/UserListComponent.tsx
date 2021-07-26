@@ -63,6 +63,7 @@ export const UserListComponent = ({
       {
         Header: 'Username',
         accessor: 'username',
+        id: 'user.username',
         Cell: ({ row }: { row: Row<User> }) => {
           const { username, imageUrl } = row.original;
           return (
@@ -78,10 +79,11 @@ export const UserListComponent = ({
       {
         Header: 'Email',
         accessor: 'email',
+        id: 'user.email'
       },
       {
         Header: 'Roles',
-        id: 'roles',
+        // id: 'user.roles',
         Cell: ({ row }: { row: Row<User> }) => {
           const { roles } = row.original;
           return (
