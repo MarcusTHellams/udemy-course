@@ -5,4 +5,6 @@ export type UserFormValues = {
   email: string;
   imageUrl?: string;
   roles?: Role[];
+  password?: string;
+  passwordConfirmation?: string;
 };

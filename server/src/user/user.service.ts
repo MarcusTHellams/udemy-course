@@ -22,6 +22,7 @@ export class UserService {
     const QB = this.repo.userRepo.createQueryBuilder('user');
     const { orderBy = [] } = options;
 
+    console.log('options: ', options);
     const formattedOrderby = orderBy.reduce((acc, value) => {
       acc[`LOWER(${value.field})`] = value.direction;
       return acc;
