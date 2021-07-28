@@ -5,6 +5,7 @@ import { UserForm } from '../../components/UserForm/UserForm';
 import { client } from '../../graphql/client';
 import { getUser } from '../../graphql/queries/user';
 import { User } from '../../types/user.type';
+import { Layout } from '../../components/Layout/Layout';
 
 export const UserEditView = (): JSX.Element => {
   const { id } = useParams<{ id: string }>();
@@ -23,7 +24,11 @@ export const UserEditView = (): JSX.Element => {
     <>
       <Query
         {...{ queryKey, queryFn }}
-        render={({ data: user }) => <UserForm user={user as User} />}
+        render={({ data: user }) => (
+          <Layout maxW='container.sm'>
+            <UserForm user={user as User} />
+          </Layout>
+        )}
       />
     </>
   );

@@ -14,21 +14,22 @@ import {
   Tbody,
   Thead,
   Td,
-} from "@chakra-ui/react";
-import * as React from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
-import { client } from "../../graphql/client";
-import { User } from "../../types/user.type";
-import { Layout } from "../Layout/Layout";
-import { UserFormValues } from "../../types/userFormValues.type";
-import { RoleSelect } from "../RoleSelect/RoleSelect";
-import { Query } from "../Query/Query";
-import { getRoles } from "../../graphql/queries/roles";
-import { Role } from "../../types/role.type";
-import { updateUser } from "../../graphql/mutations/user";
-import { useMutation, useQueryClient } from "react-query";
-import { Link, useHistory, useLocation } from "react-router-dom";
-import omit from "lodash/omit";
+} from '@chakra-ui/react';
+import * as React from 'react';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { client } from '../../graphql/client';
+import { User } from '../../types/user.type';
+import { UserFormValues } from '../../types/userFormValues.type';
+import { RoleSelect } from '../RoleSelect/RoleSelect';
+import { Query } from '../Query/Query';
+import { getRoles } from '../../graphql/queries/roles';
+import { Role } from '../../types/role.type';
+import { updateUser } from '../../graphql/mutations/user';
+import { useMutation, useQueryClient } from 'react-query';
+import { Link, useHistory, useLocation } from 'react-router-dom';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import { DevTool } from '@hookform/devtools';
 
 type UserFormProps = {
   user?: User | null;
@@ -38,7 +39,7 @@ const queryFn = () => {
   return client.query({ query: getRoles }).then(({ data: { roles } }) => roles);
 };
 
-const queryKey = "roles";
+const queryKey = 'roles';
 
 const mutationFn = (values: any) => {
   return client.mutate({
@@ -49,8 +50,32 @@ const mutationFn = (values: any) => {
   });
 };
 
+const schema = yup.object().shape({
+  username: yup.string().required('Username is required'),
+  email: yup
+    .string()
+    .email('A valid email is required')
+    .required('Email is required'),
+  password: yup.string().when('$user', (user, schema) => {
+    return !user ? schema.required('Password is required') : schema;
+  }),
+  passwordConfirmation: yup
+    .string()
+    .test(
+      'passwordConfirmation',
+      'Password Confirmation must match password',
+      (value, { parent }) => {
+        if (value !== parent.password) {
+          return false;
+        }
+        return true;
+      }
+    ),
+  imageUrl: yup.string().url('Image Url must be a valid url'),
+});
+
 export const UserForm = ({ user }: UserFormProps): JSX.Element => {
-  const editOrCreate = !!user ? "Edit" : "Create";
+  const editOrCreate = !!user ? 'Edit' : 'Create';
 
   const queryClient = useQueryClient();
   const history = useHistory();
@@ -62,16 +87,19 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
     control,
     formState: { errors },
   } = useForm<UserFormValues>({
-    defaultValues: (user && omit(user, ["tasks"])) || undefined,
+    defaultValues: user || undefined,
+    resolver: yupResolver(schema),
+    context: { user },
+    shouldUnregister: true,
   });
 
   const { mutate } = useMutation(mutationFn, {
     onSuccess() {
       if (user?.id) {
-        queryClient.invalidateQueries(["user", user.id]);
+        queryClient.invalidateQueries(['user', user.id]);
       }
-      queryClient.invalidateQueries("users");
-      history.push("/users");
+      queryClient.invalidateQueries('users');
+      history.push('/users');
     },
   });
 
@@ -80,50 +108,51 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
   };
   return (
     <>
-      <Heading as="h1" mb="8">
-        <Avatar shadow="2xl" name={user?.username} src={user?.imageUrl} />{" "}
+      <Heading as='h1' mb='8'>
+        <Avatar shadow='2xl' name={user?.username} src={user?.imageUrl} />{' '}
         {editOrCreate} User
       </Heading>
       <form onSubmit={handleSubmit(submitHandler)}>
-        <VStack spacing="8" align="start">
+        {user && <input type='hidden' {...register('id')} />}
+        <VStack spacing='8' align='start'>
           <FormControl isInvalid={!!errors?.username}>
-            <FormLabel htmlFor="username">Username</FormLabel>
+            <FormLabel htmlFor='username'>Username</FormLabel>
             <Input
-              id="username"
-              {...register("username", { required: "Username is Required" })}
+              id='username'
+              {...register('username', { required: 'Username is Required' })}
             />
             <FormErrorMessage>{errors?.username?.message}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={!!errors?.email}>
-            <FormLabel htmlFor="email">Email</FormLabel>
+            <FormLabel htmlFor='email'>Email</FormLabel>
             <Input
-              id="email"
-              {...register("email", { required: "Email is Required" })}
+              id='email'
+              {...register('email', { required: 'Email is Required' })}
             />
             <FormErrorMessage>{errors?.email?.message}</FormErrorMessage>
           </FormControl>
           {!user && (
             <>
               <FormControl isInvalid={!!errors?.password}>
-                <FormLabel htmlFor="password">Password</FormLabel>
+                <FormLabel htmlFor='password'>Password</FormLabel>
                 <Input
-                  type="password"
-                  id="password"
-                  {...register("password", {
-                    required: "Password is Required",
+                  type='password'
+                  id='password'
+                  {...register('password', {
+                    required: 'Password is Required',
                   })}
                 />
                 <FormErrorMessage>{errors?.password?.message}</FormErrorMessage>
               </FormControl>
               <FormControl isInvalid={!!errors?.passwordConfirmation}>
-                <FormLabel htmlFor="passwordConfirmation">
-                  PasswordConfirmation
+                <FormLabel htmlFor='passwordConfirmation'>
+                  Password Confirmation
                 </FormLabel>
                 <Input
-                  type="password"
-                  id="passwordConfirmation"
-                  {...register("passwordConfirmation", {
-                    required: "PasswordConfirmation is Required",
+                  type='password'
+                  id='passwordConfirmation'
+                  {...register('passwordConfirmation', {
+                    required: 'PasswordConfirmation is Required',
                   })}
                 />
                 <FormErrorMessage>
@@ -133,12 +162,12 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
             </>
           )}
           <FormControl isInvalid={!!errors?.imageUrl}>
-            <FormLabel htmlFor="imageUrl">Image Url</FormLabel>
-            <Input id="imageUrl" {...register("imageUrl")} />
+            <FormLabel htmlFor='imageUrl'>Image Url</FormLabel>
+            <Input id='imageUrl' {...register('imageUrl')} />
             <FormErrorMessage>{errors?.imageUrl?.message}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={!!errors?.roles}>
-            <FormLabel htmlFor="roles">Roles</FormLabel>
+            <FormLabel htmlFor='roles'>Roles</FormLabel>
             <Query
               {...{ queryFn, queryKey }}
               render={({ data: roles }) => {
@@ -146,15 +175,15 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
               }}
             />
           </FormControl>
-          <Box width="full">
-            <Button colorScheme="blue" variant="outline" type="submit" w="full">
+          <Box width='full'>
+            <Button colorScheme='blue' variant='outline' type='submit' w='full'>
               {editOrCreate}
             </Button>
           </Box>
         </VStack>
       </form>
       {user?.tasks && (
-        <Table mt="4">
+        <Table mt='4'>
           <Thead>
             <Tr>
               <Th>Title</Th>
@@ -171,9 +200,9 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
                     <Td>{task.description}</Td>
                     <Td>
                       <Button
-                        type="button"
-                        size="xs"
-                        colorScheme="green"
+                        type='button'
+                        size='xs'
+                        colorScheme='green'
                         as={Link}
                         to={{
                           pathname: `/tasks/${task.id}`,
@@ -190,6 +219,7 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
           </Tbody>
         </Table>
       )}
+      <DevTool {...{ control }} />
     </>
   );
 };
