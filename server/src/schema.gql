@@ -107,15 +107,20 @@ type Mutation {
 }
 
 input CreateUserInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
+  username: String!
+  email: String!
+  password: String!
+  passwordConfirmation: String!
+  imageUrl: String
 }
 
 input UpdateUserInput {
-  id: String!
-  username: String!
-  email: String!
+  username: String
+  email: String
+  password: String
+  passwordConfirmation: String
   imageUrl: String
+  id: String!
   tasks: [UpdateTaskInput!]
   roles: [UpdateRoleInput!]
 }
