@@ -4,10 +4,8 @@ import { UpdateRoleInput } from './../../role/dto/update-role.input';
 import { InputType, Field, PartialType } from '@nestjs/graphql';
 import { Role } from 'src/role/entities/role.entity';
 import { Task } from 'src/task/entities/task.entity';
-import { IsNotEmpty } from 'class-validator';
 @InputType()
 export class UpdateUserInput extends PartialType(CreateUserInput) {
-  @IsNotEmpty()
   @Field(() => String)
   id: string;
 

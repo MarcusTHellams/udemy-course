@@ -29,7 +29,7 @@ export class User {
   @Column('varchar', { name: 'password', nullable: false })
   password: string;
 
-  @Column('varchar', { name: 'email', nullable: false })
+  @Column('varchar', { name: 'email', nullable: false, unique: true })
   @Field(() => String, { description: 'Email field', name: 'email' })
   email: string;
 
