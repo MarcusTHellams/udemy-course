@@ -16,7 +16,7 @@ export class AuthService {
   ): Promise<Partial<ModifiedUser>> {
     const user = await this.repo.userRepo
       .createQueryBuilder('user')
-      .innerJoinAndSelect('user.roles', 'roles')
+      .leftJoinAndSelect('user.roles', 'roles')
       .where('user.username = :username', { username })
       .getOne();
 

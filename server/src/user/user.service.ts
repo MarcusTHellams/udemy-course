@@ -29,7 +29,11 @@ passwordValidator
   .spaces();
 
 const createUserSchema = yup.object().shape({
-  username: yup.string().required('Username is required'),
+  username: yup
+    .string()
+    .min(6, 'Username is required to be a minium of 6 characters')
+    .max(45, `Username can't be more than 45 characters`)
+    .required('Username is required'),
   email: yup
     .string()
     .email('A valid email is required')

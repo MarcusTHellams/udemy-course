@@ -1,13 +1,11 @@
+import { CORE_USER_FIELDS } from './../fragments/user';
 import gql from 'graphql-tag';
 
 export const getUsers = gql`
   query getUsers($pageQueryInput: PageQueryInput) {
     users(pageQueryInput: $pageQueryInput) {
       items {
-        id
-        username
-        email
-        imageUrl
+       ...CoreUserFields
         tasks {
           id
           title
@@ -33,4 +31,5 @@ export const getUsers = gql`
       }
     }
   }
+  ${CORE_USER_FIELDS}
 `;

@@ -1,12 +1,10 @@
-import gql from 'graphql-tag';
+import gql from "graphql-tag";
+import { CORE_USER_FIELDS } from "./../fragments/user";
 
 export const updateUser = gql`
   mutation updateUser($updateUserInput: UpdateUserInput!) {
     updateUser(updateUserInput: $updateUserInput) {
-      id
-      username
-      email
-      imageUrl
+      ...CoreUserFields
       roles {
         id
         name
@@ -18,4 +16,14 @@ export const updateUser = gql`
       }
     }
   }
+  ${CORE_USER_FIELDS}
+`;
+
+export const createUser = gql`
+  mutation createUser($createUserInput: CreateUserInput!) {
+    createUser(createUserInput: $createUserInput) {
+      ...CoreUserFields
+    }
+  }
+  ${CORE_USER_FIELDS}
 `;
