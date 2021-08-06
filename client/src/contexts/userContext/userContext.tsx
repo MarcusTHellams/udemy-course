@@ -15,7 +15,9 @@ const queryFn = () => {
 };
 interface UserContextInterface {
   userStorage: string | null | undefined;
-  setUserStorage: React.Dispatch<React.SetStateAction<null | undefined>> | null;
+  setUserStorage: React.Dispatch<
+    React.SetStateAction<string | null | undefined>
+  > | null;
   removeUserStorage: () => void | null;
 }
 
@@ -32,10 +34,9 @@ type UserContextProviderProps = {};
 export const UserContextProvider = ({
   children,
 }: React.PropsWithChildren<UserContextProviderProps>): JSX.Element => {
-  const [userStorage, setUserStorage, removeUserStorage] = useLocalStorage(
-    'todo-user',
-    null
-  );
+  const [userStorage, setUserStorage, removeUserStorage] = useLocalStorage<
+    string | null
+  >('todo-user', null);
 
   useQuery('profile', queryFn, {
     retry: false,
@@ -43,10 +44,10 @@ export const UserContextProvider = ({
     refetchInterval: 30000,
     refetchIntervalInBackground: true,
     refetchOnWindowFocus: true,
-    onError(){
+    onError() {
       removeUserStorage();
     },
-  })
+  });
 
   return (
     <>

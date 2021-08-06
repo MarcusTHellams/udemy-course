@@ -68,7 +68,7 @@ const createUserSchema = yup.object().shape({
         return true;
       },
     ),
-  imageUrl: yup.string().url('Image Url must be a valid url'),
+  imageUrl: yup.string().nullable().url('Image Url must be a valid url'),
 });
 @Injectable()
 export class UserService {
@@ -148,7 +148,7 @@ export class UserService {
     return await this.repo.userRepo.save(updateUserInput);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: string) {
+    return await this.repo.userRepo.delete(id);
   }
 }

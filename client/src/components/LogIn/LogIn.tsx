@@ -1,5 +1,5 @@
-import * as React from "react";
-import { Layout } from "../Layout/Layout";
+import * as React from 'react';
+import { Layout } from '../Layout/Layout';
 import {
   Alert,
   AlertDescription,
@@ -20,7 +20,7 @@ import {
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { client } from '../../graphql/client';
 import { login } from '../../graphql/mutations/login';
-import { useMutation } from 'react-query';
+import { useMutation, MutateFunction } from 'react-query';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useUserContext } from '../../contexts/userContext/userContext';
 import { Link as RLink } from 'react-router-dom';
@@ -53,20 +53,21 @@ export const LogIn = (): JSX.Element => {
   const { setUserStorage } = useUserContext();
   const { state } = useLocation<{ referrer?: string }>();
 
-  const { mutate, error } = useMutation(mutationFn, {
-    onSuccess: (data) => {
-      if (setUserStorage) {
-        setUserStorage(data);
-      }
-      if (state?.referrer) {
-        history.replace(state.referrer);
-      } else {
-        history.push('/');
-      }
-    },
-  });
-
-  const _error = error as { message: string };
+  const { mutate, error } = useMutation<string, Error, LogInFormValues>(
+    mutationFn as unknown as MutateFunction<string, Error, LogInFormValues>,
+    {
+      onSuccess: (data) => {
+        if (setUserStorage) {
+          setUserStorage(data);
+        }
+        if (state?.referrer) {
+          history.replace(state.referrer);
+        } else {
+          history.push('/');
+        }
+      },
+    }
+  );
 
   const submitHandler: SubmitHandler<LogInFormValues> = (values) => {
     mutate(values);
@@ -89,7 +90,7 @@ export const LogIn = (): JSX.Element => {
           <Alert mb='4' status='error'>
             <AlertIcon />
             <AlertTitle mr={2}>Error</AlertTitle>
-            <AlertDescription>{_error?.message}</AlertDescription>
+            <AlertDescription>{error?.message}</AlertDescription>
             <CloseButton
               onClick={() => setShowErrorAlert(false)}
               position='absolute'

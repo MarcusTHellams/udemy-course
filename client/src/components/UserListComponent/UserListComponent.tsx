@@ -15,6 +15,7 @@ import {
   HStack,
   Text,
   Icon,
+  useToast,
 } from '@chakra-ui/react';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
@@ -35,6 +36,10 @@ import { Paginated } from '@makotot/paginated';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { ResponsiveTable } from '../ResponsiveTable/ResponsiveTable';
 import { useIsAdmin } from '../../hooks/useIsAdmin';
+import { DeletionVerification } from '../DeletionVerification/DeletionVerification';
+import { useMutation, useQueryClient, MutateFunction } from 'react-query';
+import { client } from '../../graphql/client';
+import { removeUser } from '../../graphql/mutations/user';
 
 type UserListComponentProps = {
   paginatedUsers?: PaginatedResults<User>;
@@ -42,6 +47,8 @@ type UserListComponentProps = {
   setLimit: React.Dispatch<React.SetStateAction<number>>;
   setOrderBy: React.Dispatch<React.SetStateAction<OrderByType[]>>;
 };
+
+type CurrentUser = string | null | undefined;
 
 export const UserListComponent = ({
   paginatedUsers = {
@@ -58,6 +65,56 @@ export const UserListComponent = ({
 
   const data = React.useMemo(() => items, [items]);
   const isAdmin = useIsAdmin();
+  const [open, setOpen] = React.useState(false);
+  const [currentUser, setCurrentUser] = React.useState<CurrentUser>();
+  const toast = useToast();
+
+  const mutationFn = React.useCallback((userId) => {
+    return client
+      .mutate({
+        mutation: removeUser,
+        variables: {
+          id: userId,
+        },
+      })
+      .then(({ data: { removeUser } }) => removeUser);
+  }, []) as MutateFunction<boolean, Error, CurrentUser>;
+
+  const queryClient = useQueryClient();
+
+  const { mutate } = useMutation<boolean, Error, CurrentUser>(mutationFn, {
+    onSuccess() {
+      queryClient.invalidateQueries();
+    },
+    onSettled() {
+      setOpen(false);
+    },
+    onError(error) {
+      toast({
+        description: error?.message,
+        duration: null,
+        isClosable: true,
+        position: 'top',
+        status: 'error',
+        title: 'Error',
+      });
+    },
+  });
+
+  const onClose = React.useCallback(() => {
+    setOpen(false);
+  }, []);
+
+  const onDelete = React.useCallback(() => {
+    mutate(currentUser);
+  }, [currentUser, mutate]);
+
+  React.useEffect(() => {
+    if (!open) {
+      setCurrentUser(null);
+    }
+  }, [open]);
+
   const columns: Column<User>[] = React.useMemo(
     () => [
       {
@@ -121,7 +178,15 @@ export const UserListComponent = ({
                 Edit User
               </Button>
               {isAdmin && (
-                <Button borderLeftRadius='0' rounded='full' colorScheme='red'>
+                <Button
+                  onClick={() => {
+                    setCurrentUser(id);
+                    setOpen(true);
+                  }}
+                  borderLeftRadius='0'
+                  rounded='full'
+                  colorScheme='red'
+                >
                   Delete User
                 </Button>
               )}
@@ -130,7 +195,7 @@ export const UserListComponent = ({
         },
       },
     ],
-    []
+    [isAdmin]
   );
 
   const {
@@ -321,6 +386,16 @@ export const UserListComponent = ({
           </Box>
         )}
       </Layout>
+      <DeletionVerification
+        alertProps={{
+          isCentered: true,
+          closeOnOverlayClick: false,
+        }}
+        {...{ onClose, onDelete }}
+        isOpen={open}
+        title='Delete User'
+        bodyText='Are you sure you want to delete the user?'
+      />
     </>
   );
 };

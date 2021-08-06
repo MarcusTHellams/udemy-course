@@ -32,7 +32,7 @@ import { Query } from '../Query/Query';
 import { getRoles } from '../../graphql/queries/roles';
 import { Role } from '../../types/role.type';
 import { updateUser, createUser } from '../../graphql/mutations/user';
-import { useMutation, useQueryClient } from 'react-query';
+import { useMutation, useQueryClient, MutateFunction } from 'react-query';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -105,7 +105,7 @@ const schema = yup.object().shape({
         return true;
       }
     ),
-  imageUrl: yup.string().url('Image Url must be a valid url'),
+  imageUrl: yup.string().nullable().url('Image Url must be a valid url'),
 });
 
 export const UserForm = ({ user }: UserFormProps): JSX.Element => {
@@ -133,7 +133,7 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
         });
     },
     [user]
-  );
+  ) as MutateFunction<User, Error, UserFormValues>;
 
   const {
     register,
@@ -150,7 +150,11 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
 
   const password = watch('password');
 
-  const { mutate, isLoading, isSuccess, error } = useMutation(mutationFn, {
+  const { mutate, isLoading, isSuccess, error } = useMutation<
+    User,
+    Error,
+    UserFormValues
+  >(mutationFn, {
     onSuccess() {
       queryClient.invalidateQueries();
       toast({
@@ -170,8 +174,6 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
     }
   }, [error]);
 
-  const _error = error as { message: string };
-
   const submitHandler: SubmitHandler<UserFormValues> = (values) => {
     mutate(values);
   };
@@ -181,7 +183,7 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
         <Alert mb='4' status='error'>
           <AlertIcon />
           <AlertTitle mr={2}>Error</AlertTitle>
-          <AlertDescription>{_error?.message}</AlertDescription>
+          <AlertDescription>{error?.message}</AlertDescription>
           <CloseButton
             onClick={() => setShowErrorAlert(false)}
             position='absolute'

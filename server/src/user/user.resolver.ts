@@ -61,9 +61,10 @@ export class UserResolver {
     return await this.userService.update(updateUserInput, ctx.req);
   }
 
-  @Mutation(() => User)
-  removeUser(@Args('id', { type: () => Int }) id: number) {
-    return this.userService.remove(id);
+  @Mutation(() => Boolean)
+  removeUser(@Args('id', { type: () => String }) id: string) {
+    this.userService.remove(id);
+    return true;
   }
 
   @ResolveField(() => [Task], { name: 'tasks', nullable: true })

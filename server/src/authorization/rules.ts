@@ -23,5 +23,6 @@ export const permissions = shield({
   // },
   Mutation: {
     updateUser: or(isAdmin, canUpdateUser),
+    removeUser: isAdmin,
   },
 });

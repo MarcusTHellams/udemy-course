@@ -27,3 +27,9 @@ export const createUser = gql`
   }
   ${CORE_USER_FIELDS}
 `;
+
+export const removeUser = gql`
+  mutation removeUser($id: String!) {
+    removeUser(id: $id)
+  }
+`;
