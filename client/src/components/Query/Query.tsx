@@ -1,8 +1,9 @@
-import { Heading, Skeleton, Stack } from '@chakra-ui/react';
+import { Heading, Spinner } from '@chakra-ui/react';
 import * as React from 'react';
 import { useQuery, UseQueryOptions, UseQueryResult } from 'react-query';
 import { useWhyDidYouUpdate } from '../../hooks/useWhyDidYouUpdate';
 import { Layout } from '../Layout/Layout';
+import BlockUi from 'react-block-ui';
 
 type QueryProps = {
   render: (queryResult: Partial<UseQueryResult>) => React.ReactNode;
@@ -28,11 +29,12 @@ export const Query = ({
   if (isLoading) {
     return (
       <Layout>
-        <Stack height='90vh'>
+        {/* <Stack height='90vh'>
           {new Array(6).fill(1).map((_, index) => (
             <Skeleton isLoaded={!isLoading} height='15%' key={index} />
           ))}
-        </Stack>
+        </Stack> */}
+        <BlockUi blocking={true} loader={<Spinner />} keepInView />
       </Layout>
     );
   }

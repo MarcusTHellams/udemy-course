@@ -14,13 +14,16 @@ import {
   Heading,
   Input,
   VStack,
-} from "@chakra-ui/react";
-import { useForm, SubmitHandler } from "react-hook-form";
-import { client } from "../../graphql/client";
-import { login } from "../../graphql/mutations/login";
-import { useMutation } from "react-query";
-import { useHistory, useLocation } from "react-router-dom";
-import { useUserContext } from "../../contexts/userContext/userContext";
+  Text,
+  Link,
+} from '@chakra-ui/react';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { client } from '../../graphql/client';
+import { login } from '../../graphql/mutations/login';
+import { useMutation } from 'react-query';
+import { useHistory, useLocation } from 'react-router-dom';
+import { useUserContext } from '../../contexts/userContext/userContext';
+import { Link as RLink } from 'react-router-dom';
 
 type LogInFormValues = {
   username: string;
@@ -58,7 +61,7 @@ export const LogIn = (): JSX.Element => {
       if (state?.referrer) {
         history.replace(state.referrer);
       } else {
-        history.push("/");
+        history.push('/');
       }
     },
   });
@@ -81,47 +84,53 @@ export const LogIn = (): JSX.Element => {
 
   return (
     <>
-      <Layout maxW={"lg"}>
+      <Layout maxW={'lg'}>
         {showErrorAlert && (
-          <Alert mb="4" status="error">
+          <Alert mb='4' status='error'>
             <AlertIcon />
             <AlertTitle mr={2}>Error</AlertTitle>
             <AlertDescription>{_error?.message}</AlertDescription>
             <CloseButton
               onClick={() => setShowErrorAlert(false)}
-              position="absolute"
-              right="8px"
-              top="8px"
+              position='absolute'
+              right='8px'
+              top='8px'
             />
           </Alert>
         )}
-        <Heading as="h1" mb="4">
+        <Heading as='h1' mb='4'>
           Login
         </Heading>
         <form onSubmit={handleSubmit(submitHandler)}>
-          <VStack spacing="8">
+          <VStack spacing='8'>
             <FormControl isInvalid={!!errors.username}>
-              <FormLabel htmlFor="username">Username</FormLabel>
+              <FormLabel htmlFor='username'>Username</FormLabel>
               <Input
-                {...register("username", { required: "Username is required" })}
-                id="username"
+                {...register('username', { required: 'Username is required' })}
+                id='username'
               />
               <FormErrorMessage>{errors?.username?.message}</FormErrorMessage>
             </FormControl>
             <FormControl isInvalid={!!errors.password}>
-              <FormLabel htmlFor="password">Password</FormLabel>
+              <FormLabel htmlFor='password'>Password</FormLabel>
               <Input
-                {...register("password", { required: "Password is required" })}
-                id="password"
-                type="password"
+                {...register('password', { required: 'Password is required' })}
+                id='password'
+                type='password'
               />
               <FormErrorMessage>{errors?.password?.message}</FormErrorMessage>
             </FormControl>
-            <Box alignSelf="stretch">
-              <Button type="submit" colorScheme="green" w="full">
+            <Box alignSelf='stretch'>
+              <Button type='submit' colorScheme='green' w='full'>
                 Submit
               </Button>
             </Box>
+            <Text>
+              Don't have an account,{' '}
+              <Link color='blue.300' as={RLink} to='/signup'>
+                sign up here
+              </Link>
+            </Text>
           </VStack>
         </form>
       </Layout>

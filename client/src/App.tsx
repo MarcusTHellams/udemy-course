@@ -14,25 +14,25 @@ export const App = () => (
   <>
     <Header />
     <Switch>
-      <Route exact path="/tasks/create">
+      <Route exact path='/tasks/create'>
         <TaskCreate />
       </Route>
-      <ProtectedRoute exact path="/tasks/:id">
+      <ProtectedRoute exact path='/tasks/:id'>
         <TaskEditView />
       </ProtectedRoute>
-      <Route exact path="/user/create">
+      <Route exact path='/signup'>
         <CreateUserView />
       </Route>
-      <Route exact path="/users/:id">
+      <Route exact path='/users/:id'>
         <UserEditView />
       </Route>
-      <Route exact path="/users">
+      <Route exact path='/users'>
         <UserList />
       </Route>
-      <Route exact path="/login">
+      <Route exact path='/login'>
         <LogIn />
       </Route>
-      <Route exact path="/">
+      <Route exact path='/'>
         <TaskListView />
       </Route>
     </Switch>
