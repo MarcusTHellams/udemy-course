@@ -54,8 +54,11 @@ export class UserResolver {
   }
 
   @Mutation(() => User)
-  async updateUser(@Args('updateUserInput') updateUserInput: UpdateUserInput) {
-    return await this.userService.update(updateUserInput);
+  async updateUser(
+    @Args('updateUserInput') updateUserInput: UpdateUserInput,
+    @Context() ctx: IGraphqlContext,
+  ) {
+    return await this.userService.update(updateUserInput, ctx.req);
   }
 
   @Mutation(() => User)

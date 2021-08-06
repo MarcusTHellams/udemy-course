@@ -40,6 +40,7 @@ import { DevTool } from '@hookform/devtools';
 import PasswordValidator from 'password-validator';
 import PasswordStrengthBar from 'react-password-strength-bar';
 import BlockUi from 'react-block-ui';
+import { useIsAdmin } from '../../hooks/useIsAdmin';
 
 const passwordValidator = new PasswordValidator();
 
@@ -113,6 +114,8 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
   const toast = useToast();
   const [showErrorAlert, setShowErrorAlert] = React.useState(false);
 
+  const isAdmin = useIsAdmin();
+
   const queryClient = useQueryClient();
   const history = useHistory();
   const location = useLocation();
@@ -178,7 +181,7 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
         <Alert mb='4' status='error'>
           <AlertIcon />
           <AlertTitle mr={2}>Error</AlertTitle>
-          <AlertDescription>{_error.message}</AlertDescription>
+          <AlertDescription>{_error?.message}</AlertDescription>
           <CloseButton
             onClick={() => setShowErrorAlert(false)}
             position='absolute'
@@ -256,17 +259,19 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
               <Input id='imageUrl' {...register('imageUrl')} />
               <FormErrorMessage>{errors?.imageUrl?.message}</FormErrorMessage>
             </FormControl>
-            <FormControl isInvalid={!!errors?.roles}>
-              <FormLabel htmlFor='roles'>Roles</FormLabel>
-              <Query
-                {...{ queryFn, queryKey }}
-                render={({ data: roles }) => {
-                  return (
-                    <RoleSelect {...{ control }} roles={roles as Role[]} />
-                  );
-                }}
-              />
-            </FormControl>
+            {isAdmin && (
+              <FormControl isInvalid={!!errors?.roles}>
+                <FormLabel htmlFor='roles'>Roles</FormLabel>
+                <Query
+                  {...{ queryFn, queryKey }}
+                  render={({ data: roles }) => {
+                    return (
+                      <RoleSelect {...{ control }} roles={roles as Role[]} />
+                    );
+                  }}
+                />
+              </FormControl>
+            )}
             <Box width='full'>
               <Button
                 colorScheme='blue'

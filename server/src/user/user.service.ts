@@ -1,3 +1,5 @@
+import { getUser } from './../helpers/get.user';
+import { IRequest } from './../types/requestWithCookie.type';
 import { yupErrorMessageFormatter } from './../helpers/yupErrorMessageFormatter';
 import { FindAll } from './../types/findAll.types';
 import { RepoService } from './../repo/repo.service';
@@ -14,6 +16,7 @@ import * as yup from 'yup';
 import PasswordValidator = require('password-validator');
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt2 = require('bcryptjs');
+import { diff } from 'deep-diff';
 
 const passwordValidator = new PasswordValidator();
 
@@ -102,7 +105,6 @@ export class UserService {
     const QB = this.repo.userRepo.createQueryBuilder('user');
     const { orderBy = [] } = options;
 
-    console.log('options: ', options);
     const formattedOrderby = orderBy.reduce((acc, value) => {
       acc[`LOWER(${value.field})`] = value.direction;
       return acc;
@@ -122,7 +124,27 @@ export class UserService {
     return await this.repo.userRepo.findOne(id);
   }
 
-  async update(updateUserInput: UpdateUserInput) {
+  async update(updateUserInput: UpdateUserInput, req: IRequest) {
+    const reqUser = await getUser(req);
+
+    const user = await this.repo.userRepo.findOne(updateUserInput.id, {
+      relations: ['roles'],
+    });
+
+    if (reqUser && user) {
+      const isDiff = diff(user?.roles, updateUserInput?.roles || []);
+      if (!reqUser?.roles.includes('admin') && isDiff) {
+        throw new HttpException(
+          'You are not authorized to update roles',
+          HttpStatus.FORBIDDEN,
+        );
+      }
+    } else {
+      throw new HttpException(
+        'You are not authorized to make this action',
+        HttpStatus.FORBIDDEN,
+      );
+    }
     return await this.repo.userRepo.save(updateUserInput);
   }
 
