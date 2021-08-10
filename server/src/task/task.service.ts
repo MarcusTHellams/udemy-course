@@ -10,7 +10,12 @@ import {
   Pagination,
   PaginationTypeEnum,
 } from 'nestjs-typeorm-paginate';
+import * as yup from 'yup';
 
+const taskSchema = yup.object().shape({
+  title: yup.string().required('Title is required'),
+  description: yup.string().nullable(),
+});
 @Injectable()
 export class TaskService {
   constructor(private readonly repo: RepoService) {}
@@ -19,6 +24,7 @@ export class TaskService {
       ...createTaskInput,
       id: uuidv4(),
     });
+    console.log('task: ', task);
     await this.repo.taskRepo.save(task);
     return task;
   }
@@ -28,7 +34,7 @@ export class TaskService {
   ): Promise<Pagination<Task>> {
     const QB = this.repo.taskRepo
       .createQueryBuilder('task')
-      .innerJoin('task.user', 'user');
+      .leftJoin('task.user', 'user');
     const { orderBy = [] } = options;
 
     const formattedOrderby = orderBy.reduce((acc, value) => {

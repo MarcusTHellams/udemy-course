@@ -1,6 +1,12 @@
 import { ObjectType, Field } from '@nestjs/graphql';
 import { User } from '../../user/entities/user.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 
 @Entity()
 @ObjectType()
@@ -26,5 +32,9 @@ export class Task {
   userId: string;
 
   @ManyToOne(() => User, (user) => user.tasks, { onDelete: 'CASCADE' })
+  @JoinColumn({
+    name: 'userId',
+    referencedColumnName: 'id',
+  })
   user: User;
 }

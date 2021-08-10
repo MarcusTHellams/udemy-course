@@ -40,6 +40,7 @@ import { DeletionVerification } from '../DeletionVerification/DeletionVerificati
 import { useMutation, useQueryClient, MutateFunction } from 'react-query';
 import { client } from '../../graphql/client';
 import { removeUser } from '../../graphql/mutations/user';
+import { useIsLoggedIn } from '../../hooks/useIsLoggedIn';
 
 type UserListComponentProps = {
   paginatedUsers?: PaginatedResults<User>;
@@ -68,6 +69,7 @@ export const UserListComponent = ({
   const [open, setOpen] = React.useState(false);
   const [currentUser, setCurrentUser] = React.useState<CurrentUser>();
   const toast = useToast();
+  const isLoggedIn = useIsLoggedIn();
 
   const mutationFn = React.useCallback((userId) => {
     return client
@@ -242,6 +244,9 @@ export const UserListComponent = ({
               return (
                 <Tr {...headerGroup.getHeaderGroupProps()}>
                   {headerGroup.headers.map((column) => {
+                    if (column.Header === 'Actions' && !isLoggedIn) {
+                      return null;
+                    }
                     return (
                       <Th
                         {...column.getHeaderProps(
@@ -277,6 +282,9 @@ export const UserListComponent = ({
               return (
                 <Tr {...row.getRowProps()}>
                   {row.cells.map((cell) => {
+                    if (cell.column.Header === 'Actions' && !isLoggedIn) {
+                      return null;
+                    }
                     return (
                       <Td data-th={cell.column.Header} {...cell.getCellProps()}>
                         <Text
