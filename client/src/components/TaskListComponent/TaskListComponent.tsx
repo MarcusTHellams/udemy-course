@@ -14,6 +14,7 @@ import {
   Wrap,
   WrapItem,
   Icon,
+  useToast,
 } from "@chakra-ui/react";
 import { Link as RLink } from "react-router-dom";
 import { DeletionVerification } from "../DeletionVerification/DeletionVerification";
@@ -33,6 +34,8 @@ import { Paginated } from "@makotot/paginated";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { DirectionEnum, OrderByType } from "../../types/orderBy.type";
 import { ResponsiveTable } from "../ResponsiveTable/ResponsiveTable";
+import { useIsLoggedIn } from "../../hooks/useIsLoggedIn";
+import { useIsAdmin } from "../../hooks/useIsAdmin";
 
 type TaskListComponentProps = {
   paginatedTasks?: PaginatedResults<Task>;
@@ -56,11 +59,14 @@ export const TaskListComponent = ({
   } = paginatedTasks;
   const [open, setOpen] = React.useState(false);
   const [currentTask, setCurrentTask] = React.useState<string | null>();
+  const toast = useToast();
+  const isLoggedIn = useIsLoggedIn();
+  const isAdmin = useIsAdmin();
 
   const data = React.useMemo(() => items, [items]);
 
-  const columns: Column<Task>[] = React.useMemo(
-    () => [
+  const columns: Column<Task>[] = React.useMemo(() => {
+    const cols = [
       {
         Header: "Task Info",
         columns: [
@@ -81,48 +87,71 @@ export const TaskListComponent = ({
         columns: [
           {
             Header: "Username",
-            accessor: "user.username",
+            accessor: (originalRow: Task) => {
+              if (originalRow?.user) {
+                return originalRow.user.username;
+              } else {
+                return "None";
+              }
+            },
           },
           {
             Header: "Email",
-            accessor: "user.email",
+            accessor: (originalRow: Task) => {
+              if (originalRow?.user) {
+                return originalRow.user.email;
+              } else {
+                return "None";
+              }
+            },
           },
         ],
       },
-      {
+    ];
+    if (isLoggedIn) {
+      cols.push({
         Header: "Actions",
-        id: "actions",
-        Cell: ({ row }: { row: Row<Task> }) => {
-          const { id } = row.original;
-          return (
-            <ButtonGroup isAttached size="xs">
-              <Button
-                borderRightRadius="0"
-                as={RLink}
-                to={`tasks/${id}`}
-                rounded="full"
-                colorScheme="green"
-              >
-                Edit Task
-              </Button>
-              <Button
-                borderLeftRadius="0"
-                onClick={() => {
-                  setCurrentTask(id);
-                  setOpen(true);
-                }}
-                rounded="full"
-                colorScheme="red"
-              >
-                Delete Task
-              </Button>
-            </ButtonGroup>
-          );
-        },
-      },
-    ],
-    []
-  );
+        id: "Actions",
+        columns: [
+          {
+            Header: "Edit/Delete",
+            //@ts-ignore
+            Cell: ({ row }: { row: Row<Task> }) => {
+              const { id } = row.original;
+              return (
+                <ButtonGroup isAttached size="xs">
+                  <Button
+                    borderRightRadius={isAdmin ? "0" : ""}
+                    as={RLink}
+                    to={`tasks/${id}`}
+                    rounded="full"
+                    colorScheme="green"
+                  >
+                    Edit Task
+                  </Button>
+                  {isAdmin && (
+                    <Button
+                      borderLeftRadius="0"
+                      onClick={() => {
+                        setCurrentTask(id);
+                        setOpen(true);
+                      }}
+                      rounded="full"
+                      colorScheme="red"
+                    >
+                      Delete Task
+                    </Button>
+                  )}
+                </ButtonGroup>
+              );
+            },
+            id: "edit/delete",
+          },
+        ],
+      });
+    }
+    return cols;
+  }, [isAdmin, isLoggedIn]);
 
   const {
     getTableProps,
@@ -164,14 +193,32 @@ export const TaskListComponent = ({
 
   const queryClient = useQueryClient();
 
-  const { mutate } = useMutation(mutationFn, {
-    onSuccess: () => {
-      queryClient.invalidateQueries("tasks");
-    },
-    onSettled: () => {
-      setOpen(false);
-    },
-  });
+  const { mutate } = useMutation<unknown, Error, string | null | undefined>(
+    mutationFn,
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("tasks");
+        toast({
+          position: "top",
+          status: "success",
+          title: "Task Deleted",
+        });
+      },
+      onError(error) {
+        toast({
+          description: error.message,
+          duration: null,
+          isClosable: true,
+          position: "top",
+          status: "error",
+          title: "Error",
+        });
+      },
+      onSettled: () => {
+        setOpen(false);
+      },
+    }
+  );
 
   const onClose = React.useCallback(() => {
     setOpen(false);
@@ -217,7 +264,6 @@ export const TaskListComponent = ({
                 {headerGroup.headers.map((column) => {
                   return (
                     <Th
-                      onClick={() => console.log("Hello")}
                       {...column.getHeaderProps(column.getSortByToggleProps())}
                     >
                       <Wrap as="div">

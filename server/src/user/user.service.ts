@@ -134,13 +134,13 @@ export class UserService {
     if (reqUser && user) {
       const isDiff = diff(user?.roles, updateUserInput?.roles || []);
       if (!reqUser?.roles.includes('admin') && isDiff) {
-        throw new HttpException(
+        return new HttpException(
           'You are not authorized to update roles',
           HttpStatus.FORBIDDEN,
         );
       }
     } else {
-      throw new HttpException(
+      return new HttpException(
         'You are not authorized to make this action',
         HttpStatus.FORBIDDEN,
       );

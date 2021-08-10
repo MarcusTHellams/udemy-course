@@ -12,8 +12,8 @@ import {
   Box,
   Button,
   Textarea,
+  useToast,
 } from "@chakra-ui/react";
-import omit from "lodash/omit";
 import { useMutation, useQueryClient } from "react-query";
 import { client } from "../../graphql/client";
 import { updateTask } from "../../graphql/mutations/updateTask";
@@ -26,6 +26,7 @@ import { DevTool } from "@hookform/devtools";
 import { useHistory, useLocation } from "react-router-dom";
 import { createTask } from "../../graphql/mutations/createTask";
 import { PaginatedResults } from "../../types/paginatedResults.type";
+import BlockUi from "react-block-ui";
 
 type TaskFormProps = {
   task?: Task | null;
@@ -45,6 +46,8 @@ const queryKey = "users";
 export const TaskForm = ({ task = null }: TaskFormProps): JSX.Element => {
   const editOrCreate = !!task ? "Edit" : "Create";
 
+  const toast = useToast();
+
   const { state } = useLocation<{ referrer?: string }>();
 
   const {
@@ -54,6 +57,7 @@ export const TaskForm = ({ task = null }: TaskFormProps): JSX.Element => {
     formState: { errors },
   } = useForm<TaskFormValues>({
     defaultValues: task || {},
+    shouldUnregister: true,
   });
 
   const history = useHistory();
@@ -64,24 +68,42 @@ export const TaskForm = ({ task = null }: TaskFormProps): JSX.Element => {
       return client.mutate({
         mutation: task ? updateTask : createTask,
         variables: {
-          [task ? "updateTaskInput" : "createTaskInput"]: omit(data, [
-            "__typename",
-            "user",
-          ]),
+          [task ? "updateTaskInput" : "createTaskInput"]: data,
         },
       });
     },
     [task]
   );
 
-  const { mutate, isLoading } = useMutation(mutationFn, {
+  const { mutate, isLoading, isSuccess } = useMutation<
+    unknown,
+    Error,
+    TaskFormValues
+  >(mutationFn, {
     onSuccess: () => {
       queryClient.invalidateQueries();
-      if (state?.referrer) {
-        history.push(state.referrer);
-      } else {
-        history.push("/");
-      }
+      toast({
+        onCloseComplete: () => {
+          if (state?.referrer) {
+            history.push(state.referrer);
+          } else {
+            history.push("/");
+          }
+        },
+        position: "top",
+        status: "success",
+        title: !!task ? "Task Update" : "Task Created",
+      });
+    },
+    onError(error) {
+      toast({
+        description: error.message,
+        duration: null,
+        isClosable: true,
+        position: "top",
+        status: "error",
+        title: "Error",
+      });
     },
   });
 
@@ -95,52 +117,55 @@ export const TaskForm = ({ task = null }: TaskFormProps): JSX.Element => {
         <Heading as="h1" mb="4">
           {editOrCreate} Task
         </Heading>
-        <form onSubmit={handleSubmit(submitHandler)}>
-          <VStack spacing="8" align="start">
-            <FormControl isInvalid={!!errors?.title}>
-              <FormLabel htmlFor="title">Title</FormLabel>
-              <Input
-                id="title"
-                {...register("title", { required: "Title is Required" })}
-              />
-              <FormErrorMessage>{errors?.title?.message}</FormErrorMessage>
-            </FormControl>
-            <FormControl>
-              <FormLabel htmlFor="description">Description</FormLabel>
-              <Textarea id="description" {...register("description")} />
-            </FormControl>
-            <FormControl id="description">
-              <FormLabel>User Task is Assigned to</FormLabel>
-              <Query
-                {...{ queryFn, queryKey }}
-                render={({ data }) => {
-                  const { items } = data as PaginatedResults<User>;
-                  return (
-                    <>
-                      <UserSelect
-                        selectProps={{ isClearable: true }}
-                        name="userId"
-                        {...{ control }}
-                        users={items}
-                      />
-                    </>
-                  );
-                }}
-              />
-            </FormControl>
-            <Box width="full">
-              <Button
-                {...{ isLoading }}
-                variant="outline"
-                type="submit"
-                colorScheme="blue"
-                w="full"
-              >
-                {editOrCreate}
-              </Button>
-            </Box>
-          </VStack>
-        </form>
+        <BlockUi blocking={isLoading || isSuccess}>
+          <form onSubmit={handleSubmit(submitHandler)}>
+            {!!task && <input type="hidden" {...register("id")} />}
+            <VStack spacing="8" align="start">
+              <FormControl isInvalid={!!errors?.title}>
+                <FormLabel htmlFor="title">Title</FormLabel>
+                <Input
+                  id="title"
+                  {...register("title", { required: "Title is Required" })}
+                />
+                <FormErrorMessage>{errors?.title?.message}</FormErrorMessage>
+              </FormControl>
+              <FormControl>
+                <FormLabel htmlFor="description">Description</FormLabel>
+                <Textarea id="description" {...register("description")} />
+              </FormControl>
+              <FormControl id="description">
+                <FormLabel>User Task is Assigned to</FormLabel>
+                <Query
+                  {...{ queryFn, queryKey }}
+                  render={({ data }) => {
+                    const { items } = data as PaginatedResults<User>;
+                    return (
+                      <>
+                        <UserSelect
+                          selectProps={{ isClearable: true }}
+                          name="userId"
+                          {...{ control }}
+                          users={items}
+                        />
+                      </>
+                    );
+                  }}
+                />
+              </FormControl>
+              <Box width="full">
+                <Button
+                  {...{ isLoading }}
+                  variant="outline"
+                  type="submit"
+                  colorScheme="blue"
+                  w="full"
+                >
+                  {editOrCreate}
+                </Button>
+              </Box>
+            </VStack>
+          </form>
+        </BlockUi>
       </Layout>
       <DevTool control={control} />
     </>
