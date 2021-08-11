@@ -65,7 +65,7 @@ const queryFn = () => {
         },
       },
     })
-    .then(({ data: { roles } }) => roles);
+    .then(({ data: { roles } }) => roles.items);
 };
 
 const queryKey = "roles";
