@@ -106,7 +106,7 @@ export class UserService {
     const { orderBy = [] } = options;
 
     const formattedOrderby = orderBy.reduce((acc, value) => {
-      acc[`LOWER(${value.field})`] = value.direction;
+      acc[`lower(${value.field})`] = value.direction;
       return acc;
     }, {});
 

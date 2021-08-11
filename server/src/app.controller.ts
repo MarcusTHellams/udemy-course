@@ -17,15 +17,11 @@ export class AppController {
 
   @Get()
   async getHello(): Promise<any> {
-    const user = await this.repo.userRepo
-      .createQueryBuilder('user')
-      .select(['user.id'])
-      .innerJoinAndSelect('user.roles', 'roles')
-      .whereInIds(['653453b7-ec29-47ee-8ba8-70616c37a2e8'])
+    const users = await this.repo.roleRepo
+      .createQueryBuilder('role')
+      .where(`lower(role.name) LIKE '%${''}%'`)
       .getMany();
-
-    const keyedUsers = keyBy(user, (user) => user.id);
-    console.log('keyedUsers: ', keyedUsers);
+    console.log('users: ', users);
 
     // for (let i = 0; i < 100; i++) {
     //   const title = faker.lorem.words(
@@ -59,7 +55,7 @@ export class AppController {
 
     // user.roles = userRoles.map((ur) => ur.role);
 
-    return user;
+    return users;
     // const roleId = '07203ac4-93fd-46cf-8cb9-0b09e643b246';
 
     // for (let index = 0; index < 8; index++) {

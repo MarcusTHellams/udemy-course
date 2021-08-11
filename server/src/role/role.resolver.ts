@@ -1,3 +1,5 @@
+import { PageQueryInput } from 'src/common/entities/pageQuery.input';
+import { PaginatedRole } from './entities/paginatedRoles.entity';
 import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
 import { RoleService } from './role.service';
 import { Role } from './entities/role.entity';
@@ -13,9 +15,11 @@ export class RoleResolver {
     return this.roleService.create(createRoleInput);
   }
 
-  @Query(() => [Role], { name: 'roles' })
-  findAll() {
-    return this.roleService.findAll();
+  @Query(() => PaginatedRole, { name: 'roles' })
+  findAll(
+    @Args('pageQueryInput', { nullable: true }) pageQueryInput: PageQueryInput,
+  ) {
+    return this.roleService.findAll(pageQueryInput);
   }
 
   @Query(() => Role, { name: 'role' })

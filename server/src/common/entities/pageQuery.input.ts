@@ -28,4 +28,7 @@ export class PageQueryInput {
 
   @Field(() => [OrderByInput], { nullable: true })
   orderBy: OrderByInput[];
+
+  @Field(() => String, { nullable: true })
+  search: string;
 }

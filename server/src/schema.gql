@@ -66,13 +66,19 @@ type PaginatedTask {
   items: [Task!]!
 }
 
+type PaginatedRole {
+  meta: Meta
+  links: Links
+  items: [Role!]!
+}
+
 type Query {
   users(pageQueryInput: PageQueryInput): PaginatedUser!
   user(id: String!): User!
   profile: String!
   tasks(pageQueryInput: PageQueryInput): PaginatedTask!
   task(id: String!): Task!
-  roles: [Role!]!
+  roles(pageQueryInput: PageQueryInput): PaginatedRole!
   role(id: Int!): Role!
 }
 
@@ -80,6 +86,7 @@ input PageQueryInput {
   page: Int
   limit: Int
   orderBy: [OrderByInput!]
+  search: String
 }
 
 input OrderByInput {

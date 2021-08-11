@@ -55,7 +55,17 @@ type UserFormProps = {
 };
 
 const queryFn = () => {
-  return client.query({ query: getRoles }).then(({ data: { roles } }) => roles);
+  return client
+    .query({
+      query: getRoles,
+      variables: {
+        pageQueryInput: {
+          page: 1,
+          limit: 100000000,
+        },
+      },
+    })
+    .then(({ data: { roles } }) => roles);
 };
 
 const queryKey = "roles";
