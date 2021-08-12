@@ -16,10 +16,6 @@ import {
   Text,
   Icon,
   useToast,
-  Input,
-  FormControl,
-  FormLabel,
-  FormHelperText,
   Container,
 } from '@chakra-ui/react';
 import * as React from 'react';
@@ -46,7 +42,7 @@ import { useMutation, useQueryClient, MutateFunction } from 'react-query';
 import { client } from '../../graphql/client';
 import { removeUser } from '../../graphql/mutations/user';
 import { useIsLoggedIn } from '../../hooks/useIsLoggedIn';
-import debounce from 'lodash/debounce';
+import { SearchComponent } from '../SearchComponent/SearchComponent';
 
 type UserListComponentProps = {
   paginatedUsers?: PaginatedResults<User>;
@@ -76,20 +72,12 @@ export const UserListComponent = ({
   const isAdmin = useIsAdmin();
   const [open, setOpen] = React.useState(false);
   const [currentUser, setCurrentUser] = React.useState<CurrentUser>();
-  const [searchText, setSearchText] = React.useState('');
   const toast = useToast();
   const isLoggedIn = useIsLoggedIn();
   const changeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPage(1);
     setSearch(event.target.value);
   };
-
-  const changeHandlerRef = React.useRef(changeHandler);
-
-  const debouncedChangeHandler = React.useMemo(
-    () => debounce(changeHandlerRef.current, 300),
-    []
-  );
 
   const mutationFn = React.useCallback((userId) => {
     return client
@@ -260,23 +248,12 @@ export const UserListComponent = ({
         <Heading size='xl' as='h1' mb='4'>
           Users
         </Heading>
-        <Container maxW='container.sm' centerContent>
-          <FormControl mb='4'>
-            <FormLabel fontWeight='bold' htmlFor='search'>
-              User Search
-            </FormLabel>
-            <Input
-              name='search'
-              id='search'
-              type='search'
-              value={searchText}
-              onChange={(event) => {
-                setSearchText(event.target.value);
-                debouncedChangeHandler(event);
-              }}
-            />
-            <FormHelperText>Search by username and email</FormHelperText>
-          </FormControl>
+        <Container mb='4' maxW='container.sm' centerContent>
+          <SearchComponent
+            title='User Search'
+            descriptionText='Search by username and email'
+            searchHandler={changeHandler}
+          />
         </Container>
         <ResponsiveTable
           reactTableProps={getTableProps()}

@@ -13,10 +13,10 @@ export const UserList = (): JSX.Element => {
   const [orderBy, setOrderBy] = React.useState<OrderByType[]>([]);
   const [search, setSearch] = React.useState('');
 
-  const queryKey = React.useMemo(
-    () => ["users", page, orderBy, search],
-    [page, orderBy, search]
-  );
+const queryKey = React.useMemo(
+  () => ['users', page, orderBy, search],
+  [page, orderBy, search]
+);
   const queryFn = React.useCallback(() => {
     return client
       .query({

@@ -15,13 +15,14 @@ import {
   WrapItem,
   Icon,
   useToast,
-} from "@chakra-ui/react";
-import { Link as RLink } from "react-router-dom";
-import { DeletionVerification } from "../DeletionVerification/DeletionVerification";
-import { client } from "../../graphql/client";
-import { useMutation, useQueryClient } from "react-query";
-import { removeTask } from "../../graphql/mutations/removeTask";
-import { PaginatedResults } from "../../types/paginatedResults.type";
+  Container,
+} from '@chakra-ui/react';
+import { Link as RLink } from 'react-router-dom';
+import { DeletionVerification } from '../DeletionVerification/DeletionVerification';
+import { client } from '../../graphql/client';
+import { useMutation, useQueryClient } from 'react-query';
+import { removeTask } from '../../graphql/mutations/removeTask';
+import { PaginatedResults } from '../../types/paginatedResults.type';
 import {
   useTable,
   usePagination,
@@ -29,19 +30,21 @@ import {
   Row,
   HeaderGroup,
   useSortBy,
-} from "react-table";
-import { Paginated } from "@makotot/paginated";
-import { FaChevronDown, FaChevronUp } from "react-icons/fa";
-import { DirectionEnum, OrderByType } from "../../types/orderBy.type";
-import { ResponsiveTable } from "../ResponsiveTable/ResponsiveTable";
-import { useIsLoggedIn } from "../../hooks/useIsLoggedIn";
-import { useIsAdmin } from "../../hooks/useIsAdmin";
+} from 'react-table';
+import { Paginated } from '@makotot/paginated';
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { DirectionEnum, OrderByType } from '../../types/orderBy.type';
+import { ResponsiveTable } from '../ResponsiveTable/ResponsiveTable';
+import { useIsLoggedIn } from '../../hooks/useIsLoggedIn';
+import { useIsAdmin } from '../../hooks/useIsAdmin';
+import { SearchComponent } from '../SearchComponent/SearchComponent';
 
 type TaskListComponentProps = {
   paginatedTasks?: PaginatedResults<Task>;
   setPage: React.Dispatch<React.SetStateAction<number>>;
   setLimit: React.Dispatch<React.SetStateAction<number>>;
   setOrderBy: React.Dispatch<React.SetStateAction<OrderByType[]>>;
+  setSearch: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export const TaskListComponent = ({
@@ -52,6 +55,7 @@ export const TaskListComponent = ({
   setPage,
   setLimit,
   setOrderBy,
+  setSearch,
 }: TaskListComponentProps): JSX.Element => {
   const {
     items,
@@ -63,45 +67,50 @@ export const TaskListComponent = ({
   const isLoggedIn = useIsLoggedIn();
   const isAdmin = useIsAdmin();
 
+  const changeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPage(1);
+    setSearch(event.target.value);
+  };
+
   const data = React.useMemo(() => items, [items]);
 
   const columns: Column<Task>[] = React.useMemo(() => {
     const cols = [
       {
-        Header: "Task Info",
+        Header: 'Task Info',
         columns: [
           {
-            Header: "Title",
-            accessor: "title",
-            id: "task.title",
+            Header: 'Title',
+            accessor: 'title',
+            id: 'task.title',
           },
           {
-            Header: "Description",
-            accessor: "description",
-            id: "task.id",
+            Header: 'Description',
+            accessor: 'description',
+            id: 'task.id',
           },
         ],
       },
       {
-        Header: "User",
+        Header: 'User',
         columns: [
           {
-            Header: "Username",
+            Header: 'Username',
             accessor: (originalRow: Task) => {
               if (originalRow?.user) {
                 return originalRow.user.username;
               } else {
-                return "None";
+                return 'None';
               }
             },
           },
           {
-            Header: "Email",
+            Header: 'Email',
             accessor: (originalRow: Task) => {
               if (originalRow?.user) {
                 return originalRow.user.email;
               } else {
-                return "None";
+                return 'None';
               }
             },
           },
@@ -110,34 +119,34 @@ export const TaskListComponent = ({
     ];
     if (isLoggedIn) {
       cols.push({
-        Header: "Actions",
-        id: "Actions",
+        Header: 'Actions',
+        id: 'Actions',
         columns: [
           {
-            Header: "Edit/Delete",
+            Header: 'Edit/Delete',
             //@ts-ignore
             Cell: ({ row }: { row: Row<Task> }) => {
               const { id } = row.original;
               return (
-                <ButtonGroup isAttached size="xs">
+                <ButtonGroup isAttached size='xs'>
                   <Button
-                    borderRightRadius={isAdmin ? "0" : ""}
+                    borderRightRadius={isAdmin ? '0' : ''}
                     as={RLink}
                     to={`tasks/${id}`}
-                    rounded="full"
-                    colorScheme="green"
+                    rounded='full'
+                    colorScheme='green'
                   >
                     Edit Task
                   </Button>
                   {isAdmin && (
                     <Button
-                      borderLeftRadius="0"
+                      borderLeftRadius='0'
                       onClick={() => {
                         setCurrentTask(id);
                         setOpen(true);
                       }}
-                      rounded="full"
-                      colorScheme="red"
+                      rounded='full'
+                      colorScheme='red'
                     >
                       Delete Task
                     </Button>
@@ -145,7 +154,7 @@ export const TaskListComponent = ({
                 </ButtonGroup>
               );
             },
-            id: "edit/delete",
+            id: 'edit/delete',
           },
         ],
       });
@@ -197,11 +206,11 @@ export const TaskListComponent = ({
     mutationFn,
     {
       onSuccess: () => {
-        queryClient.invalidateQueries("tasks");
+        queryClient.invalidateQueries('tasks');
         toast({
-          position: "top",
-          status: "success",
-          title: "Task Deleted",
+          position: 'top',
+          status: 'success',
+          title: 'Task Deleted',
         });
       },
       onError(error) {
@@ -209,9 +218,9 @@ export const TaskListComponent = ({
           description: error.message,
           duration: null,
           isClosable: true,
-          position: "top",
-          status: "error",
-          title: "Error",
+          position: 'top',
+          status: 'error',
+          title: 'Error',
         });
       },
       onSettled: () => {
@@ -237,25 +246,32 @@ export const TaskListComponent = ({
   return (
     <>
       <Heading
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        as="h1"
-        mb="8"
+        display='flex'
+        justifyContent='space-between'
+        alignItems='center'
+        as='h1'
+        mb='8'
       >
         Tasks
         <Button
           as={RLink}
-          to="/tasks/create"
-          colorScheme="green"
-          rounded="full"
+          to='/tasks/create'
+          colorScheme='green'
+          rounded='full'
         >
           New Task
         </Button>
       </Heading>
+      <Container mb='4' maxW='container.sm' centerContent>
+        <SearchComponent
+          title='Task Search'
+          descriptionText='Search by title, description, username, and email'
+          searchHandler={changeHandler}
+        />
+      </Container>
       <ResponsiveTable
         reactTableProps={getTableProps()}
-        tableProps={{ variant: "simple", colorScheme: "blackAlpha" }}
+        tableProps={{ variant: 'simple', colorScheme: 'blackAlpha' }}
       >
         <Thead>
           {headerGroups.map((headerGroup: HeaderGroup<Task>) => {
@@ -266,9 +282,9 @@ export const TaskListComponent = ({
                     <Th
                       {...column.getHeaderProps(column.getSortByToggleProps())}
                     >
-                      <Wrap as="div">
-                        <WrapItem as="div">{column.render("Header")}</WrapItem>
-                        <WrapItem as="div">
+                      <Wrap as='div'>
+                        <WrapItem as='div'>{column.render('Header')}</WrapItem>
+                        <WrapItem as='div'>
                           {column.isSorted ? (
                             column.isSortedDesc ? (
                               <Icon as={FaChevronDown} w={4} h={4} />
@@ -276,7 +292,7 @@ export const TaskListComponent = ({
                               <Icon as={FaChevronUp} w={4} h={4} />
                             )
                           ) : (
-                            ""
+                            ''
                           )}
                         </WrapItem>
                       </Wrap>
@@ -299,9 +315,9 @@ export const TaskListComponent = ({
                         {...cell.column.getHeaderProps(
                           cell.column.getSortByToggleProps()
                         )}
-                        className="mobile-header"
-                        fontWeight="bold"
-                        as="span"
+                        className='mobile-header'
+                        fontWeight='bold'
+                        as='span'
                       >
                         {cell.column.Header}:
                         {cell.column.isSorted ? (
@@ -311,10 +327,10 @@ export const TaskListComponent = ({
                             <Icon as={FaChevronUp} w={4} h={4} />
                           )
                         ) : (
-                          ""
+                          ''
                         )}
                       </Text>
-                      {cell.render("Cell")}
+                      {cell.render('Cell')}
                     </Td>
                   );
                 })}
@@ -324,7 +340,7 @@ export const TaskListComponent = ({
         </Tbody>
       </ResponsiveTable>
       {totalPages > 1 && (
-        <Box mb="8">
+        <Box mb='8'>
           <Paginated
             currentPage={currentPage}
             totalPage={totalPages}
@@ -342,10 +358,10 @@ export const TaskListComponent = ({
               isNextTruncated,
             }) => (
               <ButtonGroup
-                flexWrap="wrap"
-                mt="5"
-                colorScheme="blue"
-                variant="outline"
+                flexWrap='wrap'
+                mt='5'
+                colorScheme='blue'
+                variant='outline'
                 isAttached={true}
               >
                 {hasPrev() && (
@@ -364,7 +380,7 @@ export const TaskListComponent = ({
                 {isPrevTruncated && <Button>...</Button>}
                 {pages.map((page) => {
                   return page === currentPage ? (
-                    <Button variant="solid" disabled={true} key={page}>
+                    <Button variant='solid' disabled={true} key={page}>
                       {page}
                     </Button>
                   ) : (
@@ -409,8 +425,8 @@ export const TaskListComponent = ({
         }}
         isOpen={open}
         {...{ onClose, onDelete }}
-        title="Delete Task"
-        bodyText="Are you sure you want to delete the task?"
+        title='Delete Task'
+        bodyText='Are you sure you want to delete the task?'
       />
     </>
   );

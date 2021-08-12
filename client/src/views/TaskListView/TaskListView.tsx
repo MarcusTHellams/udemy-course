@@ -13,8 +13,12 @@ export const TaskListView = (): JSX.Element => {
   const [page, setPage] = React.useState(1);
   const [limit, setLimit] = React.useState(10);
   const [orderBy, setOrderBy] = React.useState<OrderByType[]>([]);
+  const [search, setSearch] = React.useState('');
 
-  const queryKey = React.useMemo(() => ["tasks", page, orderBy], [page, orderBy]);
+  const queryKey = React.useMemo(
+    () => ['tasks', page, orderBy, search],
+    [page, orderBy, search]
+  );
   const queryFn = React.useCallback(() => {
     return client
       .query({
@@ -24,11 +28,12 @@ export const TaskListView = (): JSX.Element => {
             limit,
             page,
             orderBy,
+            search,
           },
         },
       })
       .then(({ data: { tasks } }) => tasks);
-  }, [limit, page, orderBy]);
+  }, [limit, page, orderBy, search]);
 
   return (
     <>
@@ -40,7 +45,7 @@ export const TaskListView = (): JSX.Element => {
             <>
               <Layout>
                 <TaskListComponent
-                  {...{ setLimit, setPage, setOrderBy }}
+                  {...{ setLimit, setPage, setOrderBy, setSearch }}
                   paginatedTasks={paginatedTasks as PaginatedResults<Task>}
                 />
               </Layout>

@@ -30,7 +30,7 @@ export class TaskService {
   }
 
   async findAll(
-    options: FindAll = { page: 1, limit: 1, orderBy: [] },
+    options: FindAll = { page: 1, limit: 1, orderBy: [], search: null },
   ): Promise<Pagination<Task>> {
     const QB = this.repo.taskRepo
       .createQueryBuilder('task')
@@ -41,6 +41,12 @@ export class TaskService {
       acc[`LOWER(${value.field})`] = value.direction;
       return acc;
     }, {});
+
+    if (!!options.search) {
+      QB.where(
+        `lower(task.title) || lower(task.description) || lower(user.username) || lower(user.email) LIKE '%${options.search}%'`,
+      );
+    }
 
     if (!!orderBy.length) {
       QB.orderBy(formattedOrderby);
