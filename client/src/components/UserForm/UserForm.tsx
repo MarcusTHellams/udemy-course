@@ -144,6 +144,7 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
     handleSubmit,
     control,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<UserFormValues>({
     defaultValues: user || undefined,
@@ -153,6 +154,13 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
   });
 
   const password = watch("password");
+  const roles = watch("roles");
+
+  React.useEffect(() => {
+    if (!roles && user?.roles) {
+      setValue("roles", user?.roles);
+    }
+  }, [setValue, roles, user]);
 
   const { mutate, isLoading, isSuccess } = useMutation<
     User,
@@ -168,18 +176,17 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
         title: user ? "User Updated" : "User Created",
       });
     },
-    onError(error){
+    onError(error) {
       toast({
         description: error.message,
         duration: null,
         isClosable: true,
         position: "top",
-        status: 'error',
-        title: 'Error',
+        status: "error",
+        title: "Error",
       });
-    }
+    },
   });
-
 
   const submitHandler: SubmitHandler<UserFormValues> = (values) => {
     mutate(values);

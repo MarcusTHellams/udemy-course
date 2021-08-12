@@ -54,11 +54,23 @@ export const TaskForm = ({ task = null }: TaskFormProps): JSX.Element => {
     register,
     handleSubmit,
     control,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<TaskFormValues>({
     defaultValues: task || {},
     shouldUnregister: true,
   });
+
+  const userId = watch('userId');
+  const userIdRef = React.useRef(userId);
+  const taskRef = React.useRef(task);
+
+  React.useEffect(() => {
+    if (!userIdRef.current && taskRef?.current?.user) {
+      setValue("userId", taskRef.current.user.id);
+    }
+  }, [setValue]);
 
   const history = useHistory();
   const queryClient = useQueryClient();
