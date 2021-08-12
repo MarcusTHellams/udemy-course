@@ -20,14 +20,15 @@ import {
   FormControl,
   FormLabel,
   FormHelperText,
-} from "@chakra-ui/react";
-import * as React from "react";
-import { Link } from "react-router-dom";
-import { Role } from "../../types/role.type";
-import { User } from "../../types/user.type";
-import { Layout } from "../Layout/Layout";
-import { PaginatedResults } from "../../types/paginatedResults.type";
-import { DirectionEnum, OrderByType } from "../../types/orderBy.type";
+  Container,
+} from '@chakra-ui/react';
+import * as React from 'react';
+import { Link } from 'react-router-dom';
+import { Role } from '../../types/role.type';
+import { User } from '../../types/user.type';
+import { Layout } from '../Layout/Layout';
+import { PaginatedResults } from '../../types/paginatedResults.type';
+import { DirectionEnum, OrderByType } from '../../types/orderBy.type';
 import {
   useTable,
   usePagination,
@@ -35,16 +36,16 @@ import {
   Row,
   HeaderGroup,
   useSortBy,
-} from "react-table";
-import { Paginated } from "@makotot/paginated";
-import { FaChevronDown, FaChevronUp } from "react-icons/fa";
-import { ResponsiveTable } from "../ResponsiveTable/ResponsiveTable";
-import { useIsAdmin } from "../../hooks/useIsAdmin";
-import { DeletionVerification } from "../DeletionVerification/DeletionVerification";
-import { useMutation, useQueryClient, MutateFunction } from "react-query";
-import { client } from "../../graphql/client";
-import { removeUser } from "../../graphql/mutations/user";
-import { useIsLoggedIn } from "../../hooks/useIsLoggedIn";
+} from 'react-table';
+import { Paginated } from '@makotot/paginated';
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { ResponsiveTable } from '../ResponsiveTable/ResponsiveTable';
+import { useIsAdmin } from '../../hooks/useIsAdmin';
+import { DeletionVerification } from '../DeletionVerification/DeletionVerification';
+import { useMutation, useQueryClient, MutateFunction } from 'react-query';
+import { client } from '../../graphql/client';
+import { removeUser } from '../../graphql/mutations/user';
+import { useIsLoggedIn } from '../../hooks/useIsLoggedIn';
 import debounce from 'lodash/debounce';
 
 type UserListComponentProps = {
@@ -77,9 +78,19 @@ export const UserListComponent = ({
   const isAdmin = useIsAdmin();
   const [open, setOpen] = React.useState(false);
   const [currentUser, setCurrentUser] = React.useState<CurrentUser>();
+  const [searchText, setSearchText] = React.useState('');
   const toast = useToast();
   const isLoggedIn = useIsLoggedIn();
-  const changeHandler = React.useMemo(() => {}, []);
+  const changeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(event.target.value);
+  };
+
+  const changeHandlerRef = React.useRef(changeHandler);
+
+  const debouncedChangeHandler = React.useMemo(
+    () => debounce(changeHandlerRef.current, 300),
+    []
+  );
 
   const mutationFn = React.useCallback((userId) => {
     return client
@@ -106,9 +117,9 @@ export const UserListComponent = ({
         description: error?.message,
         duration: null,
         isClosable: true,
-        position: "top",
-        status: "error",
-        title: "Error",
+        position: 'top',
+        status: 'error',
+        title: 'Error',
       });
     },
   });
@@ -131,28 +142,28 @@ export const UserListComponent = ({
   const columns: Column<User>[] = React.useMemo(() => {
     const cols = [
       {
-        Header: "Username",
-        accessor: "username",
-        id: "user.username",
+        Header: 'Username',
+        accessor: 'username',
+        id: 'user.username',
         Cell: ({ row }: { row: Row<User> }) => {
           const { username, imageUrl } = row.original;
           return (
             <>
               <HStack>
-                <Avatar size="sm" name={username} src={imageUrl} />
-                <Text wordBreak="break-all">{username}</Text>
+                <Avatar size='sm' name={username} src={imageUrl} />
+                <Text wordBreak='break-all'>{username}</Text>
               </HStack>
             </>
           );
         },
       },
       {
-        Header: "Email",
-        accessor: "email",
-        id: "user.email",
+        Header: 'Email',
+        accessor: 'email',
+        id: 'user.email',
       },
       {
-        Header: "Roles",
+        Header: 'Roles',
         Cell: ({ row }: { row: Row<User> }) => {
           const { roles } = row.original;
           return (
@@ -163,7 +174,7 @@ export const UserListComponent = ({
                     return (
                       <React.Fragment key={role.id}>
                         <WrapItem>
-                          <Badge rounded="full">{role.name}</Badge>
+                          <Badge rounded='full'>{role.name}</Badge>
                         </WrapItem>
                       </React.Fragment>
                     );
@@ -178,18 +189,18 @@ export const UserListComponent = ({
     if (isLoggedIn) {
       //@ts-ignore
       cols.push({
-        Header: "Actions",
-        id: "actions",
+        Header: 'Actions',
+        id: 'actions',
         Cell: ({ row }: { row: Row<User> }) => {
           const { id } = row.original;
           return (
-            <ButtonGroup isAttached size="xs">
+            <ButtonGroup isAttached size='xs'>
               <Button
-                borderRightRadius={isAdmin ? "0" : ""}
+                borderRightRadius={isAdmin ? '0' : ''}
                 as={Link}
                 to={`users/${id}`}
-                rounded="full"
-                colorScheme="green"
+                rounded='full'
+                colorScheme='green'
               >
                 Edit User
               </Button>
@@ -199,9 +210,9 @@ export const UserListComponent = ({
                     setCurrentUser(id);
                     setOpen(true);
                   }}
-                  borderLeftRadius="0"
-                  rounded="full"
-                  colorScheme="red"
+                  borderLeftRadius='0'
+                  rounded='full'
+                  colorScheme='red'
                 >
                   Delete User
                 </Button>
@@ -247,27 +258,30 @@ export const UserListComponent = ({
   return (
     <>
       <Layout>
-        <Heading size="xl" as="h1" mb="4">
+        <Heading size='xl' as='h1' mb='4'>
           Users
         </Heading>
-        <FormControl mb="4">
-          <FormLabel fontWeight="bold" htmlFor="search">
-            User Search
-          </FormLabel>
-          <Input
-            name="search"
-            id="search"
-            type="search"
-            value={search}
-            onChange={(event) => {
-              setSearch(event.target.value);
-            }}
-          />
-          <FormHelperText>Search by username and email</FormHelperText>
-        </FormControl>
+        <Container maxW='container.sm' centerContent>
+          <FormControl mb='4'>
+            <FormLabel fontWeight='bold' htmlFor='search'>
+              User Search
+            </FormLabel>
+            <Input
+              name='search'
+              id='search'
+              type='search'
+              value={searchText}
+              onChange={(event) => {
+                setSearchText(event.target.value);
+                debouncedChangeHandler(event);
+              }}
+            />
+            <FormHelperText>Search by username and email</FormHelperText>
+          </FormControl>
+        </Container>
         <ResponsiveTable
           reactTableProps={getTableProps()}
-          tableProps={{ variant: "simple", colorScheme: "blackAlpha" }}
+          tableProps={{ variant: 'simple', colorScheme: 'blackAlpha' }}
         >
           <Thead>
             {headerGroups.map((headerGroup: HeaderGroup<User>) => {
@@ -280,11 +294,11 @@ export const UserListComponent = ({
                           column.getSortByToggleProps()
                         )}
                       >
-                        <Wrap as="div">
-                          <WrapItem as="div">
-                            {column.render("Header")}
+                        <Wrap as='div'>
+                          <WrapItem as='div'>
+                            {column.render('Header')}
                           </WrapItem>
-                          <WrapItem as="div">
+                          <WrapItem as='div'>
                             {column.isSorted ? (
                               column.isSortedDesc ? (
                                 <Icon as={FaChevronDown} w={4} h={4} />
@@ -292,7 +306,7 @@ export const UserListComponent = ({
                                 <Icon as={FaChevronUp} w={4} h={4} />
                               )
                             ) : (
-                              ""
+                              ''
                             )}
                           </WrapItem>
                         </Wrap>
@@ -315,9 +329,9 @@ export const UserListComponent = ({
                           {...cell.column.getHeaderProps(
                             cell.column.getSortByToggleProps()
                           )}
-                          className="mobile-header"
-                          fontWeight="bold"
-                          as="span"
+                          className='mobile-header'
+                          fontWeight='bold'
+                          as='span'
                         >
                           {cell.column.Header}:
                           {cell.column.isSorted ? (
@@ -327,10 +341,10 @@ export const UserListComponent = ({
                               <Icon as={FaChevronUp} w={4} h={4} />
                             )
                           ) : (
-                            ""
+                            ''
                           )}
                         </Text>
-                        {cell.render("Cell")}
+                        {cell.render('Cell')}
                       </Td>
                     );
                   })}
@@ -340,7 +354,7 @@ export const UserListComponent = ({
           </Tbody>
         </ResponsiveTable>
         {totalPages > 1 && (
-          <Box mb="8">
+          <Box mb='8'>
             <Paginated
               currentPage={currentPage}
               totalPage={totalPages}
@@ -358,10 +372,10 @@ export const UserListComponent = ({
                 isNextTruncated,
               }) => (
                 <ButtonGroup
-                  flexWrap="wrap"
-                  mt="5"
-                  colorScheme="blue"
-                  variant="outline"
+                  flexWrap='wrap'
+                  mt='5'
+                  colorScheme='blue'
+                  variant='outline'
                   isAttached={true}
                 >
                   {hasPrev() && (
@@ -380,7 +394,7 @@ export const UserListComponent = ({
                   {isPrevTruncated && <Button>...</Button>}
                   {pages.map((page) => {
                     return page === currentPage ? (
-                      <Button variant="solid" disabled={true} key={page}>
+                      <Button variant='solid' disabled={true} key={page}>
                         {page}
                       </Button>
                     ) : (
@@ -425,8 +439,8 @@ export const UserListComponent = ({
         }}
         {...{ onClose, onDelete }}
         isOpen={open}
-        title="Delete User"
-        bodyText="Are you sure you want to delete the user?"
+        title='Delete User'
+        bodyText='Are you sure you want to delete the user?'
       />
     </>
   );
