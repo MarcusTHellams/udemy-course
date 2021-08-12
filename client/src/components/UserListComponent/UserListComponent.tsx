@@ -16,6 +16,10 @@ import {
   Text,
   Icon,
   useToast,
+  Input,
+  FormControl,
+  FormLabel,
+  FormHelperText,
 } from "@chakra-ui/react";
 import * as React from "react";
 import { Link } from "react-router-dom";
@@ -41,12 +45,15 @@ import { useMutation, useQueryClient, MutateFunction } from "react-query";
 import { client } from "../../graphql/client";
 import { removeUser } from "../../graphql/mutations/user";
 import { useIsLoggedIn } from "../../hooks/useIsLoggedIn";
+import debounce from 'lodash/debounce';
 
 type UserListComponentProps = {
   paginatedUsers?: PaginatedResults<User>;
   setPage: React.Dispatch<React.SetStateAction<number>>;
   setLimit: React.Dispatch<React.SetStateAction<number>>;
   setOrderBy: React.Dispatch<React.SetStateAction<OrderByType[]>>;
+  setSearch: React.Dispatch<React.SetStateAction<string>>;
+  search: string;
 };
 
 type CurrentUser = string | null | undefined;
@@ -58,6 +65,8 @@ export const UserListComponent = ({
   },
   setPage,
   setOrderBy,
+  setSearch,
+  search,
 }: UserListComponentProps): JSX.Element => {
   const {
     items,
@@ -70,6 +79,7 @@ export const UserListComponent = ({
   const [currentUser, setCurrentUser] = React.useState<CurrentUser>();
   const toast = useToast();
   const isLoggedIn = useIsLoggedIn();
+  const changeHandler = React.useMemo(() => {}, []);
 
   const mutationFn = React.useCallback((userId) => {
     return client
@@ -237,9 +247,24 @@ export const UserListComponent = ({
   return (
     <>
       <Layout>
-        <Heading size="xl" as="h1">
+        <Heading size="xl" as="h1" mb="4">
           Users
         </Heading>
+        <FormControl mb="4">
+          <FormLabel fontWeight="bold" htmlFor="search">
+            User Search
+          </FormLabel>
+          <Input
+            name="search"
+            id="search"
+            type="search"
+            value={search}
+            onChange={(event) => {
+              setSearch(event.target.value);
+            }}
+          />
+          <FormHelperText>Search by username and email</FormHelperText>
+        </FormControl>
         <ResponsiveTable
           reactTableProps={getTableProps()}
           tableProps={{ variant: "simple", colorScheme: "blackAlpha" }}

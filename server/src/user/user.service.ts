@@ -100,7 +100,7 @@ export class UserService {
   }
 
   async findAll(
-    options: FindAll = { page: 1, limit: 10, orderBy: [] },
+    options: FindAll = { page: 1, limit: 10, orderBy: [], search: null },
   ): Promise<Pagination<User>> {
     const QB = this.repo.userRepo.createQueryBuilder('user');
     const { orderBy = [] } = options;
@@ -112,6 +112,12 @@ export class UserService {
 
     if (!!orderBy.length) {
       QB.orderBy(formattedOrderby);
+    }
+
+    if (!!options.search) {
+      QB.where(
+        `lower(user.username) || lower(user.email) LIKE '%${options.search}%'`,
+      );
     }
 
     return await paginate<User>(QB, {
