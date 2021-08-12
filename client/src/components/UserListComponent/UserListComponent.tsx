@@ -54,7 +54,6 @@ type UserListComponentProps = {
   setLimit: React.Dispatch<React.SetStateAction<number>>;
   setOrderBy: React.Dispatch<React.SetStateAction<OrderByType[]>>;
   setSearch: React.Dispatch<React.SetStateAction<string>>;
-  search: string;
 };
 
 type CurrentUser = string | null | undefined;
@@ -67,7 +66,6 @@ export const UserListComponent = ({
   setPage,
   setOrderBy,
   setSearch,
-  search,
 }: UserListComponentProps): JSX.Element => {
   const {
     items,
@@ -82,6 +80,7 @@ export const UserListComponent = ({
   const toast = useToast();
   const isLoggedIn = useIsLoggedIn();
   const changeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPage(1);
     setSearch(event.target.value);
   };
 

@@ -42,7 +42,7 @@ export const UserList = (): JSX.Element => {
           return (
             <>
               <UserListComponent
-                {...{ setPage, setLimit, setOrderBy, setSearch, search }}
+                {...{ setPage, setLimit, setOrderBy, setSearch }}
                 paginatedUsers={paginatedUsers as PaginatedResults<User>}
               />
             </>
