@@ -100,9 +100,13 @@ export class UserService {
   }
 
   async findAll(
-    options: FindAll = { page: 1, limit: 10, orderBy: [], search: null },
+    options: FindAll = { page: 1, limit: 10, orderBy: [], search: '' },
   ): Promise<Pagination<User>> {
-    const QB = this.repo.userRepo.createQueryBuilder('user');
+    const QB = this.repo.userRepo
+      .createQueryBuilder('user')
+      .leftJoin('user.roles', 'roles')
+      .groupBy('user.id');
+
     const { orderBy = [] } = options;
 
     const formattedOrderby = orderBy.reduce((acc, value) => {
@@ -115,10 +119,52 @@ export class UserService {
     }
 
     if (!!options.search) {
-      QB.where(
-        `lower(user.username) || lower(user.email) LIKE '%${options.search}%'`,
-      );
+      QB.where('lower(user.username) like :usernameSearch', {
+        usernameSearch: `%${options.search}%`,
+      })
+        .orWhere('lower(user.email) like :emailSearch', {
+          emailSearch: `%${options.search}%`,
+        })
+        .orWhere('lower(roles.name) like :roleSearch', {
+          roleSearch: `%${options.search}%`,
+        });
     }
+
+    // const users = await QB.limit(+options.limit)
+    //   .groupBy('user.id')
+    //   .offset((+options.page - 1) * +options.limit)
+    //   .getMany();
+    // const count = await this.repo.userRepo.query(
+    //   `Select count(*) as 'count' from (SELECT user.* from  user LEFT JOIN user_role on user.id = user_role.userId LEFT  JOIN role on  user_role.roleId = role.id  WHERE lower(role.name) like '%${
+    //     options.search || ''
+    //   }%'  or  lower(user.email)  like '%${
+    //     options.search || ''
+    //   }%'  or  lower(username) like '%${
+    //     options.search || ''
+    //   }%'  GROUP by user.id)`,
+    // );
+
+    // const currentPage = +options.page;
+    // const itemCount = users.length;
+    // const itemsPerPage = +options.limit;
+    // const totalItems = count[0].count;
+    // const totalPages = Math.ceil(count[0].count / +options.limit);
+
+    // console.log('count: ', count);
+    // console.log('users: ', users.length);
+    // console.log('pages: ', totalPages);
+
+    // return {
+    //   items: users,
+    //   links: null,
+    //   meta: {
+    //     currentPage,
+    //     itemCount,
+    //     itemsPerPage,
+    //     totalItems,
+    //     totalPages,
+    //   },
+    // };
 
     return await paginate<User>(QB, {
       ...options,

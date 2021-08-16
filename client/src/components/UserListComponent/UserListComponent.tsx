@@ -251,7 +251,7 @@ export const UserListComponent = ({
         <Container mb='4' maxW='container.sm' centerContent>
           <SearchComponent
             title='User Search'
-            descriptionText='Search by username and email'
+            descriptionText='Search by username, or email, or by role name'
             searchHandler={changeHandler}
           />
         </Container>

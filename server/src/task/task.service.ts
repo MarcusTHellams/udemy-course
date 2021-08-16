@@ -24,7 +24,6 @@ export class TaskService {
       ...createTaskInput,
       id: uuidv4(),
     });
-    console.log('task: ', task);
     await this.repo.taskRepo.save(task);
     return task;
   }
@@ -34,7 +33,8 @@ export class TaskService {
   ): Promise<Pagination<Task>> {
     const QB = this.repo.taskRepo
       .createQueryBuilder('task')
-      .leftJoin('task.user', 'user');
+      .leftJoin('task.user', 'user')
+      .groupBy('task.id');
     const { orderBy = [] } = options;
 
     const formattedOrderby = orderBy.reduce((acc, value) => {

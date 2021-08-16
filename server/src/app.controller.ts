@@ -1,3 +1,4 @@
+import { User } from './user/entities/user.entity';
 import { RepoService } from './repo/repo.service';
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
@@ -7,6 +8,7 @@ import bcrypt = require('bcrypt');
 import bcrypt2 = require('bcryptjs');
 import groupBy = require('lodash.groupby');
 import keyBy = require('lodash.keyby');
+import { Paginate, PaginateQuery, paginate, Paginated } from 'nestjs-paginate';
 
 @Controller()
 export class AppController {
@@ -17,11 +19,20 @@ export class AppController {
 
   @Get()
   async getHello(): Promise<any> {
-    const users = await this.repo.roleRepo
-      .createQueryBuilder('role')
-      .where(`lower(role.name) LIKE '%${''}%'`)
-      .getMany();
-    console.log('users: ', users);
+    const searchTerm = '%hotmail%';
+    const qb = this.repo.userRepo
+      .createQueryBuilder('user')
+      .leftJoin('user.roles', 'roles')
+      .where(`user.email LIKE :email`, { email: searchTerm })
+      .orWhere(`user.username LIKE :username`, { username: searchTerm })
+      .orWhere(`roles.name LIKE :roleName`, { roleName: searchTerm });
+
+    const users = await qb.getMany();
+    console.log(qb.getQuery(), qb.getParameters());
+
+    const count = await this.repo.userRepo.query(
+      `Select count(*) from (SELECT user.* from  user LEFT JOIN user_role on user.id = user_role.userId LEFT  JOIN role on  user_role.roleId = role.id  WHERE lower(role.name) like '%hotmail%'  or  lower(user.email)  like '%hotmail%'  or  lower(username) like '%hotmail%'  GROUP by user.id)`,
+    );
 
     // for (let i = 0; i < 100; i++) {
     //   const title = faker.lorem.words(
@@ -55,7 +66,10 @@ export class AppController {
 
     // user.roles = userRoles.map((ur) => ur.role);
 
-    return users;
+    return {
+      users,
+      count,
+    };
     // const roleId = '07203ac4-93fd-46cf-8cb9-0b09e643b246';
 
     // for (let index = 0; index < 8; index++) {
