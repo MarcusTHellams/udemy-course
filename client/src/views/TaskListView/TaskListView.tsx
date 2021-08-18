@@ -2,7 +2,7 @@ import * as React from "react";
 import { Layout } from "../../components/Layout/Layout";
 import { Query } from "../../components/Query/Query";
 import { TaskListComponent } from "../../components/TaskListComponent/TaskListComponent";
-import { client, Rclient } from "../../graphql/client";
+import { Rclient } from "../../graphql/client";
 import { getTasks } from "../../graphql/queries/tasks";
 import { OrderByType } from "../../types/orderBy.type";
 import { PaginatedResults } from "../../types/paginatedResults.type";

@@ -15,7 +15,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useMutation, useQueryClient } from "react-query";
-import { client } from "../../graphql/client";
+import { client, Rclient } from "../../graphql/client";
 import { updateTask } from "../../graphql/mutations/updateTask";
 import { Query } from "../Query/Query";
 import { getUsers } from "../../graphql/queries/users";
@@ -33,12 +33,9 @@ type TaskFormProps = {
 };
 
 const queryFn = () => {
-  return client
-    .query({
-      query: getUsers,
-      variables: { pageQueryInput: { page: 1, limit: 1000000 } },
-    })
-    .then(({ data: { users } }) => users);
+  return Rclient.request(getUsers, {
+    pageQueryInput: { page: 1, limit: 1000000 },
+  }).then(({ users }) => users);
 };
 
 const queryKey = "users";
@@ -62,7 +59,7 @@ export const TaskForm = ({ task = null }: TaskFormProps): JSX.Element => {
     shouldUnregister: true,
   });
 
-  const userId = watch('userId');
+  const userId = watch("userId");
   const userIdRef = React.useRef(userId);
   const taskRef = React.useRef(task);
 
@@ -77,11 +74,8 @@ export const TaskForm = ({ task = null }: TaskFormProps): JSX.Element => {
 
   const mutationFn = React.useCallback(
     (data) => {
-      return client.mutate({
-        mutation: task ? updateTask : createTask,
-        variables: {
-          [task ? "updateTaskInput" : "createTaskInput"]: data,
-        },
+      return Rclient.request(task ? updateTask : createTask, {
+        [task ? "updateTaskInput" : "createTaskInput"]: data,
       });
     },
     [task]

@@ -1,17 +1,13 @@
 import * as React from 'react';
 import { useQuery } from 'react-query';
 import { useLocalStorage } from 'react-use';
-import { client } from '../../graphql/client';
+import { Rclient } from '../../graphql/client';
 import { getProfile } from '../../graphql/queries/profile';
 
 const queryFn = () => {
-  return client
-    .query({
-      query: getProfile,
-    })
-    .catch((error: Error) => {
-      throw new Error(error.message);
-    });
+  return Rclient.request(getProfile).catch((error: Error) => {
+    throw new Error(error.message);
+  })
 };
 interface UserContextInterface {
   userStorage: string | null | undefined;
