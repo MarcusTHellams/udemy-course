@@ -137,6 +137,7 @@ input UpdateTaskInput {
   description: String
   userId: String
   id: String!
+  user: UpdateUserInput
 }
 
 input UpdateRoleInput {

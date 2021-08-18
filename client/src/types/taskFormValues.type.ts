@@ -3,4 +3,5 @@ export type TaskFormValues = {
     id: string;
     title: string;
     userId?: string;
+    user: unknown;
   };

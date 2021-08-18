@@ -1,4 +1,4 @@
-import gql from "graphql-tag";
+import { gql } from 'graphql-request';
 import { CORE_USER_FIELDS } from "./../fragments/user";
 
 export const updateUser = gql`

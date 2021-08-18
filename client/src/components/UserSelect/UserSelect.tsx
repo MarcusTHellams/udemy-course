@@ -3,14 +3,22 @@ import { User } from "../../types/user.type";
 import Select, { Props } from "react-select";
 import { Controller, Control } from "react-hook-form";
 import { TaskFormValues } from "../../types/taskFormValues.type";
-import keyBy from "lodash/keyBy";
 
 type UserSelectProps = {
   [key: string]: any;
   users: User[];
   control: Control<TaskFormValues>;
-  name: "title" | "description" | "id" | "userId";
-  selectProps?: Props;
+  name: "title" | "description" | "id" | "userId" | "user";
+  selectProps?: Omit<
+    Props,
+    | "options"
+    | "getOptionLabel"
+    | "getOptionValue"
+    | "name"
+    | "onBlur"
+    | "onChange"
+    | "value"
+  >;
 };
 
 export const UserSelect = ({
@@ -19,26 +27,23 @@ export const UserSelect = ({
   name,
   selectProps,
 }: UserSelectProps): JSX.Element => {
-  const options = React.useMemo(() => {
-    return users.map((user) => ({ value: user.id, label: user.username }));
-  }, [users]);
-
-  const optionsMap = React.useMemo(() => {
-    return keyBy(options, (option) => option.value);
-  }, [options]);
-
   return (
     <>
       <Controller
         {...{ control, name }}
-        render={({ field: { name, onBlur, onChange, value = "" } }) => {
+        render={({ field: { name, onBlur, onChange, value } }) => {
+          const _value = value as { username: string; id: string };
           return (
             <Select
-              {...{ options, name, onBlur }}
-              onChange={(option) => {
-                onChange(option?.value);
+              {...{ name, onBlur, onChange }}
+              value={_value}
+              options={users}
+              getOptionLabel={(option) => {
+                return option.username;
               }}
-              value={optionsMap[value]}
+              getOptionValue={(option) => {
+                return option.id;
+              }}
               {...selectProps}
             />
           );

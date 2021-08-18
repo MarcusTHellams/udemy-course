@@ -15,7 +15,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useMutation, useQueryClient } from "react-query";
-import { client, Rclient } from "../../graphql/client";
+import { Rclient } from "../../graphql/client";
 import { updateTask } from "../../graphql/mutations/updateTask";
 import { Query } from "../Query/Query";
 import { getUsers } from "../../graphql/queries/users";
@@ -59,15 +59,15 @@ export const TaskForm = ({ task = null }: TaskFormProps): JSX.Element => {
     shouldUnregister: true,
   });
 
-  const userId = watch("userId");
-  const userIdRef = React.useRef(userId);
+  // const userId = watch("userId");
+  // const userIdRef = React.useRef(userId);
   const taskRef = React.useRef(task);
 
-  React.useEffect(() => {
-    if (!userIdRef.current && taskRef?.current?.user) {
-      setValue("userId", taskRef.current.user.id);
-    }
-  }, [setValue]);
+  // React.useEffect(() => {
+  //   if (!userIdRef.current && taskRef?.current?.user) {
+  //     setValue("userId", taskRef.current.user.id);
+  //   }
+  // }, [setValue]);
 
   const history = useHistory();
   const queryClient = useQueryClient();
@@ -149,7 +149,7 @@ export const TaskForm = ({ task = null }: TaskFormProps): JSX.Element => {
                       <>
                         <UserSelect
                           selectProps={{ isClearable: true }}
-                          name="userId"
+                          name="user"
                           {...{ control }}
                           users={items}
                         />

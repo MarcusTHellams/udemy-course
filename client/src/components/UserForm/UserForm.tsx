@@ -19,7 +19,7 @@ import {
 } from "@chakra-ui/react";
 import * as React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { client } from "../../graphql/client";
+import { Rclient } from "../../graphql/client";
 import { User } from "../../types/user.type";
 import { UserFormValues } from "../../types/userFormValues.type";
 import { RoleSelect } from "../RoleSelect/RoleSelect";
@@ -55,17 +55,12 @@ type UserFormProps = {
 };
 
 const queryFn = () => {
-  return client
-    .query({
-      query: getRoles,
-      variables: {
-        pageQueryInput: {
-          page: 1,
-          limit: 100000000,
-        },
-      },
-    })
-    .then(({ data: { roles } }) => roles.items);
+  return Rclient.request(getRoles, {
+    pageQueryInput: {
+      page: 1,
+      limit: 100000000,
+    },
+  }).then(({ roles }) => roles.items);
 };
 
 const queryKey = "roles";
@@ -125,16 +120,11 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
   const location = useLocation();
   const mutationFn = React.useCallback(
     (values: unknown) => {
-      return client
-        .mutate({
-          mutation: user ? updateUser : createUser,
-          variables: {
-            [user ? "updateUserInput" : "createUserInput"]: values,
-          },
-        })
-        .then(({ data }) => {
-          return user ? data["updateUser"] : data["createUser"];
-        });
+      return Rclient.request(user ? updateUser : createUser, {
+        [user ? "updateUserInput" : "createUserInput"]: values,
+      }).then((data) => {
+        return user ? data["updateUser"] : data["createUser"];
+      });
     },
     [user]
   ) as MutateFunction<User, Error, UserFormValues>;
@@ -155,11 +145,11 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
 
   const password = watch("password");
   const roles = watch("roles");
-  const imageUrl = watch('imageUrl');
+  const imageUrl = watch("imageUrl");
 
   React.useEffect(() => {
     if (!roles && user?.roles) {
-      setValue('roles', user?.roles);
+      setValue("roles", user?.roles);
     }
   }, [setValue, roles, user]);
 
@@ -171,10 +161,10 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
     onSuccess() {
       queryClient.invalidateQueries();
       toast({
-        onCloseComplete: () => history.push('/users'),
-        status: 'success',
-        position: 'top',
-        title: user ? 'User Updated' : 'User Created',
+        onCloseComplete: () => history.push("/users"),
+        status: "success",
+        position: "top",
+        title: user ? "User Updated" : "User Created",
       });
     },
     onError(error) {
@@ -182,9 +172,9 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
         description: error.message,
         duration: null,
         isClosable: true,
-        position: 'top',
-        status: 'error',
-        title: 'Error',
+        position: "top",
+        status: "error",
+        title: "Error",
       });
     },
   });
@@ -194,48 +184,48 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
   };
   return (
     <>
-      <Heading as='h1' mb='8'>
+      <Heading as="h1" mb="8">
         <Avatar
-          shadow='2xl'
+          shadow="2xl"
           name={user?.username}
           src={user?.imageUrl || imageUrl}
-        />{' '}
+        />{" "}
         {editOrCreate}
       </Heading>
       <BlockUi blocking={isLoading || isSuccess}>
         <form onSubmit={handleSubmit(submitHandler)}>
-          {user && <input type='hidden' {...register('id')} />}
-          <VStack spacing='8' align='start'>
+          {user && <input type="hidden" {...register("id")} />}
+          <VStack spacing="8" align="start">
             <FormControl isInvalid={!!errors?.username}>
-              <FormLabel htmlFor='username'>Username</FormLabel>
+              <FormLabel htmlFor="username">Username</FormLabel>
               <Input
-                id='username'
-                {...register('username', { required: 'Username is Required' })}
+                id="username"
+                {...register("username", { required: "Username is Required" })}
               />
               <FormErrorMessage>{errors?.username?.message}</FormErrorMessage>
             </FormControl>
             <FormControl isInvalid={!!errors?.email}>
-              <FormLabel htmlFor='email'>Email</FormLabel>
+              <FormLabel htmlFor="email">Email</FormLabel>
               <Input
-                id='email'
-                {...register('email', { required: 'Email is Required' })}
+                id="email"
+                {...register("email", { required: "Email is Required" })}
               />
               <FormErrorMessage>{errors?.email?.message}</FormErrorMessage>
             </FormControl>
             {!user && (
               <>
                 <FormControl isInvalid={!!errors?.password}>
-                  <FormLabel htmlFor='password'>Password</FormLabel>
-                  <FormHelperText mb='2'>
+                  <FormLabel htmlFor="password">Password</FormLabel>
+                  <FormHelperText mb="2">
                     Password must have at least one uppercase letter, lowercase
                     letter, a minimum of 2 digits, and no spaces
                   </FormHelperText>
                   <Input
-                    mb={!!password?.length ? '2' : '0px'}
-                    type='password'
-                    id='password'
-                    {...register('password', {
-                      required: 'Password is Required',
+                    mb={!!password?.length ? "2" : "0px"}
+                    type="password"
+                    id="password"
+                    {...register("password", {
+                      required: "Password is Required",
                     })}
                   />
                   {!!password?.length && (
@@ -246,14 +236,14 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
                   </FormErrorMessage>
                 </FormControl>
                 <FormControl isInvalid={!!errors?.passwordConfirmation}>
-                  <FormLabel htmlFor='passwordConfirmation'>
+                  <FormLabel htmlFor="passwordConfirmation">
                     Password Confirmation
                   </FormLabel>
                   <Input
-                    type='password'
-                    id='passwordConfirmation'
-                    {...register('passwordConfirmation', {
-                      required: 'PasswordConfirmation is Required',
+                    type="password"
+                    id="passwordConfirmation"
+                    {...register("passwordConfirmation", {
+                      required: "PasswordConfirmation is Required",
                     })}
                   />
                   <FormErrorMessage>
@@ -263,13 +253,13 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
               </>
             )}
             <FormControl isInvalid={!!errors?.imageUrl}>
-              <FormLabel htmlFor='imageUrl'>Image Url</FormLabel>
-              <Input id='imageUrl' {...register('imageUrl')} />
+              <FormLabel htmlFor="imageUrl">Image Url</FormLabel>
+              <Input id="imageUrl" {...register("imageUrl")} />
               <FormErrorMessage>{errors?.imageUrl?.message}</FormErrorMessage>
             </FormControl>
             {isAdmin && (
               <FormControl isInvalid={!!errors?.roles}>
-                <FormLabel htmlFor='roles'>Roles</FormLabel>
+                <FormLabel htmlFor="roles">Roles</FormLabel>
                 <Query
                   {...{ queryFn, queryKey }}
                   render={({ data: roles }) => {
@@ -280,12 +270,12 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
                 />
               </FormControl>
             )}
-            <Box width='full'>
+            <Box width="full">
               <Button
-                colorScheme='blue'
-                variant='outline'
-                type='submit'
-                w='full'
+                colorScheme="blue"
+                variant="outline"
+                type="submit"
+                w="full"
               >
                 {editOrCreate}
               </Button>
@@ -294,7 +284,7 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
         </form>
       </BlockUi>
       {user?.tasks && (
-        <Table mt='4'>
+        <Table mt="4">
           <Thead>
             <Tr>
               <Th>Title</Th>
@@ -311,9 +301,9 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
                     <Td>{task.description}</Td>
                     <Td>
                       <Button
-                        type='button'
-                        size='xs'
-                        colorScheme='green'
+                        type="button"
+                        size="xs"
+                        colorScheme="green"
                         as={Link}
                         to={{
                           pathname: `/tasks/${task.id}`,

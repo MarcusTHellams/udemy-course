@@ -39,7 +39,7 @@ import { ResponsiveTable } from '../ResponsiveTable/ResponsiveTable';
 import { useIsAdmin } from '../../hooks/useIsAdmin';
 import { DeletionVerification } from '../DeletionVerification/DeletionVerification';
 import { useMutation, useQueryClient, MutateFunction } from 'react-query';
-import { client } from '../../graphql/client';
+import { Rclient } from '../../graphql/client';
 import { removeUser } from '../../graphql/mutations/user';
 import { useIsLoggedIn } from '../../hooks/useIsLoggedIn';
 import { SearchComponent } from '../SearchComponent/SearchComponent';
@@ -80,14 +80,7 @@ export const UserListComponent = ({
   };
 
   const mutationFn = React.useCallback((userId) => {
-    return client
-      .mutate({
-        mutation: removeUser,
-        variables: {
-          id: userId,
-        },
-      })
-      .then(({ data: { removeUser } }) => removeUser);
+    return Rclient.request(removeUser, {id: userId}).then(({removeUser})=>removeUser);
   }, []) as MutateFunction<boolean, Error, CurrentUser>;
 
   const queryClient = useQueryClient();

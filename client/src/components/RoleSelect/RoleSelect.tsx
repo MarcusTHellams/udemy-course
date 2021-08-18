@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Select, { Props } from 'react-select';
+import Select from 'react-select';
 import { Role } from '../../types/role.type';
 import { Controller, Control } from 'react-hook-form';
 import { UserFormValues } from '../../types/userFormValues.type';
