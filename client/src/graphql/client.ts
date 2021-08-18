@@ -5,6 +5,12 @@ import {
   DefaultOptions,
 } from "@apollo/client";
 
+import { GraphQLClient } from "graphql-request";
+
+export const Rclient = new GraphQLClient("http://localhost:5001/graphql", {
+  credentials: "include",
+  cache: 'no-cache',
+});
 
 const defaultOptions: DefaultOptions = {
   watchQuery: {
