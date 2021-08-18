@@ -8,7 +8,6 @@ import bcrypt = require('bcrypt');
 import bcrypt2 = require('bcryptjs');
 import groupBy = require('lodash.groupby');
 import keyBy = require('lodash.keyby');
-import { Paginate, PaginateQuery, paginate, Paginated } from 'nestjs-paginate';
 
 @Controller()
 export class AppController {
