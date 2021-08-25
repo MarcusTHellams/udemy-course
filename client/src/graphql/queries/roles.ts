@@ -6,6 +6,7 @@ export const getRoles = gql`
       items {
         id
         name
+        description
       }
       meta {
         itemCount

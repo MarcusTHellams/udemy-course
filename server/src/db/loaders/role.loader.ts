@@ -1,4 +1,4 @@
-import { User } from 'src/user/entities/user.entity';
+import { User } from '../../user/entities/user.entity';
 import Dataloader = require('dataloader');
 import { getRepository } from 'typeorm';
 import keyBy = require('lodash.keyby');

@@ -7,4 +7,10 @@ export class CreateRoleInput {
 
   @Field(() => String, { description: 'Name field', name: 'name' })
   name: string;
+
+  @Field(() => String, {
+    description: 'Description field',
+    name: 'description',
+  })
+  description: string;
 }

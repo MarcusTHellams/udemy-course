@@ -1,4 +1,4 @@
-import { PageQueryInput } from 'src/common/entities/pageQuery.input';
+import { PageQueryInput } from '../common/entities/pageQuery.input';
 import { PaginatedRole } from './entities/paginatedRoles.entity';
 import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
 import { RoleService } from './role.service';

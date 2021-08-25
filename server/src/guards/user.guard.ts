@@ -1,6 +1,6 @@
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
-import { getUser } from 'src/helpers/get.user';
+import { getUser } from '../helpers/get.user';
 
 @Injectable()
 export class UserGuard implements CanActivate {

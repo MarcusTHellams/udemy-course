@@ -16,11 +16,11 @@ import { TaskService } from './task.service';
 import { Task } from './entities/task.entity';
 import { CreateTaskInput } from './dto/create-task.input';
 import { UpdateTaskInput } from './dto/update-task.input';
-import { User } from 'src/user/entities/user.entity';
-import { Roles } from 'src/decorators/role.decorator';
+import { User } from '../user/entities/user.entity';
+import { Roles } from '../decorators/role.decorator';
 import { UseGuards } from '@nestjs/common';
-import { RolesGuard } from 'src/auth/roles.guard';
-import { PageQueryInput } from 'src/common/entities/pageQuery.input';
+import { RolesGuard } from '../auth/roles.guard';
+import { PageQueryInput } from '../common/entities/pageQuery.input';
 @Resolver(() => Task)
 export class TaskResolver {
   constructor(

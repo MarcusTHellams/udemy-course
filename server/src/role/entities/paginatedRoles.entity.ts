@@ -1,6 +1,6 @@
 import { ObjectType, Field } from '@nestjs/graphql';
 import { PartialType } from '@nestjs/graphql';
-import { Pagination } from 'src/common/entities/pagainated.entity';
+import { Pagination } from '../../common/entities/pagainated.entity';
 import { Role } from './role.entity';
 
 @ObjectType()

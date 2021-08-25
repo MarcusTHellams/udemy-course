@@ -8,6 +8,9 @@ type Role {
 
   """Name field"""
   name: String!
+
+  """Description field"""
+  description: String!
 }
 
 type Task {
@@ -146,6 +149,9 @@ input UpdateRoleInput {
 
   """Name field"""
   name: String
+
+  """Description field"""
+  description: String
 }
 
 input CreateTaskInput {
@@ -160,4 +166,7 @@ input CreateRoleInput {
 
   """Name field"""
   name: String!
+
+  """Description field"""
+  description: String!
 }

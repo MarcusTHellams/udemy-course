@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { rule, shield, or } from 'graphql-shield';
-import { getUser } from 'src/helpers/get.user';
+import { getUser } from '../helpers/get.user';
 
 export const isAdmin = rule()(async (_, __, ctx) => {
   const user = await getUser(ctx.req);

@@ -21,7 +21,7 @@ import { applyMiddleware } from 'graphql-middleware';
     TypeOrmModule.forRoot({
       autoLoadEntities: true,
       database: `${join(__dirname, '../../', 'udemy-course.db')}`,
-      synchronize: true,
+      synchronize: false,
       type: 'sqlite',
       logging: 'all',
       logger: 'advanced-console',

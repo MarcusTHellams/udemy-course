@@ -1,7 +1,7 @@
 import Dataloader = require('dataloader');
 import { getRepository, In } from 'typeorm';
 import keyBy = require('lodash.keyby');
-import { User } from 'src/user/entities/user.entity';
+import { User } from '../../user/entities/user.entity';
 
 const batchUsers = async (taskIds: string[]) => {
   const users = await getRepository(User).find({ id: In(taskIds) });
