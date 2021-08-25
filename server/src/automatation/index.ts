@@ -1,8 +1,14 @@
-import { AppModule } from './../app.module';
 import { NestFactory } from '@nestjs/core';
+import { DataSeedingService } from './../data-seeding/data-seeding.service';
+import { DataSeedingModule } from './../data-seeding/data-seeding.module';
+import { AppModule } from './../app.module';
 
 (async () => {
   const app = await NestFactory.createApplicationContext(AppModule);
-  console.log('app: ', app);
-  console.log('Hello');
+  const dataSeedingService = app
+    .select(DataSeedingModule)
+    .get(DataSeedingService, { strict: true });
+
+  await dataSeedingService.fillInMissingImageUrls();
+  app.close();
 })();

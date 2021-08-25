@@ -16,6 +16,7 @@ import { AuthModule } from './auth/auth.module';
 import { buildContext } from 'graphql-passport';
 import { GraphQLSchema } from 'graphql';
 import { applyMiddleware } from 'graphql-middleware';
+import { DataSeedingModule } from './data-seeding/data-seeding.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -51,6 +52,7 @@ import { applyMiddleware } from 'graphql-middleware';
     TaskModule,
     RoleModule,
     AuthModule,
+    DataSeedingModule,
   ],
   controllers: [AppController],
   providers: [AppService],
