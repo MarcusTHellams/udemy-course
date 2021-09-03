@@ -74,13 +74,18 @@ export const UserListComponent = ({
   const [currentUser, setCurrentUser] = React.useState<CurrentUser>();
   const toast = useToast();
   const isLoggedIn = useIsLoggedIn();
-  const changeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPage(1);
-    setSearch(event.target.value);
-  };
+  const changeHandler = React.useCallback(
+    (searchTerm: string) => {
+      setPage(1);
+      setSearch(searchTerm);
+    },
+    [setPage, setSearch]
+  );
 
   const mutationFn = React.useCallback((userId) => {
-    return Rclient.request(removeUser, {id: userId}).then(({removeUser})=>removeUser);
+    return Rclient.request(removeUser, { id: userId }).then(
+      ({ removeUser }) => removeUser
+    );
   }, []) as MutateFunction<boolean, Error, CurrentUser>;
 
   const queryClient = useQueryClient();

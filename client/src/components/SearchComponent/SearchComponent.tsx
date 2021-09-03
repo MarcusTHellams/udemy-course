@@ -5,12 +5,12 @@ import {
   FormLabel,
   Input,
 } from '@chakra-ui/react';
-import debounce from 'lodash/debounce';
+import { useDebounce } from 'react-use';
 
 type SearchComponentProps = {
   descriptionText?: string;
   title?: string;
-  searchHandler: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  searchHandler: (searchTerm: string) => void;
 };
 
 export const SearchComponent = ({
@@ -19,12 +19,15 @@ export const SearchComponent = ({
   title,
 }: SearchComponentProps): JSX.Element => {
   const [searchText, setSearchText] = React.useState('');
-  const changeHandlerRef = React.useRef(searchHandler);
 
-  const debouncedChangeHandler = React.useMemo(
-    () => debounce(changeHandlerRef.current, 300),
-    []
+  useDebounce(
+    () => {
+      searchHandler(searchText);
+    },
+    500,
+    [searchText]
   );
+
   return (
     <>
       <FormControl>
@@ -40,7 +43,6 @@ export const SearchComponent = ({
           value={searchText}
           onChange={(event) => {
             setSearchText(event.target.value);
-            debouncedChangeHandler(event);
           }}
         />
         {!!descriptionText && (

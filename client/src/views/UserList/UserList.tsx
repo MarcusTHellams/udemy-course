@@ -6,8 +6,10 @@ import { getUsers } from '../../graphql/queries/users';
 import { User } from '../../types/user.type';
 import { PaginatedResults } from '../../types/paginatedResults.type';
 import { OrderByType } from '../../types/orderBy.type';
+import { useTitle } from 'react-use';
 
 export const UserList = (): JSX.Element => {
+  useTitle('Users');
   const [page, setPage] = React.useState(1);
   const [limit, setLimit] = React.useState(10);
   const [orderBy, setOrderBy] = React.useState<OrderByType[]>([]);
