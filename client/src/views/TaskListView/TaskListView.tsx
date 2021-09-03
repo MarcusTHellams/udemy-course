@@ -31,7 +31,7 @@ export const TaskListView = (): JSX.Element => {
 
   return (
     <>
-      <Query
+      <Query<PaginatedResults<Task>>
         queryOptions={{ keepPreviousData: true }}
         {...{ queryKey, queryFn }}
         render={({ data: paginatedTasks }) => {
@@ -39,8 +39,7 @@ export const TaskListView = (): JSX.Element => {
             <>
               <Layout>
                 <TaskListComponent
-                  {...{ setLimit, setPage, setOrderBy, setSearch }}
-                  paginatedTasks={paginatedTasks as PaginatedResults<Task>}
+                  {...{ setLimit, setPage, setOrderBy, setSearch, paginatedTasks }}
                 />
               </Layout>
             </>

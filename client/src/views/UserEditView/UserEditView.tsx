@@ -17,11 +17,11 @@ export const UserEditView = (): JSX.Element => {
 
   return (
     <>
-      <Query
+      <Query<User>
         {...{ queryKey, queryFn }}
         render={({ data: user }) => (
           <Layout maxW="container.sm">
-            <UserForm user={user as User} />
+            <UserForm {...{user}} />
           </Layout>
         )}
       />

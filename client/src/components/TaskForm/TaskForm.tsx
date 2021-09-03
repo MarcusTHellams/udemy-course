@@ -141,7 +141,7 @@ export const TaskForm = ({ task = null }: TaskFormProps): JSX.Element => {
               </FormControl>
               <FormControl id="description">
                 <FormLabel>User Task is Assigned to</FormLabel>
-                <Query
+                <Query<PaginatedResults<User>>
                   {...{ queryFn, queryKey }}
                   render={({ data }) => {
                     const { items } = data as PaginatedResults<User>;

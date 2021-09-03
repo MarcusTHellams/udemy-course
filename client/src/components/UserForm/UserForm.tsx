@@ -193,10 +193,10 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
         {editOrCreate}
       </Heading>
       <BlockUi blocking={isLoading || isSuccess}>
-        <form onSubmit={handleSubmit(submitHandler)}>
+        <form onSubmit={handleSubmit(submitHandler)} noValidate>
           {user && <input type="hidden" {...register("id")} />}
           <VStack spacing="8" align="start">
-            <FormControl isInvalid={!!errors?.username}>
+            <FormControl isRequired isInvalid={!!errors?.username}>
               <FormLabel htmlFor="username">Username</FormLabel>
               <Input
                 id="username"
@@ -204,7 +204,7 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
               />
               <FormErrorMessage>{errors?.username?.message}</FormErrorMessage>
             </FormControl>
-            <FormControl isInvalid={!!errors?.email}>
+            <FormControl isRequired isInvalid={!!errors?.email}>
               <FormLabel htmlFor="email">Email</FormLabel>
               <Input
                 id="email"
@@ -214,7 +214,7 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
             </FormControl>
             {!user && (
               <>
-                <FormControl isInvalid={!!errors?.password}>
+                <FormControl isRequired isInvalid={!!errors?.password}>
                   <FormLabel htmlFor="password">Password</FormLabel>
                   <FormHelperText mb="2">
                     Password must have at least one uppercase letter, lowercase
@@ -235,7 +235,7 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
                     {errors?.password?.message}
                   </FormErrorMessage>
                 </FormControl>
-                <FormControl isInvalid={!!errors?.passwordConfirmation}>
+                <FormControl isRequired isInvalid={!!errors?.passwordConfirmation}>
                   <FormLabel htmlFor="passwordConfirmation">
                     Password Confirmation
                   </FormLabel>
@@ -260,11 +260,11 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
             {isAdmin && (
               <FormControl isInvalid={!!errors?.roles}>
                 <FormLabel htmlFor="roles">Roles</FormLabel>
-                <Query
+                <Query<Role[]>
                   {...{ queryFn, queryKey }}
                   render={({ data: roles }) => {
                     return (
-                      <RoleSelect {...{ control }} roles={roles as Role[]} />
+                      <RoleSelect {...{ control, roles }} />
                     );
                   }}
                 />

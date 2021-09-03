@@ -1,5 +1,5 @@
-import * as React from "react";
-import { Layout } from "../Layout/Layout";
+import * as React from 'react';
+import { Layout } from '../Layout/Layout';
 import {
   Alert,
   AlertDescription,
@@ -16,14 +16,14 @@ import {
   VStack,
   Text,
   Link,
-} from "@chakra-ui/react";
-import { useForm, SubmitHandler } from "react-hook-form";
-import { Rclient } from "../../graphql/client";
-import { login } from "../../graphql/mutations/login";
-import { useMutation, MutateFunction } from "react-query";
-import { useHistory, useLocation } from "react-router-dom";
-import { useUserContext } from "../../contexts/userContext/userContext";
-import { Link as RLink } from "react-router-dom";
+} from '@chakra-ui/react';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { Rclient } from '../../graphql/client';
+import { login } from '../../graphql/mutations/login';
+import { useMutation, MutateFunction } from 'react-query';
+import { useHistory, useLocation } from 'react-router-dom';
+import { useUserContext } from '../../contexts/userContext/userContext';
+import { Link as RLink } from 'react-router-dom';
 
 type LogInFormValues = {
   username: string;
@@ -57,7 +57,7 @@ export const LogIn = (): JSX.Element => {
         if (state?.referrer) {
           history.replace(state.referrer);
         } else {
-          history.push("/");
+          history.push('/');
         }
       },
     }
@@ -79,7 +79,7 @@ export const LogIn = (): JSX.Element => {
 
   return (
     <>
-      <Layout maxW={"lg"}>
+      <Layout maxW={'lg'}>
         {showErrorAlert && (
           <Alert mb="4" status="error">
             <AlertIcon />
@@ -96,20 +96,20 @@ export const LogIn = (): JSX.Element => {
         <Heading as="h1" mb="4">
           Login
         </Heading>
-        <form onSubmit={handleSubmit(submitHandler)}>
+        <form onSubmit={handleSubmit(submitHandler)} noValidate>
           <VStack spacing="8">
-            <FormControl isInvalid={!!errors.username}>
+            <FormControl isRequired isInvalid={!!errors.username}>
               <FormLabel htmlFor="username">Username</FormLabel>
               <Input
-                {...register("username", { required: "Username is required" })}
+                {...register('username', { required: 'Username is required' })}
                 id="username"
               />
               <FormErrorMessage>{errors?.username?.message}</FormErrorMessage>
             </FormControl>
-            <FormControl isInvalid={!!errors.password}>
+            <FormControl isRequired isInvalid={!!errors.password}>
               <FormLabel htmlFor="password">Password</FormLabel>
               <Input
-                {...register("password", { required: "Password is required" })}
+                {...register('password', { required: 'Password is required' })}
                 id="password"
                 type="password"
               />
@@ -121,7 +121,7 @@ export const LogIn = (): JSX.Element => {
               </Button>
             </Box>
             <Text>
-              Don't have an account,{" "}
+              Don't have an account,{' '}
               <Link color="blue.300" as={RLink} to="/signup">
                 sign up here
               </Link>

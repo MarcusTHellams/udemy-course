@@ -20,9 +20,9 @@ export const TaskEditView = (): JSX.Element => {
   const queryKey = React.useMemo(() => ["task", id], [id]);
   return (
     <>
-      <Query
+      <Query<Task>
         {...{ queryKey, queryFn }}
-        render={({ data: task }) => <TaskForm task={task as Task} />}
+        render={({ data: task }) => <TaskForm {...{task}} />}
       />
     </>
   );

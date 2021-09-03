@@ -1,6 +1,7 @@
 import { Heading, Spinner } from '@chakra-ui/react';
 import * as React from 'react';
 import {
+  QueryFunction,
   QueryKey,
   useQuery,
   UseQueryOptions,
@@ -9,25 +10,29 @@ import {
 import { Layout } from '../Layout/Layout';
 import BlockUi from 'react-block-ui';
 
-type QueryProps = {
-  render: (queryResult: Partial<UseQueryResult>) => React.ReactNode;
-  queryKey: string | Array<string | unknown>;
-  queryFn: () => Promise<any>;
-  queryOptions?: UseQueryOptions<unknown, Error, unknown, QueryKey>;
-};
+interface QueryProps<T> {
+  render: (
+    queryResult: Omit<
+      UseQueryResult<T, Error>,
+      'isLoading' | 'error' | 'isError'
+    >
+  ) => JSX.Element;
+  queryKey: QueryKey;
+  queryFn: QueryFunction<T>;
+  queryOptions?: UseQueryOptions<T, Error>;
+}
 
-export const Query = ({
+export function Query<T>({
   render,
   queryKey,
   queryFn,
   queryOptions,
-}: QueryProps): JSX.Element => {
-  const { isLoading, isError, error, ...rest } = useQuery<
-    unknown,
-    Error,
-    unknown,
-    QueryKey
-  >(queryKey, queryFn, queryOptions);
+}: QueryProps<T>): JSX.Element {
+  const { isLoading, isError, error, ...rest } = useQuery<T, Error>(
+    queryKey,
+    queryFn,
+    queryOptions
+  );
 
   if (isLoading) {
     return (
@@ -45,5 +50,5 @@ export const Query = ({
     );
   }
 
-  return <>{render(rest)}</>;
-};
+  return <>{render({ ...rest })}</>;
+}

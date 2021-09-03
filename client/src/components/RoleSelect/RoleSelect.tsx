@@ -6,7 +6,7 @@ import { UserFormValues } from '../../types/userFormValues.type';
 
 type RoleSelectProps = {
   [key: string]: any;
-  roles: Role[];
+  roles: Role[] | undefined;
   control: Control<UserFormValues>;
 };
 
@@ -26,7 +26,7 @@ export const RoleSelect = ({
             <>
               <Select
                 {...rest}
-                id='name'
+                id="name"
                 {...{ name, value, onChange, onBlur }}
                 isMulti
                 options={roles}
