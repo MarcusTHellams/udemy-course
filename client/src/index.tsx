@@ -9,7 +9,15 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { UserContextProvider } from "./contexts/userContext/userContext";
 import "react-block-ui/style.css";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchInterval: false,
+      refetchIntervalInBackground: false,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 ReactDOM.render(
   <React.StrictMode>
