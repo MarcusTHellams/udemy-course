@@ -123,14 +123,13 @@ export const UserListComponent = ({
     }
   }, [open]);
 
-  //@ts-ignore
-  const columns: Column<User>[] = React.useMemo(() => {
-    const cols = [
+  const columns = React.useMemo(() => {
+    const cols: Column<User>[] = [
       {
         Header: 'Username',
         accessor: 'username',
         id: 'user.username',
-        Cell: ({ row }: { row: Row<User> }) => {
+        Cell: ({ row }) => {
           const { username, imageUrl } = row.original;
           return (
             <>
@@ -172,7 +171,6 @@ export const UserListComponent = ({
     ];
 
     if (isLoggedIn) {
-      //@ts-ignore
       cols.push({
         Header: 'Actions',
         id: 'actions',
@@ -255,7 +253,7 @@ export const UserListComponent = ({
         </Container>
         <ResponsiveTable
           reactTableProps={getTableProps()}
-          tableProps={{ variant: 'simple', colorScheme: 'blackAlpha' }}
+          tableProps={{ variant: 'simple', colorScheme: 'red' }}
         >
           <Thead>
             {headerGroups.map((headerGroup: HeaderGroup<User>) => {
@@ -348,7 +346,7 @@ export const UserListComponent = ({
                 <ButtonGroup
                   flexWrap='wrap'
                   mt='5'
-                  colorScheme='blue'
+                  colorScheme='red'
                   variant='outline'
                   isAttached={true}
                 >

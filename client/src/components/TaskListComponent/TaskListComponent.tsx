@@ -77,8 +77,8 @@ export const TaskListComponent = ({
 
   const data = React.useMemo(() => items, [items]);
 
-  const columns: Column<Task>[] = React.useMemo(() => {
-    const cols = [
+  const columns = React.useMemo(() => {
+    const cols: Column<Task>[] = [
       {
         Header: 'Task Info',
         columns: [
@@ -127,7 +127,6 @@ export const TaskListComponent = ({
         columns: [
           {
             Header: 'Edit/Delete',
-            //@ts-ignore
             Cell: ({ row }: { row: Row<Task> }) => {
               const { id } = row.original;
               return (
@@ -271,7 +270,7 @@ export const TaskListComponent = ({
       </Container>
       <ResponsiveTable
         reactTableProps={getTableProps()}
-        tableProps={{ variant: 'simple', colorScheme: 'blackAlpha' }}
+        tableProps={{ variant: 'simple', colorScheme: 'red' }}
       >
         <Thead>
           {headerGroups.map((headerGroup: HeaderGroup<Task>) => {
@@ -360,7 +359,7 @@ export const TaskListComponent = ({
               <ButtonGroup
                 flexWrap='wrap'
                 mt='5'
-                colorScheme='blue'
+                colorScheme='red'
                 variant='outline'
                 isAttached={true}
               >
