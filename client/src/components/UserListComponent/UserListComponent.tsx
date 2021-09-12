@@ -38,7 +38,7 @@ import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { ResponsiveTable } from '../ResponsiveTable/ResponsiveTable';
 import { useIsAdmin } from '../../hooks/useIsAdmin';
 import { DeletionVerification } from '../DeletionVerification/DeletionVerification';
-import { useMutation, useQueryClient, MutateFunction } from 'react-query';
+import { useMutation, useQueryClient } from 'react-query';
 import { Rclient } from '../../graphql/client';
 import { removeUser } from '../../graphql/mutations/user';
 import { useIsLoggedIn } from '../../hooks/useIsLoggedIn';
@@ -86,7 +86,7 @@ export const UserListComponent = ({
     return Rclient.request(removeUser, { id: userId }).then(
       ({ removeUser }) => removeUser
     );
-  }, []) as MutateFunction<boolean, Error, CurrentUser>;
+  }, []);
 
   const queryClient = useQueryClient();
 
