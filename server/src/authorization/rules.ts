@@ -5,7 +5,7 @@ import { getUser } from '../helpers/get.user';
 export const isAdmin = rule()(async (_, __, ctx) => {
   const user = await getUser(ctx.req);
   if (!user || !user.roles.includes('admin')) {
-    return new HttpException(
+    throw new HttpException(
       'You are required to be an admin to view, or edit, or delete, or create this resource',
       HttpStatus.UNAUTHORIZED,
     );

@@ -59,29 +59,29 @@ export const Header = (props: HeaderProps): JSX.Element => {
   return (
     <>
       <Flex
-        boxShadow='lg'
-        position='sticky'
-        as='nav'
-        align='center'
-        justify='space-between'
-        wrap='wrap'
+        boxShadow="lg"
+        position="sticky"
+        as="nav"
+        align="center"
+        justify="space-between"
+        wrap="wrap"
         padding={6}
-        bg='red.800'
-        color='white'
-        top='0'
-        zIndex='sticky'
+        bg="red.800"
+        color="white"
+        top="0"
+        zIndex="sticky"
         {...props}
       >
-        <Flex align='center' mr={5}>
-          <Heading as='h6' size='md' letterSpacing={'tighter'}>
-            <Link _hover={{ textDecoration: 'none' }} as={RLink} to='/'>
+        <Flex align="center" mr={5}>
+          <Heading as="h6" size="md" letterSpacing={'tighter'}>
+            <Link _hover={{ textDecoration: 'none' }} as={RLink} to="/">
               Tasks IO
             </Link>
           </Heading>
         </Flex>
 
         <Box
-          cursor='pointer'
+          cursor="pointer"
           display={{ base: 'block', md: 'none' }}
           onClick={handleToggle}
         >
@@ -92,12 +92,12 @@ export const Header = (props: HeaderProps): JSX.Element => {
           direction={{ base: 'column', md: 'row' }}
           display={{ base: isOpen ? 'block' : 'none', md: 'flex' }}
           width={{ base: 'full', md: 'auto' }}
-          alignItems='center'
+          alignItems="center"
           flexGrow={1}
           mt={{ base: 4, md: 0 }}
         >
           <Text>
-            <Link as={RLink} to='/users'>
+            <Link as={RLink} to="/users">
               Users
             </Link>
           </Text>
@@ -111,9 +111,9 @@ export const Header = (props: HeaderProps): JSX.Element => {
             <>
               <Menu>
                 <MenuButton>
-                  <Avatar src={user.imageUrl} size='md' name={user.username} />
+                  <Avatar src={user.imageUrl} size="md" name={user.username} />
                 </MenuButton>
-                <MenuList color='black'>
+                <MenuList color="black">
                   <MenuItem as={RLink} to={`/users/${user.id}`}>
                     Go to Profile
                   </MenuItem>
@@ -124,10 +124,10 @@ export const Header = (props: HeaderProps): JSX.Element => {
           )) || (
             <Button
               _hover={{ color: 'black' }}
-              size='xs'
+              size="xs"
               as={RLink}
-              to='/login'
-              variant='outline'
+              to="/login"
+              variant="outline"
             >
               Log In
             </Button>

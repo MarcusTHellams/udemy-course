@@ -169,13 +169,13 @@ export const UserForm = ({ user }: UserFormProps): JSX.Element => {
     },
     onError(error) {
       toast({
-        description: error.message,
-        duration: null,
-        isClosable: true,
-        position: "top",
-        status: "error",
-        title: "Error",
-      });
+				description: error.message.split(':')[0],
+				duration: null,
+				isClosable: true,
+				position: 'top',
+				status: 'error',
+				title: 'Error',
+			});
     },
   });
 
