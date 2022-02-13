@@ -10,13 +10,15 @@ import { UserContextProvider } from "./contexts/userContext/userContext";
 import "react-block-ui/style.css";
 
 const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchInterval: false,
-      refetchIntervalInBackground: false,
-      refetchOnWindowFocus: false,
-    },
-  },
+	defaultOptions: {
+		queries: {
+			refetchInterval: false,
+			refetchIntervalInBackground: false,
+			refetchOnWindowFocus: false,
+			refetchOnMount: false,
+			refetchOnReconnect: false,
+		},
+	},
 });
 
 ReactDOM.render(
