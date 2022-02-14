@@ -48,8 +48,48 @@ export const usePaginationParams = ({
 		Search.search = search;
 		Search.orderBy = JSON.stringify(orderBy);
 		Search.limit = limit;
-		history.push({ pathname, search: qs.stringify(Search) });
+		history[action]({ pathname, search: qs.stringify(Search) });
 	};
+
+	useEffect(() => {
+		const unlisten = history.listen(({ search }) => {
+			console.log('location: ', search, page);
+			const Search = qs.parse(search, { ignoreQueryPrefix: true }) as Search;
+			console.log('Search: ', Search.page);
+			// setPage(Number(Search.page));
+
+			// if (Number(Search.page) !== searchParams.current.page) {
+			// }
+			// if (Number(Search.limit) !== searchParams.current.limit) {
+			// 	setLimit(Number(Search.limit));
+			// }
+			// if (Search.search !== searchParams.current.search) {
+			// 	setSearch(String(Search.search));
+			// }
+			// if (
+			// 	!isEqual(
+			// 		JSON.parse(Search.orderBy as string),
+			// 		searchParams.current.orderBy
+			// 	)
+			// ) {
+			// 	setOrderBy(JSON.parse(Search.orderBy as string));
+			// }
+		});
+
+		return () => {
+			unlisten();
+		};
+	}, [
+		history,
+		setPage,
+		setLimit,
+		setOrderBy,
+		setSearch,
+		page,
+		limit,
+		search,
+		orderBy,
+	]);
 
 	const searchParams = useRef({
 		page,
@@ -67,33 +107,6 @@ export const usePaginationParams = ({
 		};
 	});
 
-	useEffect(() => {
-		const unlisten = history.listen(({ search }) => {
-			const Search = qs.parse(search, { ignoreQueryPrefix: true }) as Search;
-			if (Number(Search.page) !== searchParams.current.page) {
-				setPage(Number(Search.page));
-			}
-			if (Number(Search.limit) !== searchParams.current.limit) {
-				setLimit(Number(Search.limit));
-			}
-			if (Search.search !== searchParams.current.search) {
-				setSearch(String(Search.search));
-			}
-			if (
-				!isEqual(
-					JSON.parse(Search.orderBy as string),
-					searchParams.current.orderBy
-				)
-			) {
-				setOrderBy(JSON.parse(Search.orderBy as string));
-			}
-		});
-
-		return () => {
-			unlisten();
-		};
-	}, [history, setPage, setLimit, setOrderBy, setSearch]);
-
 	const updateRef = useRef(updateURl);
 	useEffect(() => {
 		updateRef.current = updateURl;
@@ -110,6 +123,7 @@ export const usePaginationParams = ({
 	 */
 	useEffect(() => {
 		if (prevPage && prevPage !== page) {
+			console.log('changing');
 			updateRef.current('push');
 		}
 	}, [page, history, pathname, prevPage]);
