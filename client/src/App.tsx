@@ -9,32 +9,33 @@ import { LogIn } from "./components/LogIn/LogIn";
 import { ProtectedRoute } from "./components/ProtectedRoute/ProtectedRoute";
 import { UserEditView } from "./views/UserEditView/UserEditView";
 import { CreateUserView } from "./views/CreateUserView/CreateUserView";
+import { UserListPage } from './users';
 
 export const App = () => (
-  <>
-    <Header />
-    <Switch>
-      <Route exact path='/tasks/create'>
-        <TaskCreate />
-      </Route>
-      <ProtectedRoute exact path='/tasks/:id'>
-        <TaskEditView />
-      </ProtectedRoute>
-      <Route exact path='/signup'>
-        <CreateUserView />
-      </Route>
-      <Route exact path='/users/:id'>
-        <UserEditView />
-      </Route>
-      <Route exact path='/users'>
-        <UserList />
-      </Route>
-      <Route exact path='/login'>
-        <LogIn />
-      </Route>
-      <Route exact path='/'>
-        <TaskListView />
-      </Route>
-    </Switch>
-  </>
+	<>
+		<Header />
+		<Switch>
+			<Route exact path="/tasks/create">
+				<TaskCreate />
+			</Route>
+			<ProtectedRoute exact path="/tasks/:id">
+				<TaskEditView />
+			</ProtectedRoute>
+			<Route exact path="/signup">
+				<CreateUserView />
+			</Route>
+			<Route exact path="/users/:id">
+				<UserEditView />
+			</Route>
+			<Route exact path="/users">
+				<UserListPage />
+			</Route>
+			<Route exact path="/login">
+				<LogIn />
+			</Route>
+			<Route exact path="/">
+				<TaskListView />
+			</Route>
+		</Switch>
+	</>
 );

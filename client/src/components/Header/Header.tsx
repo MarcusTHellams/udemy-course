@@ -31,22 +31,33 @@ const mutationFn = (): Promise<string> => {
 
 export const Header = (props: HeaderProps): JSX.Element => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const handleToggle = () => (isOpen ? onClose() : onOpen());
-  const { userStorage, removeUserStorage } = useUserContext();
-  const [user, setUser] = React.useState<{
-    username: string;
-    imageUrl?: string;
-    id: string;
-  } | null>(null);
+	const handleToggle = () => (isOpen ? onClose() : onOpen());
+	const { userStorage, removeUserStorage } = useUserContext();
+	const [user, setUser] = React.useState<{
+		username: string;
+		imageUrl?: string;
+		id: string;
+	} | null>(null);
 
-  const history = useHistory();
+	const history = useHistory();
 
-  const { mutate } = useMutation<string, Error>(mutationFn, {
-    onSuccess() {
-      removeUserStorage();
-      history.push("/login");
-    },
-  });
+	const { mutate } = useMutation<string, Error>(mutationFn, {
+		onSuccess() {
+			removeUserStorage();
+			history.push('/login');
+		},
+	});
+
+	React.useEffect(() => {
+		const unListen = history.listen(() => {
+			onClose();
+		});
+
+		return () => {
+			unListen();
+		};
+	}, [history, onClose]);
+
 
   React.useEffect(() => {
     if (userStorage) {

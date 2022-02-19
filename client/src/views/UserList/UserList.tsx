@@ -7,7 +7,6 @@ import { Rclient } from '../../graphql/client';
 import { getUsers } from '../../graphql/queries/users';
 import { User } from '../../types/user.type';
 import { PaginatedResults } from '../../types/paginatedResults.type';
-import { OrderByType } from '../../types/orderBy.type';
 import {
 	useQueryParams,
 	NumberParam,
