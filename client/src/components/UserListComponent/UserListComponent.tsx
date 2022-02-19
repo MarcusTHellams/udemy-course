@@ -17,9 +17,13 @@ import {
 	Icon,
 	useToast,
 	Container,
+	Select,
+	Stack,
+	FormControl,
+	FormHelperText,
 } from '@chakra-ui/react';
 import * as React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { Role } from '../../types/role.type';
 import { User } from '../../types/user.type';
 import { Layout } from '../Layout/Layout';
@@ -34,7 +38,6 @@ import {
 	useSortBy,
 } from 'react-table';
 import { Paginated } from '@makotot/paginated';
-import { usePrevious } from 'react-use';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { ResponsiveTable } from '../ResponsiveTable/ResponsiveTable';
 import { useIsAdmin } from '../../hooks/useIsAdmin';
@@ -44,14 +47,20 @@ import { Rclient } from '../../graphql/client';
 import { removeUser } from '../../graphql/mutations/user';
 import { useIsLoggedIn } from '../../hooks/useIsLoggedIn';
 import { SearchComponent } from '../SearchComponent/SearchComponent';
-import { getParsedSearch } from '../../hooks/usePaginationParams';
+import { getParsedSearch } from '../../utils';
+import { QueryParamConfig, SetQuery } from 'use-query-params';
 
 type UserListComponentProps = {
 	paginatedUsers?: PaginatedResults<User>;
-	setPage: React.Dispatch<React.SetStateAction<number>>;
-	setLimit: React.Dispatch<React.SetStateAction<number>>;
-	setOrderBy: React.Dispatch<React.SetStateAction<OrderByType[]>>;
-	setSearch: React.Dispatch<React.SetStateAction<string>>;
+	setQuery: SetQuery<{
+		search: QueryParamConfig<string | null | undefined, string>;
+		page: QueryParamConfig<number | null | undefined, number>;
+		limit: QueryParamConfig<number | null | undefined, number>;
+		orderBy: QueryParamConfig<
+			Array<unknown> | null | undefined,
+			Array<unknown>
+		>;
+	}>;
 };
 
 type CurrentUser = string | null | undefined;
@@ -61,16 +70,12 @@ export const UserListComponent = ({
 		items: [],
 		meta: { itemCount: 0, totalItems: 0, totalPages: 0, currentPage: 1 },
 	},
-	setPage,
-	setOrderBy,
-	setSearch,
+	setQuery,
 }: UserListComponentProps): JSX.Element => {
 	const {
 		items,
 		meta: { totalPages, currentPage },
 	} = paginatedUsers;
-
-	const search = getParsedSearch();
 
 	const data = React.useMemo(() => items, [items]);
 	const isAdmin = useIsAdmin();
@@ -80,10 +85,9 @@ export const UserListComponent = ({
 	const isLoggedIn = useIsLoggedIn();
 	const changeHandler = React.useCallback(
 		(searchTerm: string) => {
-			setPage(1);
-			setSearch(searchTerm);
+			setQuery({ search: searchTerm });
 		},
-		[setPage, setSearch]
+		[setQuery]
 	);
 
 	const mutationFn = React.useCallback((userId) => {
@@ -215,7 +219,7 @@ export const UserListComponent = ({
 
 	const initialSortBy = React.useMemo(() => {
 		try {
-			const sortBy = JSON.parse(search.orderBy as string);
+			const sortBy = JSON.parse(getParsedSearch().orderBy as string);
 			return sortBy.map((sort: OrderByType) => {
 				return {
 					id: sort.field,
@@ -225,7 +229,7 @@ export const UserListComponent = ({
 		} catch (error) {
 			return [];
 		}
-	}, [search.orderBy]);
+	}, []);
 
 	const {
 		getTableProps,
@@ -256,8 +260,41 @@ export const UserListComponent = ({
 				direction: sort.desc === false ? DirectionEnum.ASC : DirectionEnum.DESC,
 			};
 		});
-		setOrderBy(formatted);
-	}, [sortBy, setOrderBy]);
+		if (!getParsedSearch().orderBy && !formatted.length) {
+			return;
+		}
+		setQuery({ orderBy: formatted });
+	}, [setQuery, sortBy]);
+
+	const limitRef = React.useRef<HTMLSelectElement | null>(null);
+	const history = useHistory();
+
+	React.useEffect(() => {
+		const unListen = history.listen(() => {
+			const { limit } = getParsedSearch();
+			if (limit) {
+				if (limitRef.current) {
+					limitRef.current.value = limit as string;
+				}
+			}
+
+			if (!limit) {
+				if (limitRef.current) {
+					limitRef.current.value = '10';
+				}
+			}
+		});
+
+		return () => {
+			unListen();
+		};
+	}, [history]);
+
+	React.useEffect(() => {
+		if (totalPages < 2) {
+			setQuery({ page: 1 }, 'replaceIn');
+		}
+	}, [totalPages, setQuery]);
 
 	return (
 		<>
@@ -281,6 +318,23 @@ export const UserListComponent = ({
 							return (
 								<Tr {...headerGroup.getHeaderGroupProps()}>
 									{headerGroup.headers.map((column) => {
+										let { orderBy = '[]' } = getParsedSearch();
+										const o = JSON.parse(orderBy as string) as OrderByType[];
+										const isSorted =
+											column.isSorted ||
+											(orderBy &&
+												o.some((by) => {
+													return by.field === column.id;
+												}));
+										const isSortedDesc =
+											column.isSortedDesc ||
+											(orderBy &&
+												o.some((by) => {
+													return (
+														by.field === column.id &&
+														by.direction === DirectionEnum.DESC
+													);
+												}));
 										return (
 											<Th
 												{...column.getHeaderProps(
@@ -292,8 +346,8 @@ export const UserListComponent = ({
 														{column.render('Header')}
 													</WrapItem>
 													<WrapItem as="div">
-														{column.isSorted ? (
-															column.isSortedDesc ? (
+														{isSorted ? (
+															isSortedDesc ? (
 																<Icon as={FaChevronDown} w={4} h={4} />
 															) : (
 																<Icon as={FaChevronUp} w={4} h={4} />
@@ -346,84 +400,140 @@ export const UserListComponent = ({
 						})}
 					</Tbody>
 				</ResponsiveTable>
-				{totalPages > 1 && (
-					<Box mb="8">
-						<Paginated
-							currentPage={currentPage}
-							totalPage={totalPages}
-							siblingsSize={2}
-							boundarySize={2}
+				<Stack
+					direction={['column', null, 'row']}
+					spacing={'6'}
+					my={'8'}
+					alignItems={'flex-end'}
+				>
+					{totalPages > 1 && (
+						<Box display={['none', null, null, 'block']}>
+							<Paginated
+								currentPage={currentPage}
+								totalPage={totalPages}
+								siblingsSize={2}
+								boundarySize={2}
+							>
+								{({
+									pages,
+									currentPage,
+									hasPrev,
+									hasNext,
+									getFirstBoundary,
+									getLastBoundary,
+									isPrevTruncated,
+									isNextTruncated,
+								}) => (
+									<ButtonGroup
+										flexWrap="nowrap"
+										mt="5"
+										colorScheme="red"
+										variant="outline"
+										isAttached={true}
+									>
+										{hasPrev() && (
+											<>
+												<Button onClick={() => setQuery({ page: 1 })}>
+													First
+												</Button>
+												<Button
+													onClick={() => setQuery({ page: currentPage - 1 })}
+												>
+													Prev
+												</Button>
+											</>
+										)}
+										{getFirstBoundary().map((boundary) => (
+											<Button
+												onClick={() => setQuery({ page: boundary })}
+												key={boundary}
+											>
+												{boundary}
+											</Button>
+										))}
+										{isPrevTruncated && <Button>...</Button>}
+										{pages.map((page) => {
+											return page === currentPage ? (
+												<Button variant="solid" disabled={true} key={page}>
+													{page}
+												</Button>
+											) : (
+												<Button
+													onClick={() => {
+														setQuery({ page });
+													}}
+													key={page}
+												>
+													{page}
+												</Button>
+											);
+										})}
+										{isNextTruncated && <Button>...</Button>}
+										{getLastBoundary().map((boundary) => (
+											<Button
+												onClick={() => setQuery({ page: boundary })}
+												key={boundary}
+											>
+												{boundary}
+											</Button>
+										))}
+										{hasNext() && (
+											<>
+												<Button
+													onClick={() => {
+														setQuery({ page: currentPage + 1 });
+													}}
+												>
+													Next
+												</Button>
+												<Button onClick={() => setQuery({ page: totalPages })}>
+													Last
+												</Button>
+											</>
+										)}
+									</ButtonGroup>
+								)}
+							</Paginated>
+						</Box>
+					)}
+					<FormControl display={['block', null, null, 'none']}>
+						<FormHelperText>Choose a Page</FormHelperText>
+						<Select
+							variant={'flushed'}
+							onChange={(event) => {
+								setQuery({ page: parseInt(event.currentTarget.value, 10) });
+							}}
+							value={currentPage}
 						>
-							{({
-								pages,
-								currentPage,
-								hasPrev,
-								hasNext,
-								getFirstBoundary,
-								getLastBoundary,
-								isPrevTruncated,
-								isNextTruncated,
-							}) => (
-								<ButtonGroup
-									flexWrap="wrap"
-									mt="5"
-									colorScheme="red"
-									variant="outline"
-									isAttached={true}
-								>
-									{hasPrev() && (
-										<>
-											<Button onClick={() => setPage(1)}>First</Button>
-											<Button onClick={() => setPage((prev) => prev - 1)}>
-												Prev
-											</Button>
-										</>
-									)}
-									{getFirstBoundary().map((boundary) => (
-										<Button onClick={() => setPage(boundary)} key={boundary}>
-											{boundary}
-										</Button>
-									))}
-									{isPrevTruncated && <Button>...</Button>}
-									{pages.map((page) => {
-										return page === currentPage ? (
-											<Button variant="solid" disabled={true} key={page}>
-												{page}
-											</Button>
-										) : (
-											<Button
-												onClick={() => {
-													setPage(page);
-												}}
-												key={page}
-											>
-												{page}
-											</Button>
-										);
-									})}
-									{isNextTruncated && <Button>...</Button>}
-									{getLastBoundary().map((boundary) => (
-										<Button onClick={() => setPage(boundary)} key={boundary}>
-											{boundary}
-										</Button>
-									))}
-									{hasNext() && (
-										<>
-											<Button
-												onClick={() => {
-													setPage((prev) => prev + 1);
-												}}
-											>
-												Next
-											</Button>
-											<Button onClick={() => setPage(totalPages)}>Last</Button>
-										</>
-									)}
-								</ButtonGroup>
-							)}
-						</Paginated>
-					</Box>
-				)}
+							{new Array(totalPages).fill(1).map((option, index) => {
+								return (
+									<option value={index + 1} key={index}>
+										{index + 1}
+									</option>
+								);
+							})}
+						</Select>
+					</FormControl>
+
+					<FormControl>
+						<FormHelperText>Choose a Page Size</FormHelperText>
+						<Select
+							variant={'flushed'}
+							ref={limitRef}
+							size="sm"
+							onInput={(event) => {
+								setQuery({ limit: parseInt(event.currentTarget.value, 10) });
+							}}
+							defaultValue={(getParsedSearch().limit as string) || 10}
+						>
+							<option value="5">5</option>
+							<option value="10">10</option>
+							<option value="20">20</option>
+							<option value="50">50</option>
+							<option value="100">100</option>
+						</Select>
+					</FormControl>
+				</Stack>
 			</Layout>
 			<DeletionVerification
 				alertProps={{
