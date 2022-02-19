@@ -5,9 +5,10 @@ import { App } from "./App";
 import reportWebVitals from "./reportWebVitals";
 import * as serviceWorker from "./serviceWorker";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { BrowserRouter as Router } from "react-router-dom";
-import { UserContextProvider } from "./contexts/userContext/userContext";
-import "react-block-ui/style.css";
+import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { UserContextProvider } from './contexts/userContext/userContext';
+import { QueryParamProvider } from 'use-query-params';
+import 'react-block-ui/style.css';
 
 const queryClient = new QueryClient({
 	defaultOptions: {
@@ -22,18 +23,20 @@ const queryClient = new QueryClient({
 });
 
 ReactDOM.render(
-  <React.StrictMode>
-    <Router>
-      <QueryClientProvider client={queryClient}>
-        <ChakraProvider>
-          <UserContextProvider>
-            <App />
-          </UserContextProvider>
-        </ChakraProvider>
-      </QueryClientProvider>
-    </Router>
-  </React.StrictMode>,
-  document.getElementById("root")
+	<React.StrictMode>
+		<Router>
+			<QueryParamProvider ReactRouterRoute={Route}>
+				<QueryClientProvider client={queryClient}>
+					<ChakraProvider>
+						<UserContextProvider>
+							<App />
+						</UserContextProvider>
+					</ChakraProvider>
+				</QueryClientProvider>
+			</QueryParamProvider>
+		</Router>
+	</React.StrictMode>,
+	document.getElementById('root')
 );
 
 // If you want your app to work offline and load faster, you can change

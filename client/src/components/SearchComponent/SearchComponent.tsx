@@ -6,7 +6,8 @@ import {
 	Input,
 } from '@chakra-ui/react';
 import { useDebounce, usePrevious } from 'react-use';
-import { getParsedSearch } from '../../hooks/usePaginationParams';
+import { getParsedSearch } from '../../utils';
+import { useHistory } from 'react-router-dom';
 
 type SearchComponentProps = {
 	descriptionText?: string;
@@ -19,24 +20,50 @@ export const SearchComponent = ({
 	searchHandler,
 	title,
 }: SearchComponentProps): JSX.Element => {
-	const [searchText, setSearchText] = React.useState<string>(() => {
-		const { search } = getParsedSearch();
-		if (search) {
-			return search as string;
-		}
-		return '';
-	});
+	const [forceUpdate, setForceUpdate] = React.useState(false);
+	const searchRef = React.useRef<HTMLInputElement | null>(null);
+	const history = useHistory();
 
-	const prevSearch = usePrevious(searchText);
+	const prevSearchText = usePrevious(searchRef.current?.value);
+
+	const flag = React.useRef(false);
 	useDebounce(
 		() => {
-			if (prevSearch !== searchText) {
-				searchHandler(searchText);
+			if (!flag.current) {
+				flag.current = true;
+				return;
+			}
+			if (searchRef.current) {
+				// if (!prevSearchText || prevSearchText === searchRef.current.value) {
+				// 	return;
+				// }
+				searchHandler(searchRef.current.value);
 			}
 		},
 		500,
-		[searchText]
+		[forceUpdate]
 	);
+
+	React.useEffect(() => {
+		const unListen = history.listen(() => {
+			const { search } = getParsedSearch();
+			if (search) {
+				if (searchRef.current) {
+					searchRef.current.value = search as string;
+				}
+			}
+
+			if (!search) {
+				if (searchRef.current) {
+					searchRef.current.value = '';
+				}
+			}
+		});
+
+		return () => {
+			unListen();
+		};
+	}, [history]);
 
 	return (
 		<>
@@ -47,12 +74,16 @@ export const SearchComponent = ({
 					</FormLabel>
 				)}
 				<Input
+					ref={searchRef}
 					name="search"
 					id="search"
 					type="search"
-					value={searchText}
-					onChange={(event) => {
-						setSearchText(event.target.value);
+					defaultValue={(getParsedSearch().search as string) || ''}
+					onInput={(event) => {
+						if (searchRef.current) {
+							searchRef.current.value = event.currentTarget.value;
+							setForceUpdate((prev) => !prev);
+						}
 					}}
 				/>
 				{!!descriptionText && (

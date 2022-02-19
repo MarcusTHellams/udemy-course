@@ -1,6 +1,4 @@
 import * as React from 'react';
-import * as qs from 'qs';
-import { useLocation, useHistory } from 'react-router-dom';
 import { useTitle } from 'react-use';
 import { useQuery } from 'react-query';
 import { Query } from '../../components/Query/Query2';
@@ -11,22 +9,27 @@ import { User } from '../../types/user.type';
 import { PaginatedResults } from '../../types/paginatedResults.type';
 import { OrderByType } from '../../types/orderBy.type';
 import {
-	getParsedSearch,
-	usePaginationParams,
-} from '../../hooks/usePaginationParams';
+	useQueryParams,
+	NumberParam,
+	StringParam,
+	JsonParam,
+	withDefault,
+} from 'use-query-params';
 
 export const UserList = (): JSX.Element => {
 	useTitle('Users');
-	const S = getParsedSearch();
-	const [page, setPage] = React.useState(Number(S.page) || 1);
-	const [limit, setLimit] = React.useState(Number(S.limit) || 10);
-	const [orderBy, setOrderBy] = React.useState<OrderByType[]>(
-		(S.orderBy && JSON.parse(S.orderBy as string)) || []
-	);
-	const [search, setSearch] = React.useState(S.search || '');
+
+	const [query, setQuery] = useQueryParams({
+		search: withDefault(StringParam, ''),
+		page: withDefault(NumberParam, 1),
+		limit: withDefault(NumberParam, 10),
+		orderBy: withDefault(JsonParam, []),
+	});
+
+	const { page, limit, search, orderBy } = query;
 
 	const { data, isLoading, error } = useQuery<PaginatedResults<User>, Error>({
-		queryKey: ['users', page, orderBy, search],
+		queryKey: ['users', page, orderBy, search, limit],
 		queryFn: async () => {
 			return Rclient.request(getUsers, {
 				pageQueryInput: {
@@ -40,27 +43,13 @@ export const UserList = (): JSX.Element => {
 		keepPreviousData: true,
 	});
 
-	usePaginationParams({
-		page,
-		limit,
-		search,
-		orderBy,
-		setPage,
-		setLimit,
-		setOrderBy,
-		setSearch,
-	});
-
 	return (
 		<>
 			<Query {...{ isLoading }} error={error?.message}>
 				<UserListComponent
 					paginatedUsers={data}
 					{...{
-						setPage,
-						setLimit,
-						setOrderBy,
-						setSearch,
+						setQuery,
 					}}
 				/>
 			</Query>
