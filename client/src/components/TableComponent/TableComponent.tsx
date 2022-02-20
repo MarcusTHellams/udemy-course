@@ -17,6 +17,7 @@ import {
 	Wrap,
 	WrapItem,
 	Text,
+	Container,
 } from '@chakra-ui/react';
 import { Paginated } from '@makotot/paginated';
 import React from 'react';
@@ -32,8 +33,12 @@ import {
 	TableBodyProps,
 } from 'react-table';
 import { SetQueryType } from '../../types/setQuery.type';
+import {
+	SearchComponent,
+	SearchComponentProps,
+} from '../SearchComponent/SearchComponent';
 
-interface TableComponentProps<T extends object> {
+interface TableComponentProps<T extends object> extends SearchComponentProps {
 	setQuery: SetQueryType;
 	page: Row<T>[];
 	getTableProps: (propGetter?: TablePropGetter<T> | undefined) => TableProps;
@@ -57,9 +62,15 @@ export const TableComponent = <T extends object>({
 	prepareRow,
 	setQuery,
 	totalPages,
+	title,
+	descriptionText,
+	searchHandler,
 }: TableComponentProps<T>) => {
 	return (
 		<>
+			<Container mb="4" maxW="container.sm" centerContent>
+				<SearchComponent {...{ searchHandler, title, descriptionText }} />
+			</Container>
 			<ResponsiveTable
 				reactTableProps={getTableProps()}
 				tableProps={{ variant: 'simple', colorScheme: 'red' }}

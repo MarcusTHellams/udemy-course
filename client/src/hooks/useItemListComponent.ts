@@ -78,7 +78,7 @@ export const useItemListComponent = <T extends object>({
 
 	const onClose = useCallback(() => {
 		setOpen(false);
-	}, []);
+	}, [setOpen]);
 
 	const onDelete = useCallback(() => {
 		mutate(currentItem);
@@ -145,7 +145,7 @@ export const useItemListComponent = <T extends object>({
 			setQuery({ orderBy: formatted });
 		} catch (error) {
 			if (error instanceof Error) {
-				console.log(
+				console.warn(
 					'🚀 ~ file: useItemListComponent.ts ~ line 148 ~ useEffect ~ error',
 					error.message
 				);
@@ -193,7 +193,7 @@ export const useItemListComponent = <T extends object>({
 				}
 			} catch (error) {
 				if (error instanceof Error) {
-					console.log(
+					console.warn(
 						'🚀 ~ file: useItemListComponent.ts ~ line 187 ~ unListen ~ error',
 						error.message
 					);

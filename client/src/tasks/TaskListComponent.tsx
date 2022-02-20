@@ -1,13 +1,12 @@
 import * as React from 'react';
 import { Task } from '../types/task.type';
-import { Button, Heading, Container } from '@chakra-ui/react';
+import { Button, Heading } from '@chakra-ui/react';
 import { Link as RLink } from 'react-router-dom';
 import { DeletionVerification } from '../components/DeletionVerification/DeletionVerification';
 import { removeTask } from '../graphql/mutations/removeTask';
 import { PaginatedResults } from '../types/paginatedResults.type';
 import { useIsLoggedIn } from '../hooks/useIsLoggedIn';
 import { useIsAdmin } from '../hooks/useIsAdmin';
-import { SearchComponent } from '../components/SearchComponent/SearchComponent';
 import { SetQueryType } from '../types/setQuery.type';
 import { useItemListComponent } from '../hooks/useItemListComponent';
 import { taskQueryKeys } from '../queryKeys/taskQueryKeys';
@@ -83,14 +82,10 @@ export const TaskListComponent = ({
 					New Task
 				</Button>
 			</Heading>
-			<Container mb="4" maxW="container.sm" centerContent>
-				<SearchComponent
-					title="Task Search"
-					descriptionText="Search by title, description, username, and email"
-					searchHandler={changeHandler}
-				/>
-			</Container>
 			<TableComponent<Task>
+				title="Task Search"
+				descriptionText="Search by title, description, username, and email"
+				searchHandler={changeHandler}
 				{...{
 					getTableProps,
 					headerGroups,

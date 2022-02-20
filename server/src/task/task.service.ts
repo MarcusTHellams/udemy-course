@@ -67,13 +67,6 @@ export class TaskService {
       relations: ['user'],
     });
 
-    // Object.keys(task).forEach((key) => {
-    //   if (!updateTaskInput[key]) {
-    //     task[key] = null;
-    //   } else {
-    //     task[key] = updateTaskInput[key];
-    //   }
-    // });
 
     await this.repo.taskRepo.update(task.id, updateTaskInput);
   }

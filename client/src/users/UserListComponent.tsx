@@ -1,10 +1,9 @@
-import { Heading, Container } from '@chakra-ui/react';
+import { Heading } from '@chakra-ui/react';
 import * as React from 'react';
 import { User } from '../types/user.type';
 import { Layout } from '../components/Layout/Layout';
 import { PaginatedResults } from '../types/paginatedResults.type';
 import { DeletionVerification } from '../components/DeletionVerification/DeletionVerification';
-import { SearchComponent } from '../components/SearchComponent/SearchComponent';
 import { userQueryKeys } from '.';
 import { useItemListComponent } from '../hooks/useItemListComponent';
 import { removeUser } from '../graphql/mutations/user';
@@ -71,14 +70,10 @@ export const UserListComponent = ({
 				<Heading size="xl" as="h1" mb="4">
 					Users
 				</Heading>
-				<Container mb="4" maxW="container.sm" centerContent>
-					<SearchComponent
-						title="User Search"
-						descriptionText="Search by username, or email, or by role name"
-						searchHandler={changeHandler}
-					/>
-				</Container>
 				<TableComponent
+					title="User Search"
+					descriptionText="Search by username, or email, or by role name"
+					searchHandler={changeHandler}
 					{...{
 						getTableProps,
 						headerGroups,

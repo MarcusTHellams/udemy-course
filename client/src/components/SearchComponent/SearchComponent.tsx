@@ -9,7 +9,7 @@ import { useDebounce, usePrevious } from 'react-use';
 import { getParsedSearch } from '../../utils';
 import { useHistory } from 'react-router-dom';
 
-type SearchComponentProps = {
+export type SearchComponentProps = {
 	descriptionText?: string;
 	title?: string;
 	searchHandler: (searchTerm: string) => void;
