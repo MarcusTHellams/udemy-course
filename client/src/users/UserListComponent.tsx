@@ -19,33 +19,34 @@ import {
 	FormHelperText,
 	FormLabel,
 	VisuallyHidden,
+	Badge,
+	HStack,
+	Avatar,
 } from '@chakra-ui/react';
 import * as React from 'react';
 import { User } from '../types/user.type';
 import { Layout } from '../components/Layout/Layout';
 import { PaginatedResults } from '../types/paginatedResults.type';
-import { DirectionEnum, OrderByType } from '../types/orderBy.type';
-import { HeaderGroup } from 'react-table';
+import { Column, HeaderGroup, Row } from 'react-table';
 import { Paginated } from '@makotot/paginated';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { ResponsiveTable } from '../components/ResponsiveTable/ResponsiveTable';
 import { DeletionVerification } from '../components/DeletionVerification/DeletionVerification';
 import { SearchComponent } from '../components/SearchComponent/SearchComponent';
 import { getParsedSearch } from '../utils';
-import { QueryParamConfig, SetQuery } from 'use-query-params';
-import { useUserListComponent } from '.';
+import { userQueryKeys } from '.';
+import { useItemListComponent } from '../hooks/useItemListComponent';
+import { removeUser } from '../graphql/mutations/user';
+import { SetQueryType } from '../types/setQuery.type';
+import { useIsAdmin } from '../hooks/useIsAdmin';
+import { useIsLoggedIn } from '../hooks/useIsLoggedIn';
+import { Link } from 'react-router-dom';
+import { Role } from '../types/role.type';
+import { userListColumns } from '.';
 
 type UserListComponentProps = {
 	paginatedUsers?: PaginatedResults<User>;
-	setQuery: SetQuery<{
-		search: QueryParamConfig<string | null | undefined, string>;
-		page: QueryParamConfig<number | null | undefined, number>;
-		limit: QueryParamConfig<number | null | undefined, number>;
-		orderBy: QueryParamConfig<
-			Array<unknown> | null | undefined,
-			Array<unknown>
-		>;
-	}>;
+	setQuery: SetQueryType;
 };
 
 export const UserListComponent = ({
@@ -60,8 +61,36 @@ export const UserListComponent = ({
 		meta: { totalPages, currentPage },
 	} = paginatedUsers;
 
-	const { tableInstance, changeHandler, onClose, onDelete, open, limitRef } =
-		useUserListComponent({ setQuery, users: items, totalPages });
+	const isAdmin = useIsAdmin();
+	const [open, setOpen] = React.useState(false);
+	const [currentItem, setCurrentItem] = React.useState<
+		string | null | undefined
+	>();
+	const isLoggedIn = useIsLoggedIn();
+
+	const columns = React.useMemo(() => {
+		return userListColumns({
+			isAdmin,
+			isLoggedIn,
+			setCurrentItem,
+			setOpen,
+		});
+	}, [isAdmin, isLoggedIn]);
+
+	const { tableInstance, changeHandler, onClose, onDelete, limitRef } =
+		useItemListComponent<User>({
+			currentPage,
+			totalPages,
+			document: removeUser,
+			queryKeys: userQueryKeys,
+			setQuery,
+			items,
+			columns,
+			setOpen,
+			open,
+			setCurrentItem,
+			currentItem,
+		});
 
 	const { getTableProps, headerGroups, getTableBodyProps, page, prepareRow } =
 		tableInstance;
@@ -88,23 +117,6 @@ export const UserListComponent = ({
 							return (
 								<Tr {...headerGroup.getHeaderGroupProps()}>
 									{headerGroup.headers.map((column) => {
-										let { orderBy = '[]' } = getParsedSearch();
-										const o = JSON.parse(orderBy as string) as OrderByType[];
-										const isSorted =
-											column.isSorted ||
-											(orderBy &&
-												o.some((by) => {
-													return by.field === column.id;
-												}));
-										const isSortedDesc =
-											column.isSortedDesc ||
-											(orderBy &&
-												o.some((by) => {
-													return (
-														by.field === column.id &&
-														by.direction === DirectionEnum.DESC
-													);
-												}));
 										return (
 											<Th
 												{...column.getHeaderProps(
@@ -116,8 +128,8 @@ export const UserListComponent = ({
 														{column.render('Header')}
 													</WrapItem>
 													<WrapItem as="div">
-														{isSorted ? (
-															isSortedDesc ? (
+														{column.isSorted ? (
+															column.isSortedDesc ? (
 																<Icon as={FaChevronDown} w={4} h={4} />
 															) : (
 																<Icon as={FaChevronUp} w={4} h={4} />

@@ -1,6 +1,7 @@
+import { QueryKeysType } from './../types/queryKey.types';
 import { FilterType } from './../types/filter.type';
 
-export const taskQueryKeys = {
+export const taskQueryKeys: QueryKeysType = {
 	all: ['tasks'] as const,
 	lists: () => [...taskQueryKeys.all, 'list'] as const,
 	list: (filters: FilterType) =>

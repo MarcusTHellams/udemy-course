@@ -1,3 +1,4 @@
+import { QueryKeysType } from './../types/queryKey.types';
 import { useQuery } from 'react-query';
 import {
 	useQueryParams,
@@ -6,13 +7,21 @@ import {
 	NumberParam,
 	JsonParam,
 } from 'use-query-params';
-import { userQueryKeys } from './userQueryKeys';
+import { DocumentNode } from 'graphql/language/ast';
 import { Rclient } from '../graphql/client';
-import { getUsers } from '../graphql/queries/users';
 import { PaginatedResults } from '../types/paginatedResults.type';
-import { User } from '../types/user.type';
 
-export const useUserListPage = () => {
+type UseGetListType = {
+	document: string | DocumentNode;
+	keys: QueryKeysType;
+	responseName: string;
+};
+
+export const useGetList = <T = unknown>({
+	document,
+	keys,
+	responseName,
+}: UseGetListType) => {
 	const [query, setQuery] = useQueryParams({
 		search: withDefault(StringParam, ''),
 		page: withDefault(NumberParam, 1),
@@ -21,17 +30,17 @@ export const useUserListPage = () => {
 	});
 
 	const { page, limit, search, orderBy } = query;
-	const queryInstance = useQuery<PaginatedResults<User>, Error>({
-		queryKey: userQueryKeys.list([page, limit, orderBy, search]),
+	const queryInstance = useQuery<PaginatedResults<T>, Error>({
+		queryKey: keys.list([page, limit, orderBy, search]),
 		queryFn: async () => {
-			return Rclient.request(getUsers, {
+			return Rclient.request(document, {
 				pageQueryInput: {
 					limit,
 					page,
 					orderBy,
 					search,
 				},
-			}).then(({ users }) => users);
+			}).then((response) => response[responseName]);
 		},
 		keepPreviousData: true,
 	});

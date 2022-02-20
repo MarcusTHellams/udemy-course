@@ -19,7 +19,7 @@ export const TaskListView = (): JSX.Element => {
 	const [search, setSearch] = React.useState('');
 
 	const { data, error, isLoading } = useQuery<PaginatedResults<Task>, Error>({
-		queryKey: taskQueryKeys.list([page, orderBy, search]),
+		queryKey: taskQueryKeys.list([page, limit, orderBy, search]),
 		queryFn: () => {
 			return Rclient.request(getTasks, {
 				pageQueryInput: {
