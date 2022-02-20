@@ -67,7 +67,6 @@ export class TaskService {
       relations: ['user'],
     });
 
-
     await this.repo.taskRepo.update(task.id, updateTaskInput);
   }
 
