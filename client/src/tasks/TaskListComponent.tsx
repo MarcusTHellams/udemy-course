@@ -14,31 +14,30 @@ import {
 	Wrap,
 	WrapItem,
 	Icon,
-	useToast,
 	Container,
+	Stack,
+	FormControl,
+	VisuallyHidden,
+	FormLabel,
+	FormHelperText,
+	Select,
 } from '@chakra-ui/react';
 import { Link as RLink } from 'react-router-dom';
 import { DeletionVerification } from '../components/DeletionVerification/DeletionVerification';
-import { Rclient } from '../graphql/client';
-import { useMutation, useQueryClient } from 'react-query';
 import { removeTask } from '../graphql/mutations/removeTask';
 import { PaginatedResults } from '../types/paginatedResults.type';
-import {
-	useTable,
-	usePagination,
-	Column,
-	Row,
-	HeaderGroup,
-	useSortBy,
-} from 'react-table';
+import { HeaderGroup } from 'react-table';
 import { Paginated } from '@makotot/paginated';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
-import { DirectionEnum, OrderByType } from '../types/orderBy.type';
 import { ResponsiveTable } from '../components/ResponsiveTable/ResponsiveTable';
 import { useIsLoggedIn } from '../hooks/useIsLoggedIn';
 import { useIsAdmin } from '../hooks/useIsAdmin';
 import { SearchComponent } from '../components/SearchComponent/SearchComponent';
 import { SetQueryType } from '../types/setQuery.type';
+import { useItemListComponent } from '../hooks/useItemListComponent';
+import { taskQueryKeys } from '../queryKeys/taskQueryKeys';
+import { getParsedSearch } from '../utils';
+import { taskListColumns } from '.';
 
 type TaskListComponentProps = {
 	paginatedTasks?: PaginatedResults<Task>;
@@ -50,195 +49,45 @@ export const TaskListComponent = ({
 		items: [],
 		meta: { itemCount: 0, totalItems: 0, totalPages: 0, currentPage: 1 },
 	},
-	setPage,
-	setLimit,
-	setOrderBy,
-	setSearch,
+	setQuery,
 }: TaskListComponentProps): JSX.Element => {
 	const {
 		items,
 		meta: { totalPages, currentPage },
 	} = paginatedTasks;
 	const [open, setOpen] = React.useState(false);
-	const [currentTask, setCurrentTask] = React.useState<string | null>();
-	const toast = useToast();
+	const [currentItem, setCurrentItem] = React.useState<
+		string | null | undefined
+	>();
 	const isLoggedIn = useIsLoggedIn();
 	const isAdmin = useIsAdmin();
 
-	const changeHandler = React.useCallback(
-		(searchTerm: string) => {
-			setPage(1);
-			setSearch(searchTerm);
-		},
-		[setPage, setSearch]
-	);
-
-	const data = React.useMemo(() => items, [items]);
-
 	const columns = React.useMemo(() => {
-		const cols: Column<Task>[] = [
-			{
-				Header: 'Task Info',
-				columns: [
-					{
-						Header: 'Title',
-						accessor: 'title',
-						id: 'task.title',
-					},
-					{
-						Header: 'Description',
-						accessor: 'description',
-						id: 'task.id',
-					},
-				],
-			},
-			{
-				Header: 'User',
-				columns: [
-					{
-						Header: 'Username',
-						accessor: (originalRow: Task) => {
-							if (originalRow?.user) {
-								return originalRow.user.username;
-							} else {
-								return 'None';
-							}
-						},
-					},
-					{
-						Header: 'Email',
-						accessor: (originalRow: Task) => {
-							if (originalRow?.user) {
-								return originalRow.user.email;
-							} else {
-								return 'None';
-							}
-						},
-					},
-				],
-			},
-		];
-		if (isLoggedIn) {
-			cols.push({
-				Header: 'Actions',
-				id: 'Actions',
-				columns: [
-					{
-						Header: 'Edit/Delete',
-						Cell: ({ row }: { row: Row<Task> }) => {
-							const { id } = row.original;
-							return (
-								<ButtonGroup isAttached size="xs">
-									<Button
-										borderRightRadius={isAdmin ? '0' : ''}
-										as={RLink}
-										to={`tasks/${id}`}
-										rounded="full"
-										colorScheme="green"
-									>
-										Edit Task
-									</Button>
-									{isAdmin && (
-										<Button
-											borderLeftRadius="0"
-											onClick={() => {
-												setCurrentTask(id);
-												setOpen(true);
-											}}
-											rounded="full"
-											colorScheme="red"
-										>
-											Delete Task
-										</Button>
-									)}
-								</ButtonGroup>
-							);
-						},
-						id: 'edit/delete',
-					},
-				],
-			});
-		}
-		return cols;
+		return taskListColumns({
+			isAdmin,
+			isLoggedIn,
+			setOpen,
+			setCurrentItem,
+		});
 	}, [isAdmin, isLoggedIn]);
 
-	const {
-		getTableProps,
-		getTableBodyProps,
-		headerGroups,
-		prepareRow,
-		page,
-		state: { sortBy },
-	} = useTable<Task>(
-		{
+	const { tableInstance, changeHandler, onClose, onDelete, limitRef } =
+		useItemListComponent({
+			currentPage,
+			totalPages,
+			document: removeTask,
+			queryKeys: taskQueryKeys,
+			setQuery,
+			items,
 			columns,
-			data,
-			manualPagination: true,
-			manualSortBy: true,
-			pageCount: totalPages,
-		},
-		useSortBy,
-		usePagination
-	);
-
-	React.useEffect(() => {
-		const formatted = sortBy.map((sort) => {
-			return {
-				field: sort.id,
-				direction: sort.desc === false ? DirectionEnum.ASC : DirectionEnum.DESC,
-			};
+			setOpen,
+			open,
+			setCurrentItem,
+			currentItem,
 		});
-		setOrderBy(formatted);
-	}, [sortBy, setOrderBy]);
 
-	const mutationFn = React.useCallback((taskId) => {
-		return Rclient.request(removeTask, {
-			id: taskId,
-		});
-	}, []);
-
-	const queryClient = useQueryClient();
-
-	const { mutate } = useMutation<unknown, Error, string | null | undefined>(
-		mutationFn,
-		{
-			onSuccess: () => {
-				queryClient.invalidateQueries('tasks');
-				toast({
-					position: 'top',
-					status: 'success',
-					title: 'Task Deleted',
-				});
-			},
-			onError(error) {
-				toast({
-					description: error.message,
-					duration: null,
-					isClosable: true,
-					position: 'top',
-					status: 'error',
-					title: 'Error',
-				});
-			},
-			onSettled: () => {
-				setOpen(false);
-			},
-		}
-	);
-
-	const onClose = React.useCallback(() => {
-		setOpen(false);
-	}, []);
-
-	const onDelete = React.useCallback(() => {
-		mutate(currentTask);
-	}, [currentTask, mutate]);
-
-	React.useEffect(() => {
-		if (!open) {
-			setCurrentTask(null);
-		}
-	}, [open]);
+	const { getTableProps, headerGroups, getTableBodyProps, page, prepareRow } =
+		tableInstance;
 
 	return (
 		<>
@@ -336,84 +185,150 @@ export const TaskListComponent = ({
 					})}
 				</Tbody>
 			</ResponsiveTable>
-			{totalPages > 1 && (
-				<Box mb="8">
-					<Paginated
-						currentPage={currentPage}
-						totalPage={totalPages}
-						siblingsSize={2}
-						boundarySize={2}
+			<Stack
+				direction={['column', null, 'row']}
+				spacing={'6'}
+				my={'8'}
+				alignItems={'flex-end'}
+			>
+				{totalPages > 1 && (
+					<Box display={['none', null, null, 'block']}>
+						<Paginated
+							currentPage={currentPage}
+							totalPage={totalPages}
+							siblingsSize={2}
+							boundarySize={2}
+						>
+							{({
+								pages,
+								currentPage,
+								hasPrev,
+								hasNext,
+								getFirstBoundary,
+								getLastBoundary,
+								isPrevTruncated,
+								isNextTruncated,
+							}) => (
+								<ButtonGroup
+									flexWrap="nowrap"
+									mt="5"
+									colorScheme="red"
+									variant="outline"
+									isAttached={true}
+								>
+									{hasPrev() && (
+										<>
+											<Button onClick={() => setQuery({ page: 1 })}>
+												First
+											</Button>
+											<Button
+												onClick={() => setQuery({ page: currentPage - 1 })}
+											>
+												Prev
+											</Button>
+										</>
+									)}
+									{getFirstBoundary().map((boundary) => (
+										<Button
+											onClick={() => setQuery({ page: boundary })}
+											key={boundary}
+										>
+											{boundary}
+										</Button>
+									))}
+									{isPrevTruncated && <Button>...</Button>}
+									{pages.map((page) => {
+										return page === currentPage ? (
+											<Button variant="solid" disabled={true} key={page}>
+												{page}
+											</Button>
+										) : (
+											<Button
+												onClick={() => {
+													setQuery({ page });
+												}}
+												key={page}
+											>
+												{page}
+											</Button>
+										);
+									})}
+									{isNextTruncated && <Button>...</Button>}
+									{getLastBoundary().map((boundary) => (
+										<Button
+											onClick={() => setQuery({ page: boundary })}
+											key={boundary}
+										>
+											{boundary}
+										</Button>
+									))}
+									{hasNext() && (
+										<>
+											<Button
+												onClick={() => {
+													setQuery({ page: currentPage + 1 });
+												}}
+											>
+												Next
+											</Button>
+											<Button onClick={() => setQuery({ page: totalPages })}>
+												Last
+											</Button>
+										</>
+									)}
+								</ButtonGroup>
+							)}
+						</Paginated>
+					</Box>
+				)}
+				<FormControl display={['block', null, null, 'none']}>
+					<VisuallyHidden>
+						<FormLabel htmlFor="selectPage">Choose a Page Size</FormLabel>
+					</VisuallyHidden>
+					<FormHelperText>Choose a Page</FormHelperText>
+					<Select
+						id="selectPage"
+						name="selectPage"
+						variant={'flushed'}
+						onChange={(event) => {
+							setQuery({ page: parseInt(event.currentTarget.value, 10) });
+						}}
+						value={currentPage}
 					>
-						{({
-							pages,
-							currentPage,
-							hasPrev,
-							hasNext,
-							getFirstBoundary,
-							getLastBoundary,
-							isPrevTruncated,
-							isNextTruncated,
-						}) => (
-							<ButtonGroup
-								flexWrap="wrap"
-								mt="5"
-								colorScheme="red"
-								variant="outline"
-								isAttached={true}
-							>
-								{hasPrev() && (
-									<>
-										<Button onClick={() => setPage(1)}>First</Button>
-										<Button onClick={() => setPage((prev) => prev - 1)}>
-											Prev
-										</Button>
-									</>
-								)}
-								{getFirstBoundary().map((boundary) => (
-									<Button onClick={() => setPage(boundary)} key={boundary}>
-										{boundary}
-									</Button>
-								))}
-								{isPrevTruncated && <Button>...</Button>}
-								{pages.map((page) => {
-									return page === currentPage ? (
-										<Button variant="solid" disabled={true} key={page}>
-											{page}
-										</Button>
-									) : (
-										<Button
-											onClick={() => {
-												setPage(page);
-											}}
-											key={page}
-										>
-											{page}
-										</Button>
-									);
-								})}
-								{isNextTruncated && <Button>...</Button>}
-								{getLastBoundary().map((boundary) => (
-									<Button onClick={() => setPage(boundary)} key={boundary}>
-										{boundary}
-									</Button>
-								))}
-								{hasNext() && (
-									<>
-										<Button
-											onClick={() => {
-												setPage((prev) => prev + 1);
-											}}
-										>
-											Next
-										</Button>
-										<Button onClick={() => setPage(totalPages)}>Last</Button>
-									</>
-								)}
-							</ButtonGroup>
-						)}
-					</Paginated>
-				</Box>
-			)}
+						{new Array(totalPages).fill(1).map((_, index) => {
+							return (
+								<option value={index + 1} key={index}>
+									{index + 1}
+								</option>
+							);
+						})}
+					</Select>
+				</FormControl>
+
+				<FormControl>
+					<VisuallyHidden>
+						<FormLabel htmlFor="pageSize">Choose a Page Size</FormLabel>
+					</VisuallyHidden>
+					<FormHelperText>Choose a Page Size</FormHelperText>
+					<Select
+						id="pageSize"
+						name="pageSize"
+						variant={'flushed'}
+						ref={limitRef}
+						size="sm"
+						onInput={(event) => {
+							setQuery({ limit: parseInt(event.currentTarget.value, 10) });
+						}}
+						defaultValue={(getParsedSearch().limit as string) || 10}
+					>
+						<option value="5">5</option>
+						<option value="10">10</option>
+						<option value="20">20</option>
+						<option value="50">50</option>
+						<option value="100">100</option>
+					</Select>
+				</FormControl>
+			</Stack>
 
 			<DeletionVerification
 				alertProps={{

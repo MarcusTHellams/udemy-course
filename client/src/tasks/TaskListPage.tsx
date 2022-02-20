@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useTitle } from 'react-use';
 import { Layout } from '../components/Layout/Layout';
 import { Query } from '../components/Query/Query2';
-import { TaskListComponent } from '../components/TaskListComponent/TaskListComponent';
+import { TaskListComponent } from '.';
 import { getTasks } from '../graphql/queries/tasks';
 import { useGetList } from '../hooks/useGetList';
 import { taskQueryKeys } from '../queryKeys/taskQueryKeys';
@@ -12,21 +12,18 @@ export const TaskListPage = (): JSX.Element => {
 	useTitle('Tasks');
 
 	const {
-		queryInstance: { isLoading, error },
+		setQuery,
+		queryInstance: { isLoading, error, data },
 	} = useGetList<Task>({
 		document: getTasks,
 		keys: taskQueryKeys,
 		responseName: 'tasks',
 	});
-
 	return (
 		<>
 			<Query {...{ isLoading }} error={error?.message}>
 				<Layout>
-					<TaskListComponent
-						{...{ setLimit, setPage, setOrderBy, setSearch }}
-						paginatedTasks={data}
-					/>
+					<TaskListComponent {...{ setQuery }} paginatedTasks={data} />
 				</Layout>
 			</Query>
 		</>

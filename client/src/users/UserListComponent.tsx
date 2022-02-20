@@ -19,9 +19,6 @@ import {
 	FormHelperText,
 	FormLabel,
 	VisuallyHidden,
-	Badge,
-	HStack,
-	Avatar,
 } from '@chakra-ui/react';
 import * as React from 'react';
 import { User } from '../types/user.type';
