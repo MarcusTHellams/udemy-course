@@ -112,29 +112,33 @@ export const TableComponent = <T extends object>({
 							<Tr {...row.getRowProps()}>
 								{row.cells.map((cell) => {
 									return (
-										<Td {...cell.getCellProps()}>
-											<Text
-												{...cell.column.getHeaderProps(
-													cell.column.getSortByToggleProps()
-												)}
-												className="mobile-header"
-												fontWeight="bold"
-												as="span"
-											>
-												{cell.column.Header}:
-												{cell.column.isSorted ? (
-													cell.column.isSortedDesc ? (
-														<Icon as={FaChevronDown} w={4} h={4} />
-													) : (
-														<Icon as={FaChevronUp} w={4} h={4} />
-													)
-												) : (
-													''
-												)}
-											</Text>
-											{cell.render('Cell')}
-										</Td>
-									);
+                    <Td {...cell.getCellProps()}>
+                      <Text
+                        {...cell.column.getHeaderProps(
+                          cell.column.getSortByToggleProps()
+                        )}
+                        className='mobile-header'
+                        fontWeight='bold'
+                        as='span'
+                      >
+                        {cell.column.isSorted ? (
+                          cell.column.isSortedDesc ? (
+                            <React.Fragment>
+                              <Icon as={FaChevronDown} w={4} h={4} />{" "}
+                            </React.Fragment>
+                          ) : (
+                            <React.Fragment>
+                              <Icon as={FaChevronUp} w={4} h={4} />{" "}
+                            </React.Fragment>
+                          )
+                        ) : (
+                          ""
+                        )}{" "}
+                        {cell.column.Header}:
+                      </Text>
+                      {cell.render("Cell")}
+                    </Td>
+                  );
 								})}
 							</Tr>
 						);
