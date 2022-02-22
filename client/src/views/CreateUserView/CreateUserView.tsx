@@ -1,6 +1,6 @@
 import * as React from "react";
-import { Layout } from "../../components/Layout/Layout";
-import { UserForm } from "../../components/UserForm/UserForm";
+import { Layout } from "components/Layout/Layout";
+import { UserForm } from "components/UserForm/UserForm";
 
 type CreateUserViewProps = {};
 

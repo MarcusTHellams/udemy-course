@@ -1,5 +1,5 @@
 import { gql } from 'graphql-request';
-import { CORE_USER_FIELDS } from './../fragments/user';
+import { CORE_USER_FIELDS } from "graphql/fragments/user";
 
 export const getUsers = gql`
   query getUsers($pageQueryInput: PageQueryInput) {

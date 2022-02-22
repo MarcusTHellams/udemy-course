@@ -1,5 +1,5 @@
 import * as React from "react";
-import { TaskForm } from "../TaskForm/TaskForm";
+import { TaskForm } from "components/TaskForm/TaskForm";
 
 type TaskCreateProps = {};
 

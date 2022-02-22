@@ -1,17 +1,17 @@
 import * as React from 'react';
-import { Task } from '../types/task.type';
-import { Button, Heading } from '@chakra-ui/react';
-import { Link as RLink } from 'react-router-dom';
-import { DeletionVerification } from '../components/DeletionVerification/DeletionVerification';
-import { removeTask } from '../graphql/mutations/removeTask';
-import { PaginatedResults } from '../types/paginatedResults.type';
-import { useIsLoggedIn } from '../hooks/useIsLoggedIn';
-import { useIsAdmin } from '../hooks/useIsAdmin';
-import { SetQueryType } from '../types/setQuery.type';
-import { useItemListComponent } from '../hooks/useItemListComponent';
-import { taskQueryKeys } from '../queryKeys/taskQueryKeys';
-import { taskListColumns } from '.';
-import { TableComponent } from '../components/TableComponent/TableComponent';
+import { Task } from "types/task.type";
+import { Button, Heading } from "@chakra-ui/react";
+import { Link as RLink } from "react-router-dom";
+import { DeletionVerification } from "components/DeletionVerification/DeletionVerification";
+import { removeTask } from "graphql/mutations/removeTask";
+import { PaginatedResults } from "types/paginatedResults.type";
+import { useIsLoggedIn } from "hooks/useIsLoggedIn";
+import { useIsAdmin } from "hooks/useIsAdmin";
+import { SetQueryType } from "types/setQuery.type";
+import { useItemListComponent } from "hooks/useItemListComponent";
+import { taskQueryKeys } from "queryKeys/taskQueryKeys";
+import { taskListColumns } from ".";
+import { TableComponent } from "components/TableComponent/TableComponent";
 
 type TaskListComponentProps = {
 	paginatedTasks?: PaginatedResults<Task>;

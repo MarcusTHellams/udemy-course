@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { Task } from "../../types/task.type";
-import { Layout } from "../Layout/Layout";
+import { Task } from "types/task.type";
+import { Layout } from "components/Layout/Layout";
 import {
   FormControl,
   FormLabel,
@@ -15,17 +15,17 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useMutation, useQueryClient } from "react-query";
-import { Rclient } from "../../graphql/client";
-import { updateTask } from "../../graphql/mutations/updateTask";
-import { Query } from "../Query/Query";
-import { getUsers } from "../../graphql/queries/users";
-import { UserSelect } from "../UserSelect/UserSelect";
-import { User } from "../../types/user.type";
-import { TaskFormValues } from "../../types/taskFormValues.type";
+import { Rclient } from "graphql/client";
+import { updateTask } from "graphql/mutations/updateTask";
+import { Query } from "components/Query/Query";
+import { getUsers } from "graphql/queries/users";
+import { UserSelect } from "components/UserSelect/UserSelect";
+import { User } from "types/user.type";
+import { TaskFormValues } from "types/taskFormValues.type";
 import { DevTool } from "@hookform/devtools";
 import { useHistory, useLocation } from "react-router-dom";
-import { createTask } from "../../graphql/mutations/createTask";
-import { PaginatedResults } from "../../types/paginatedResults.type";
+import { createTask } from "graphql/mutations/createTask";
+import { PaginatedResults } from "types/paginatedResults.type";
 import BlockUi from "react-block-ui";
 
 type TaskFormProps = {

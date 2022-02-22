@@ -11,8 +11,8 @@ import {
 } from '@chakra-ui/react';
 import React from 'react';
 import { Column, Row } from 'react-table';
-import { Role } from '../types/role.type';
-import { User } from '../types/user.type';
+import { Role } from "types/role.type";
+import { User } from "types/user.type";
 
 export const userListColumns = ({
 	isAdmin,

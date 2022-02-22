@@ -2,7 +2,7 @@ import { Button, ButtonGroup } from '@chakra-ui/react';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Column, Row } from 'react-table';
-import { Task } from '../types/task.type';
+import { Task } from "types/task.type";
 
 export const taskListColumns = ({
 	isAdmin,

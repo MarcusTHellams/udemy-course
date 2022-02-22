@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { useQuery } from 'react-query';
 import { useLocalStorage } from 'react-use';
-import { Rclient } from '../../graphql/client';
-import { getProfile } from '../../graphql/queries/profile';
+import { Rclient } from "graphql/client";
+import { getProfile } from "graphql/queries/profile";
 
 const queryFn = () => {
   return Rclient.request(getProfile).catch((error: Error) => {

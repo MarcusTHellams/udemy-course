@@ -9,7 +9,7 @@ import {
 } from '@chakra-ui/react';
 import * as React from 'react';
 import { Chakra_UI_Backdrop } from 'chakra-ui-backdrop';
-import { Layout } from '../Layout/Layout';
+import { Layout } from "components/Layout/Layout";
 
 interface QueryProps {
 	isLoading: boolean;

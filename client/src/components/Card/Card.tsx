@@ -9,7 +9,7 @@ import {
   Badge,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { User } from '../../types/user.type';
+import { User } from "types/user.type";
 
 type CardProps = {
   [key: string]: any;

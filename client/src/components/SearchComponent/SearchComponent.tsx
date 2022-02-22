@@ -6,7 +6,7 @@ import {
 	Input,
 } from '@chakra-ui/react';
 import { useDebounce, usePrevious } from 'react-use';
-import { getParsedSearch } from '../../utils';
+import { getParsedSearch } from "utils";
 import { useHistory } from 'react-router-dom';
 
 export type SearchComponentProps = {

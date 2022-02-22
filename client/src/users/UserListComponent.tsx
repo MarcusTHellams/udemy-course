@@ -1,17 +1,17 @@
 import { Heading } from '@chakra-ui/react';
 import * as React from 'react';
-import { User } from '../types/user.type';
-import { Layout } from '../components/Layout/Layout';
-import { PaginatedResults } from '../types/paginatedResults.type';
-import { DeletionVerification } from '../components/DeletionVerification/DeletionVerification';
-import { userQueryKeys } from '.';
-import { useItemListComponent } from '../hooks/useItemListComponent';
-import { removeUser } from '../graphql/mutations/user';
-import { SetQueryType } from '../types/setQuery.type';
-import { useIsAdmin } from '../hooks/useIsAdmin';
-import { useIsLoggedIn } from '../hooks/useIsLoggedIn';
-import { userListColumns } from '.';
-import { TableComponent } from '../components/TableComponent/TableComponent';
+import { User } from "types/user.type";
+import { Layout } from "components/Layout/Layout";
+import { PaginatedResults } from "types/paginatedResults.type";
+import { DeletionVerification } from "components/DeletionVerification/DeletionVerification";
+import { userQueryKeys } from ".";
+import { useItemListComponent } from "hooks/useItemListComponent";
+import { removeUser } from "graphql/mutations/user";
+import { SetQueryType } from "types/setQuery.type";
+import { useIsAdmin } from "hooks/useIsAdmin";
+import { useIsLoggedIn } from "hooks/useIsLoggedIn";
+import { userListColumns } from ".";
+import { TableComponent } from "components/TableComponent/TableComponent";
 
 type UserListComponentProps = {
 	paginatedUsers?: PaginatedResults<User>;

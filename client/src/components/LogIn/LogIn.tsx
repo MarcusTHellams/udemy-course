@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Layout } from '../Layout/Layout';
+import { Layout } from "components/Layout/Layout";
 import {
   Alert,
   AlertDescription,
@@ -16,13 +16,13 @@ import {
   VStack,
   Text,
   Link,
-} from '@chakra-ui/react';
-import { useForm, SubmitHandler } from 'react-hook-form';
-import { Rclient } from '../../graphql/client';
-import { login } from '../../graphql/mutations/login';
-import { useMutation, MutateFunction } from 'react-query';
-import { useHistory, useLocation } from 'react-router-dom';
-import { useUserContext } from '../../contexts/userContext/userContext';
+} from "@chakra-ui/react";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { Rclient } from "graphql/client";
+import { login } from "graphql/mutations/login";
+import { useMutation, MutateFunction } from "react-query";
+import { useHistory, useLocation } from "react-router-dom";
+import { useUserContext } from "contexts/userContext/userContext";
 import { Link as RLink } from 'react-router-dom';
 
 type LogInFormValues = {

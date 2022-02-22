@@ -1,4 +1,4 @@
-import { useUserContext } from './../contexts/userContext/userContext';
+import { useUserContext } from "contexts/userContext/userContext";
 
 export const useIsLoggedIn = () => {
   const { userStorage } = useUserContext();

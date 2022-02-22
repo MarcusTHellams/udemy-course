@@ -1,10 +1,10 @@
 import * as React from "react";
 import { useParams } from "react-router-dom";
-import { Query } from "../../components/Query/Query";
-import { TaskForm } from "../../components/TaskForm/TaskForm";
-import { Rclient } from "../../graphql/client";
-import { getTask } from "../../graphql/queries/task";
-import { Task } from "../../types/task.type";
+import { Query } from "components/Query/Query";
+import { TaskForm } from "components/TaskForm/TaskForm";
+import { Rclient } from "graphql/client";
+import { getTask } from "graphql/queries/task";
+import { Task } from "types/task.type";
 
 type TaskParams = {
   id: string;

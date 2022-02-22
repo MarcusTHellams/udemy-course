@@ -16,9 +16,9 @@ import {
 } from "@chakra-ui/react";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { Link as RLink, useHistory } from "react-router-dom";
-import { useUserContext } from "../../contexts/userContext/userContext";
-import { Rclient } from "../../graphql/client";
-import { logout } from "../../graphql/mutations/logout";
+import { useUserContext } from "contexts/userContext/userContext";
+import { Rclient } from "graphql/client";
+import { logout } from "graphql/mutations/logout";
 import { useMutation } from "react-query";
 
 type HeaderProps = {

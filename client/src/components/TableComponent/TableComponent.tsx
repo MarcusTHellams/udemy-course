@@ -22,21 +22,21 @@ import {
 import { Paginated } from '@makotot/paginated';
 import React from 'react';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
-import { getParsedSearch } from '../../utils';
-import { ResponsiveTable } from '../ResponsiveTable/ResponsiveTable';
+import { getParsedSearch } from "utils";
 import {
-	HeaderGroup,
-	Row,
-	TablePropGetter,
-	TableProps,
-	TableBodyPropGetter,
-	TableBodyProps,
-} from 'react-table';
-import { SetQueryType } from '../../types/setQuery.type';
+  HeaderGroup,
+  Row,
+  TablePropGetter,
+  TableProps,
+  TableBodyPropGetter,
+  TableBodyProps,
+} from "react-table";
+import { SetQueryType } from "types/setQuery.type";
 import {
-	SearchComponent,
-	SearchComponentProps,
-} from '../SearchComponent/SearchComponent';
+  SearchComponent,
+  SearchComponentProps,
+} from "components/SearchComponent/SearchComponent";
+import { ResponsiveTable } from "components/ResponsiveTable/ResponsiveTable";
 
 interface TableComponentProps<T extends object> extends SearchComponentProps {
 	setQuery: SetQueryType;

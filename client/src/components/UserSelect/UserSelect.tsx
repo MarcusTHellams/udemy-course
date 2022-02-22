@@ -1,8 +1,8 @@
 import * as React from "react";
-import { User } from "../../types/user.type";
+import { User } from "types/user.type";
 import Select, { Props } from "react-select";
 import { Controller, Control } from "react-hook-form";
-import { TaskFormValues } from "../../types/taskFormValues.type";
+import { TaskFormValues } from "types/taskFormValues.type";
 
 type UserSelectProps = {
   [key: string]: any;

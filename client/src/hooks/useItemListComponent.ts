@@ -1,13 +1,13 @@
-import { QueryKeysType } from "./../types/queryKey.types";
-import { SetQueryType } from "../types/setQuery.type";
+import { QueryKeysType } from "types/queryKey.types";
+import { SetQueryType } from "types/setQuery.type";
 import { useToast } from "@chakra-ui/react";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useMutation, useQueryClient } from "react-query";
-import { Rclient } from "../graphql/client";
+import { Rclient } from "graphql/client";
 import { Column, usePagination, useSortBy, useTable } from "react-table";
 import { useHistory } from "react-router-dom";
-import { getParsedSearch } from "../utils";
-import { DirectionEnum, OrderByType } from "../types/orderBy.type";
+import { getParsedSearch } from "utils/getParsedSearch";
+import { DirectionEnum, OrderByType } from "types/orderBy.type";
 import { DocumentNode } from "graphql/language/ast";
 import isEqual from "lodash/isEqual";
 

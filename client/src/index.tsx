@@ -1,12 +1,12 @@
 import { ChakraProvider } from "@chakra-ui/react";
 import * as React from "react";
 import ReactDOM from "react-dom";
-import { App } from "./App";
-import reportWebVitals from "./reportWebVitals";
-import * as serviceWorker from "./serviceWorker";
+import { App } from "App";
+import reportWebVitals from "reportWebVitals";
+import * as serviceWorker from "serviceWorker";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { BrowserRouter as Router, Route } from 'react-router-dom';
-import { UserContextProvider } from './contexts/userContext/userContext';
+import { BrowserRouter as Router, Route } from "react-router-dom";
+import { UserContextProvider } from "contexts/userContext/userContext";
 import { QueryParamProvider } from 'use-query-params';
 import 'react-block-ui/style.css';
 

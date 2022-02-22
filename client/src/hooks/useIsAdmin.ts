@@ -1,5 +1,5 @@
-import { StorageUser } from './../types/user.type';
-import { useUserContext } from './../contexts/userContext/userContext';
+import { StorageUser } from "types/user.type";
+import { useUserContext } from "contexts/userContext/userContext";
 
 export const useIsAdmin = (): boolean => {
   const { userStorage } = useUserContext();
@@ -7,7 +7,7 @@ export const useIsAdmin = (): boolean => {
   let isAdmin: boolean = false;
   if (userStorage) {
     user = JSON.parse(userStorage) || {};
-    isAdmin = user?.roles.includes('admin');
+    isAdmin = user?.roles.includes("admin");
   }
 
   return isAdmin;

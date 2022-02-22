@@ -7,7 +7,7 @@ import {
   UseQueryOptions,
   UseQueryResult,
 } from 'react-query';
-import { Layout } from '../Layout/Layout';
+import { Layout } from "components/Layout/Layout";
 import BlockUi from 'react-block-ui';
 
 interface QueryProps<T> {
