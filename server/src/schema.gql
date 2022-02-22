@@ -139,8 +139,8 @@ input UpdateTaskInput {
   title: String!
   description: String
   userId: String
-  id: String!
   user: UpdateUserInput
+  id: String!
 }
 
 input UpdateRoleInput {
@@ -158,6 +158,7 @@ input CreateTaskInput {
   title: String!
   description: String
   userId: String
+  user: UpdateUserInput
 }
 
 input CreateRoleInput {

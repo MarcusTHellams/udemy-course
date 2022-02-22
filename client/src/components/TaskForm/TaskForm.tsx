@@ -27,6 +27,7 @@ import { useHistory, useLocation } from "react-router-dom";
 import { createTask } from "graphql/mutations/createTask";
 import { PaginatedResults } from "types/paginatedResults.type";
 import BlockUi from "react-block-ui";
+import { taskQueryKeys } from "queryKeys/taskQueryKeys";
 
 type TaskFormProps = {
   task?: Task | null;
@@ -87,13 +88,17 @@ export const TaskForm = ({ task = null }: TaskFormProps): JSX.Element => {
     TaskFormValues
   >(mutationFn, {
     onSuccess: () => {
-      queryClient.invalidateQueries();
+      queryClient.invalidateQueries(taskQueryKeys.lists());
       toast({
         onCloseComplete: () => {
+          console.log(
+            "🚀 ~ file: TaskForm.tsx ~ line 95 ~ state?.referrer",
+            state?.referrer
+          );
           if (state?.referrer) {
             history.push(state.referrer);
           } else {
-            history.push("/");
+            history.goBack();
           }
         },
         position: "top",
@@ -103,7 +108,7 @@ export const TaskForm = ({ task = null }: TaskFormProps): JSX.Element => {
     },
     onError(error) {
       toast({
-        description: error.message,
+        description: error.message.split(":")[0],
         duration: null,
         isClosable: true,
         position: "top",
@@ -119,27 +124,27 @@ export const TaskForm = ({ task = null }: TaskFormProps): JSX.Element => {
 
   return (
     <>
-      <Layout maxW="container.sm">
-        <Heading as="h1" mb="4">
+      <Layout maxW='container.sm'>
+        <Heading as='h1' mb='4'>
           {editOrCreate} Task
         </Heading>
         <BlockUi blocking={isLoading || isSuccess}>
           <form onSubmit={handleSubmit(submitHandler)}>
-            {!!task && <input type="hidden" {...register("id")} />}
-            <VStack spacing="8" align="start">
+            {!!task && <input type='hidden' {...register("id")} />}
+            <VStack spacing='8' align='start'>
               <FormControl isInvalid={!!errors?.title}>
-                <FormLabel htmlFor="title">Title</FormLabel>
+                <FormLabel htmlFor='title'>Title</FormLabel>
                 <Input
-                  id="title"
+                  id='title'
                   {...register("title", { required: "Title is Required" })}
                 />
                 <FormErrorMessage>{errors?.title?.message}</FormErrorMessage>
               </FormControl>
               <FormControl>
-                <FormLabel htmlFor="description">Description</FormLabel>
-                <Textarea id="description" {...register("description")} />
+                <FormLabel htmlFor='description'>Description</FormLabel>
+                <Textarea id='description' {...register("description")} />
               </FormControl>
-              <FormControl id="description">
+              <FormControl id='description'>
                 <FormLabel>User Task is Assigned to</FormLabel>
                 <Query<PaginatedResults<User>>
                   {...{ queryFn, queryKey }}
@@ -149,7 +154,7 @@ export const TaskForm = ({ task = null }: TaskFormProps): JSX.Element => {
                       <>
                         <UserSelect
                           selectProps={{ isClearable: true }}
-                          name="user"
+                          name='user'
                           {...{ control }}
                           users={items}
                         />
@@ -158,13 +163,13 @@ export const TaskForm = ({ task = null }: TaskFormProps): JSX.Element => {
                   }}
                 />
               </FormControl>
-              <Box width="full">
+              <Box width='full'>
                 <Button
                   {...{ isLoading }}
-                  variant="outline"
-                  type="submit"
-                  colorScheme="blue"
-                  w="full"
+                  variant='outline'
+                  type='submit'
+                  colorScheme='blue'
+                  w='full'
                 >
                   {editOrCreate}
                 </Button>
