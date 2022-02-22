@@ -1,3 +1,4 @@
+import { UserCreateValidationPipe } from './user-create-validation-pipe.pipe';
 import { PaginatedUser } from './entities/paginatedUsers.entity';
 import { PageQueryInput } from './../common/entities/pageQuery.input';
 import { JwtStrategy } from './../auth/jwt.strategy';
@@ -21,7 +22,7 @@ import { User } from './entities/user.entity';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { Task } from '../task/entities/task.entity';
-import { UseGuards } from '@nestjs/common';
+import { UseGuards, UsePipes } from '@nestjs/common';
 import { JWTAuthGuard } from '../auth/jwt-auth.guard';
 @Resolver(() => User)
 export class UserResolver {
@@ -31,6 +32,7 @@ export class UserResolver {
   ) {}
 
   @Mutation(() => User)
+  @UsePipes(new UserCreateValidationPipe())
   createUser(@Args('createUserInput') createUserInput: CreateUserInput) {
     return this.userService.create(createUserInput);
   }

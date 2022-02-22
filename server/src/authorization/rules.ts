@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { rule, shield, or } from 'graphql-shield';
+import { rule, shield, or, allow } from 'graphql-shield';
 import { getUser } from '../helpers/get.user';
 
 export const isAdmin = rule()(async (_, __, ctx) => {
@@ -56,14 +56,17 @@ export const isLoggedIn = rule()(async (_, __, ctx) => {
   );
 });
 
-export const permissions = shield({
-  // Query: {
-  //   users: isAdmin,
-  // },
-  Mutation: {
-    updateUser: or(isAdmin, canUpdateUser),
-    removeUser: isAdmin,
-    updateTask: or(isAdmin, canUpdateTask),
-    removeTask: isAdmin,
+export const permissions = shield(
+  {
+    // Query: {
+    //   // users: isAdmin,
+    // },
+    Mutation: {
+      updateUser: or(isAdmin, canUpdateUser),
+      removeUser: isAdmin,
+      updateTask: or(isAdmin, canUpdateTask),
+      removeTask: isAdmin,
+    },
   },
-});
+  { fallbackRule: allow, allowExternalErrors: true },
+);

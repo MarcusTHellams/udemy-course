@@ -1,6 +1,5 @@
 import { getUser } from './../helpers/get.user';
 import { IRequest } from './../types/requestWithCookie.type';
-import { yupErrorMessageFormatter } from './../helpers/yupErrorMessageFormatter';
 import { FindAll } from './../types/findAll.types';
 import { RepoService } from './../repo/repo.service';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
@@ -18,76 +17,11 @@ import { v4 as uuidv4 } from 'uuid';
 import bcrypt2 = require('bcryptjs');
 import { diff } from 'deep-diff';
 
-const passwordValidator = new PasswordValidator();
-
-passwordValidator
-  .has()
-  .uppercase()
-  .has()
-  .lowercase()
-  .has()
-  .digits(2)
-  .has()
-  .not()
-  .spaces();
-
-const createUserSchema = yup.object().shape({
-  username: yup
-    .string()
-    .min(6, 'Username is required to be a minium of 6 characters')
-    .max(45, `Username can't be more than 45 characters`)
-    .required('Username is required'),
-  email: yup
-    .string()
-    .email('A valid email is required')
-    .required('Email is required'),
-  password: yup
-    .string()
-    .min(8, 'Password must be a minimum of 8 characters')
-    .max(100, 'Password must not have more than 100 characters')
-    .required('Password is required')
-    .test(
-      'passwordValidator',
-      'Password must have at least one uppercase letter, lowercase letter, a minimum of 2 digits, and no spaces',
-      (value) => {
-        if (passwordValidator.validate(value)) {
-          return true;
-        }
-        return false;
-      },
-    ),
-  passwordConfirmation: yup
-    .string()
-    .test(
-      'passwordConfirmation',
-      'Password Confirmation must match `Password`',
-      (value, { parent: { password } }) => {
-        if (value !== password) {
-          return false;
-        }
-        return true;
-      },
-    ),
-  imageUrl: yup.string().nullable().url('Image Url must be a valid url'),
-});
 @Injectable()
 export class UserService {
   constructor(private readonly repo: RepoService) {}
 
   async create(createUserInput: CreateUserInput) {
-    try {
-      await createUserSchema.validate(createUserInput, { abortEarly: false });
-    } catch (e) {
-      const errors = yupErrorMessageFormatter(e);
-      throw new HttpException(
-        Object.keys(errors).reduce((acc, value) => {
-          acc += errors[value] + '\n';
-          return acc;
-        }, ''),
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
     const id = uuidv4();
     const password = await bcrypt2.hash(createUserInput.password, 12);
     const user = this.repo.userRepo.create({
